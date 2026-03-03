@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import logo from '../logo/Test.png';
+import logo from '../logo/Test.svg';
 
 export default function Header({ onMenuClick }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +25,6 @@ export default function Header({ onMenuClick }) {
       {/* Logo */}
       <div className="header-logo">
         <img src={logo} alt="Logo" className="logo-img" />
-        <span className="logo-text">CarMirror</span>
       </div>
 
       {/* Desktop Navigation */}
