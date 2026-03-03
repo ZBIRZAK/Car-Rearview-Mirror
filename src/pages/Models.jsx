@@ -27,12 +27,17 @@ export default function Models({ brand, models, onModelSelect, onBack }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Rechercher un modele..."
+          inputMode="search"
+          autoComplete="off"
         />
       </div>
 
       <div className="models-grid">
         {filteredModels.map((model, index) => (
-          <button key={index} className="model-card" onClick={() => onModelSelect(model)}>
+          <button key={index} className="model-card" onClick={() => {
+            if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
+            onModelSelect(model);
+          }}>
             <h3>{model}</h3>
             <p className="model-helper">Appuyez pour choisir</p>
           </button>

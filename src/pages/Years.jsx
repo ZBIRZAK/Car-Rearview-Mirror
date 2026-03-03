@@ -33,7 +33,10 @@ export default function Years({ model, years, onYearSelect, onBack }) {
         <h3 className="year-section-title">Annees disponibles</h3>
         <div className="years-grid">
           {visibleYears.map((year) => (
-            <button key={year} className="year-card" onClick={() => onYearSelect(year)}>
+            <button key={year} className="year-card" onClick={() => {
+              if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
+              onYearSelect(year);
+            }}>
               <h3>{year}</h3>
             </button>
           ))}
