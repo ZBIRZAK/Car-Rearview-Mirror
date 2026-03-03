@@ -163,17 +163,21 @@ function App() {
     }
   };
 
+  const showBrandRail = ['home', 'models', 'years', 'product', 'form'].includes(currentView);
+
   return (
     <div className="app">
       <Header onMenuClick={handleMenuClick} />
-      <BrandSelector
-        brands={mockData.brands}
-        selectedBrand={selectedBrand}
-        onSelect={handleBrandSelect}
-        disabled={false}
-      />
+      {showBrandRail ? (
+        <BrandSelector
+          brands={mockData.brands}
+          selectedBrand={selectedBrand}
+          onSelect={handleBrandSelect}
+          disabled={false}
+        />
+      ) : null}
 
-      <div className="main-content">
+      <div className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
         {currentView === 'home' && <Home onStartSelection={handleStartSelection} showBrandHint={showBrandHint} />}
 
         {currentView === 'about' && <About />}
