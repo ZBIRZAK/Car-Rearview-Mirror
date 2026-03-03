@@ -23,6 +23,10 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
       if (!phoneRegex.test(value)) return 'Veuillez entrer un numero de telephone valide.';
     }
 
+    if (name === 'consent') {
+      if (!value) return 'Veuillez accepter d\'etre contacte.';
+    }
+
     return '';
   };
 
@@ -30,7 +34,8 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
     const nextErrors = {
       fullName: validateField('fullName', formData.fullName),
       email: validateField('email', formData.email),
-      phone: validateField('phone', formData.phone)
+      phone: validateField('phone', formData.phone),
+      consent: validateField('consent', formData.consent)
     };
 
     setErrors(nextErrors);
@@ -39,10 +44,11 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
 
   const handleFieldChange = (e) => {
     onChange(e);
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+    const fieldValue = type === 'checkbox' ? checked : value;
     setErrors((prev) => ({
       ...prev,
-      [name]: validateField(name, value)
+      [name]: validateField(name, fieldValue)
     }));
   };
 
@@ -112,6 +118,31 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
               aria-invalid={Boolean(errors.phone)}
             />
             {errors.phone && <p className="field-error">{errors.phone}</p>}
+          </div>
+
+          <div className="form-group form-group-full">
+            <label htmlFor="message">Message (optionnel)</label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleFieldChange}
+              placeholder="Ajoutez un detail utile (reference, couleur, cote exact, etc.)"
+              rows={4}
+            />
+          </div>
+
+          <div className="form-group form-group-full consent-group">
+            <label className="consent-label">
+              <input
+                type="checkbox"
+                name="consent"
+                checked={formData.consent}
+                onChange={handleFieldChange}
+              />
+              <span>J'accepte d'etre contacte concernant cette demande.</span>
+            </label>
+            {errors.consent && <p className="field-error">{errors.consent}</p>}
           </div>
         </div>
 

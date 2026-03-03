@@ -1,6 +1,43 @@
 import React from 'react';
 
-export default function Home() {
+const heroMirrorImage = 'https://images.pexels.com/photos/1686880/pexels-photo-1686880.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1800&h=1200';
+const featuredOneImage = 'https://images.pexels.com/photos/17168615/pexels-photo-17168615.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
+const featuredTwoImage = 'https://images.pexels.com/photos/15360851/pexels-photo-15360851.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
+const featuredThreeImage = 'https://images.pexels.com/photos/12152813/pexels-photo-12152813.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
+
+function WhyLineIcon({ type }) {
+  if (type === 'shield') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3 5 6v6c0 5 3.4 8.6 7 9 3.6-.4 7-4 7-9V6z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+    );
+  }
+  if (type === 'bolt') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M13 2 4 14h6l-1 8 9-12h-6z" />
+      </svg>
+    );
+  }
+  if (type === 'price') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3v18" />
+        <path d="M16 7.5c0-1.7-1.8-3-4-3s-4 1.3-4 3 1.2 2.6 4 3 4 1.2 4 3-1.8 3-4 3-4-1.3-4-3" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M18 10a6 6 0 1 0-12 0v5H4v3h4v-3h8v3h4v-3h-2z" />
+      <path d="M9 19a3 3 0 0 0 6 0" />
+    </svg>
+  );
+}
+
+export default function Home({ onStartSelection, showBrandHint }) {
   return (
     <div className="home-view">
       <div className="home-content">
@@ -11,10 +48,19 @@ export default function Home() {
             <p className="app-description">
               Trouvez le retroviseur ideal pour votre vehicule. Produits de qualite, prix competitifs et livraison rapide.
             </p>
-            <button className="cta-button">Commencer</button>
+            <button className="cta-button" onClick={onStartSelection}>Choisir ma marque</button>
+            <p className="time-estimate">Temps estime : 30 secondes</p>
+            {showBrandHint ? (
+              <p className="brand-hint">Commencez par choisir une marque dans la barre laterale droite.</p>
+            ) : null}
+            <div className="trust-strip">
+              <span>Livraison rapide</span>
+              <span>Paiement securise</span>
+              <span>Support 24/7</span>
+            </div>
           </div>
           <div className="hero-image">
-            <div className="image-placeholder">Image principale</div>
+            <img src={heroMirrorImage} alt="Retroviseur principal" className="hero-photo" />
           </div>
         </div>
 
@@ -24,7 +70,7 @@ export default function Home() {
           <div className="featured-grid">
             <div className="featured-item">
               <div className="featured-image">
-                <div className="image-placeholder">Produit 1</div>
+                <img src={featuredOneImage} alt="Produit en vedette 1" className="featured-photo" />
               </div>
               <h3>Retroviseur Universel</h3>
               <p>Compatible avec la plupart des vehicules avec finition premium</p>
@@ -32,7 +78,7 @@ export default function Home() {
 
             <div className="featured-item">
               <div className="featured-image">
-                <div className="image-placeholder">Produit 2</div>
+                <img src={featuredTwoImage} alt="Produit en vedette 2" className="featured-photo" />
               </div>
               <h3>Retroviseur Anti-Eblouissement</h3>
               <p>Reduit l'eblouissement de nuit grace a une technologie avancee</p>
@@ -40,7 +86,7 @@ export default function Home() {
 
             <div className="featured-item">
               <div className="featured-image">
-                <div className="image-placeholder">Produit 3</div>
+                <img src={featuredThreeImage} alt="Produit en vedette 3" className="featured-photo" />
               </div>
               <h3>Reglage Electrique</h3>
               <p>Commandes electriques pratiques pour un ajustement facile</p>
@@ -54,7 +100,7 @@ export default function Home() {
           <div className="why-grid">
             <div className="why-item">
               <div className="why-image">
-                <div className="image-placeholder small">Qualite</div>
+                <span className="why-icon"><WhyLineIcon type="shield" /></span>
               </div>
               <h3>Qualite Premium</h3>
               <p>Tous nos retroviseurs passent un controle strict avant expedition</p>
@@ -62,7 +108,7 @@ export default function Home() {
 
             <div className="why-item">
               <div className="why-image">
-                <div className="image-placeholder small">Rapide</div>
+                <span className="why-icon"><WhyLineIcon type="bolt" /></span>
               </div>
               <h3>Livraison Rapide</h3>
               <p>Livraison rapide a votre adresse avec suivi de colis</p>
@@ -70,7 +116,7 @@ export default function Home() {
 
             <div className="why-item">
               <div className="why-image">
-                <div className="image-placeholder small">Prix</div>
+                <span className="why-icon"><WhyLineIcon type="price" /></span>
               </div>
               <h3>Meilleurs Prix</h3>
               <p>Prix competitifs sans frais caches</p>
@@ -78,7 +124,7 @@ export default function Home() {
 
             <div className="why-item">
               <div className="why-image">
-                <div className="image-placeholder small">Support</div>
+                <span className="why-icon"><WhyLineIcon type="support" /></span>
               </div>
               <h3>Support 24/7</h3>
               <p>Une equipe disponible pour repondre a toutes vos questions</p>

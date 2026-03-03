@@ -9,6 +9,7 @@ import Models from './pages/Models';
 import Years from './pages/Years';
 import Product from './pages/Product';
 import Form from './pages/Form';
+import Success from './pages/Success';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
@@ -17,8 +18,10 @@ function App() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'models', 'years', 'product', 'form'
+  const [currentView, setCurrentView] = useState('home'); // 'home', 'models', 'years', 'product', 'form', 'success'
   const [activeNav, setActiveNav] = useState('home');
+  const [showBrandHint, setShowBrandHint] = useState(false);
+  const [submission, setSubmission] = useState(null);
   const [productConfig, setProductConfig] = useState({
     position: '',
     productType: '',
@@ -28,7 +31,9 @@ function App() {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    phone: ''
+    phone: '',
+    message: '',
+    consent: false
   });
 
   // Reset all selections and return to home
@@ -43,8 +48,10 @@ function App() {
       adjustmentType: '',
       options: []
     });
-    setFormData({ fullName: '', email: '', phone: '' });
+    setFormData({ fullName: '', email: '', phone: '', message: '', consent: false });
     setActiveNav('home');
+    setShowBrandHint(false);
+    setSubmission(null);
   };
 
   // Handle brand selection
@@ -59,6 +66,7 @@ function App() {
       options: []
     });
     setCurrentView('models');
+    setShowBrandHint(false);
   };
 
   // Handle model selection
@@ -88,57 +96,33 @@ function App() {
   };
 
   const handleContinueToForm = () => {
-    if (!productConfig.position || !productConfig.productType || !productConfig.adjustmentType) {
-      alert('Veuillez selectionner la position, le type de produit et le type de reglage');
-      return;
-    }
     setCurrentView('form');
   };
 
   // Handle form input changes
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Simple validation
-    if (!formData.fullName || !formData.email || !formData.phone) {
-      alert('Veuillez remplir tous les champs');
-      return;
-    }
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert('Veuillez saisir une adresse email valide');
-      return;
-    }
-    
-    // Phone validation (simple)
-    const phoneRegex = /^[0-9+\-\s()]+$/;
-    if (!phoneRegex.test(formData.phone)) {
-      alert('Veuillez saisir un numero de telephone valide');
-      return;
-    }
-    
-    // Mock submission - log to console
-    console.log('Formulaire envoye :', {
+
+    const payload = {
       brand: selectedBrand?.name,
       model: selectedModel,
       year: selectedYear,
       productConfig,
       ...formData
-    });
-    
-    alert('Merci pour votre demande ! Nous vous contacterons rapidement.');
-    resetToHome();
+    };
+
+    console.log('Formulaire envoye :', payload);
+    setSubmission(payload);
+    setCurrentView('success');
   };
 
   // Handle WhatsApp click
@@ -151,7 +135,15 @@ function App() {
   // Handle Contact click
   const handleContactClick = () => {
     setActiveNav('contact');
-    alert('Contactez-nous :\nEmail : info@carrearviewmirrors.com\nTelephone : +1 (555) 123-4567');
+    setCurrentView('contact');
+  };
+
+  const handleStartSelection = () => {
+    if (selectedBrand) {
+      setCurrentView('models');
+      return;
+    }
+    setShowBrandHint(true);
   };
 
   // Handle menu page navigation
@@ -182,18 +174,23 @@ function App() {
       />
 
       <div className="main-content">
-        {currentView === 'home' && <Home />}
+        {currentView === 'home' && <Home onStartSelection={handleStartSelection} showBrandHint={showBrandHint} />}
 
         {currentView === 'about' && <About />}
 
         {currentView === 'contact' && <Contact />}
 
         {currentView === 'models' && (
-          <Models brand={selectedBrand} models={mockData.models[selectedBrand.id] || []} onModelSelect={handleModelSelect} />
+          <Models
+            brand={selectedBrand}
+            models={mockData.models[selectedBrand.id] || []}
+            onModelSelect={handleModelSelect}
+            onBack={() => setCurrentView('home')}
+          />
         )}
 
         {currentView === 'years' && (
-          <Years model={selectedModel} years={mockData.years} onYearSelect={handleYearSelect} />
+          <Years model={selectedModel} years={mockData.years} onYearSelect={handleYearSelect} onBack={() => setCurrentView('models')} />
         )}
 
         {currentView === 'form' && (
@@ -217,6 +214,14 @@ function App() {
             productConfig={productConfig}
             onChange={handleProductConfigChange}
             onContinue={handleContinueToForm}
+          />
+        )}
+
+        {currentView === 'success' && (
+          <Success
+            submission={submission}
+            onNewRequest={resetToHome}
+            onWhatsApp={handleWhatsAppClick}
           />
         )}
       </div>
