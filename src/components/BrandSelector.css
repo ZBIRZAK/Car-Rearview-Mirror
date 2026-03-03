@@ -1,0 +1,6 @@
+.brand-selector { }
+.brand-list { display:flex; flex-direction:column; gap:10px; align-items:center; }
+.brand-item { width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:transparent; border:none; cursor:pointer; }
+.brand-item.active { }
+.brand-icon { font-size:20px; }
+.brand-name { display:none; }
