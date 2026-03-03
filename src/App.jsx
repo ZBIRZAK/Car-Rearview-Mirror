@@ -205,6 +205,7 @@ function App() {
             formData={formData}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
+            onBack={() => setCurrentView('product')}
           />
         )}
 
