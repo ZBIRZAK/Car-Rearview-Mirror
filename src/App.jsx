@@ -7,6 +7,7 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import Models from './pages/Models';
 import Years from './pages/Years';
+import Product from './pages/Product';
 import Form from './pages/Form';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -16,8 +17,14 @@ function App() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'models', 'years', 'form'
+  const [currentView, setCurrentView] = useState('home'); // 'home', 'models', 'years', 'product', 'form'
   const [activeNav, setActiveNav] = useState('home');
+  const [productConfig, setProductConfig] = useState({
+    position: '',
+    productType: '',
+    adjustmentType: '',
+    options: []
+  });
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -30,6 +37,12 @@ function App() {
     setSelectedModel(null);
     setSelectedYear(null);
     setCurrentView('home');
+    setProductConfig({
+      position: '',
+      productType: '',
+      adjustmentType: '',
+      options: []
+    });
     setFormData({ fullName: '', email: '', phone: '' });
     setActiveNav('home');
   };
@@ -39,6 +52,12 @@ function App() {
     setSelectedBrand(brand);
     setSelectedModel(null);
     setSelectedYear(null);
+    setProductConfig({
+      position: '',
+      productType: '',
+      adjustmentType: '',
+      options: []
+    });
     setCurrentView('models');
   };
 
@@ -46,12 +65,33 @@ function App() {
   const handleModelSelect = (model) => {
     setSelectedModel(model);
     setSelectedYear(null);
+    setProductConfig({
+      position: '',
+      productType: '',
+      adjustmentType: '',
+      options: []
+    });
     setCurrentView('years');
   };
 
   // Handle year selection
   const handleYearSelect = (year) => {
     setSelectedYear(year);
+    setCurrentView('product');
+  };
+
+  const handleProductConfigChange = (field, value) => {
+    setProductConfig(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleContinueToForm = () => {
+    if (!productConfig.position || !productConfig.productType || !productConfig.adjustmentType) {
+      alert('Please select Position, Product Type, and Adjustment Type');
+      return;
+    }
     setCurrentView('form');
   };
 
@@ -93,6 +133,7 @@ function App() {
       brand: selectedBrand?.name,
       model: selectedModel,
       year: selectedYear,
+      productConfig,
       ...formData
     });
     
@@ -160,9 +201,21 @@ function App() {
             brand={selectedBrand}
             model={selectedModel}
             year={selectedYear}
+            productConfig={productConfig}
             formData={formData}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
+          />
+        )}
+
+        {currentView === 'product' && (
+          <Product
+            brand={selectedBrand}
+            model={selectedModel}
+            year={selectedYear}
+            productConfig={productConfig}
+            onChange={handleProductConfigChange}
+            onContinue={handleContinueToForm}
           />
         )}
       </div>

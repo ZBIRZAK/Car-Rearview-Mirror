@@ -1,12 +1,18 @@
 import React from 'react';
 
-export default function Form({ brand, model, year, formData, onChange, onSubmit }) {
+export default function Form({ brand, model, year, productConfig, formData, onChange, onSubmit }) {
   if (!year) return null;
   return (
     <div className="form-view">
       <form className="lead-form" onSubmit={onSubmit}>
         <h2>Get Your Quote</h2>
         <p className="form-subtitle">{brand?.name} {model} ({year})</p>
+        <div className="product-summary">
+          <p><strong>Position:</strong> {productConfig?.position || 'None'}</p>
+          <p><strong>Type:</strong> {productConfig?.productType}</p>
+          <p><strong>Réglage:</strong> {productConfig?.adjustmentType}</p>
+          <p><strong>Options:</strong> {productConfig?.options?.length ? productConfig.options.join(', ') : 'None'}</p>
+        </div>
 
         <div className="form-group">
           <label htmlFor="fullName">Full Name</label>

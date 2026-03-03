@@ -1,5 +1,4 @@
 import React from 'react';
-import './BrandSelector.css';
 
 export default function BrandSelector({ brands, selectedBrand, onSelect, disabled }) {
   return (
