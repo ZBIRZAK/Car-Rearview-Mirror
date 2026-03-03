@@ -110,37 +110,87 @@ html,body,#root { height: 100%; }
 }
 
 .mobile-menu {
-  position: absolute;
-  top: 70px;
-  left: 0;
-  right: 0;
-  background: linear-gradient(180deg, #0b0b0b, #060606);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  position: fixed;
+  top: 74px;
+  left: 12px;
+  right: 12px;
+  z-index: 310;
+  background: linear-gradient(180deg, #0d0d0d, #070707);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
+  padding: 12px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
   animation: slideDown 0.2s ease;
 }
 
-.mobile-menu-item {
-  background: transparent;
+.mobile-menu-backdrop {
+  position: fixed;
+  inset: 70px 0 0;
+  z-index: 305;
+  background: rgba(0, 0, 0, 0.62);
   border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-menu-item {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   color: #fff;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  padding: 14px 20px;
+  padding: 12px 14px;
   text-align: left;
   transition: all 0.2s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  display: grid;
+  gap: 2px;
 }
 
-.mobile-menu-item:last-child {
-  border-bottom: none;
+.mobile-menu-header {
+  padding: 4px 2px 10px;
+}
+
+.mobile-menu-title {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #ffc7d5;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.mobile-menu-subtitle {
+  margin: 5px 0 0;
+  color: #a7afb8;
+  font-size: 0.84rem;
+}
+
+.mobile-menu-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.mobile-menu-item-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.mobile-menu-item-hint {
+  color: #9aa0a6;
+  font-size: 0.82rem;
 }
 
 .mobile-menu-item:hover {
-  background: rgba(254, 44, 85, 0.1);
-  color: var(--accent);
+  border-color: rgba(254, 44, 85, 0.5);
+  background: rgba(254, 44, 85, 0.08);
+}
+
+.mobile-menu-item:active {
+  transform: scale(0.99);
 }
 
 .app {
@@ -1109,6 +1159,10 @@ html,body,#root { height: 100%; }
     display: none !important;
   }
 
+  .mobile-menu-backdrop {
+    display: none !important;
+  }
+
   .brand-selector {
     top: 80px;
   }
@@ -1142,6 +1196,14 @@ html,body,#root { height: 100%; }
 
   .header-nav {
     display: none !important;
+  }
+
+  .mobile-menu {
+    top: 74px;
+    left: 10px;
+    right: 10px;
+    border-radius: 14px;
+    padding: 10px;
   }
 
   .app {
