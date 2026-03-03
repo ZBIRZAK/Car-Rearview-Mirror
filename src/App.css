@@ -175,6 +175,7 @@ html,body,#root { height: 100%; }
   padding: 12px 8px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   z-index: 200;
   box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
@@ -188,25 +189,19 @@ html,body,#root { height: 100%; }
   width: 100%;
   align-items: center;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding-right: 4px;
 }
 
 .brand-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.brand-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.brand-list::-webkit-scrollbar-thumb {
-  background: rgba(254, 44, 85, 0.3);
-  border-radius: 2px;
-}
-
-.brand-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(254, 44, 85, 0.6);
+  width: 0;
+  height: 0;
 }
 
 .brand-item {
@@ -947,7 +942,7 @@ html,body,#root { height: 100%; }
     right: 8px;
     left: auto;
     bottom: 86px;
-    width: 62px;
+    width: 70px;
     height: auto;
     border-radius: 12px;
     padding: 8px 6px;
@@ -958,7 +953,7 @@ html,body,#root { height: 100%; }
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    gap: 8px;
+    gap: 12px;
     padding-right: 0;
     padding-bottom: 0;
     justify-content: flex-start;
@@ -970,15 +965,15 @@ html,body,#root { height: 100%; }
   }
 
   .brand-item {
-    width: 44px;
-    height: 44px;
+    width: 55px;
+    height: 55px;
     min-width: 44px;
     border-radius: 10px;
   }
 
   .brand-image {
-    width: 26px;
-    height: 26px;
+    width: 36px;
+    height: 36px;
   }
 
   .hamburger-dropdown {
