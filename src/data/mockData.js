@@ -1,13 +1,22 @@
+import toyotaImage from '../images/toyota.png';
+import bmwImage from '../images/bmw.png';
+import mercedesImage from '../images/mercedes.png';
+import audiImage from '../images/audi.png';
+import hyundaiImage from '../images/hyundai.png';
+import volkswagenImage from '../images/volkswagen.png';
+import nissanImage from '../images/nissan.png';
+import renaultImage from '../images/renault.png';
+
 export const mockData = {
   brands: [
-    { id: 1, name: 'Toyota', icon: '/src/images/toyota.png', isImage: true },
-    { id: 2, name: 'BMW', icon: '/src/images/bmw.png', isImage: true  },
-    { id: 3, name: 'Mercedes', icon: '/src/images/mercedes.png', isImage: true },
-    { id: 4, name: 'Audi', icon: '/src/images/audi.png', isImage: true },
-    { id: 5, name: 'hyundai', icon: '/src/images/hyundai.png', isImage: true },
-    { id: 7, name: 'Volkswagen', icon: '/src/images/volkswagen.png', isImage: true },
-    { id: 9, name: 'Nissan', icon: '/src/images/nissan.png', isImage: true },
-    { id: 10, name: 'Renault', icon: '/src/images/renault.png', isImage: true },
+    { id: 1, name: 'Toyota', icon: toyotaImage, isImage: true },
+    { id: 2, name: 'BMW', icon: bmwImage, isImage: true  },
+    { id: 3, name: 'Mercedes', icon: mercedesImage, isImage: true },
+    { id: 4, name: 'Audi', icon: audiImage, isImage: true },
+    { id: 5, name: 'hyundai', icon: hyundaiImage, isImage: true },
+    { id: 7, name: 'Volkswagen', icon: volkswagenImage, isImage: true },
+    { id: 9, name: 'Nissan', icon: nissanImage, isImage: true },
+    { id: 10, name: 'Renault', icon: renaultImage, isImage: true },
   ],
   models: {
     1: ['Camry', 'Corolla', 'RAV4', 'Prius', 'Highlander'], // Toyota

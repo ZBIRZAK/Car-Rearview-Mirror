@@ -1,4 +1,7 @@
 import React from 'react';
+import homeIcon from '../icons/home.png';
+import whatsappIcon from '../icons/whatsapp.png';
+import contactIcon from '../icons/contact.png';
 
 export default function BottomNav({ active, onHome, onWhatsApp, onContact }) {
   return (
@@ -8,7 +11,7 @@ export default function BottomNav({ active, onHome, onWhatsApp, onContact }) {
         onClick={onHome}
         aria-label="Home"
       >
-        <img src="/src/icons/home.png" alt="Home" className="nav-icon" />
+        <img src={homeIcon} alt="Home" className="nav-icon" />
       </button>
 
       <button
@@ -16,7 +19,7 @@ export default function BottomNav({ active, onHome, onWhatsApp, onContact }) {
         onClick={onWhatsApp}
         aria-label="WhatsApp"
       >
-        <img src="/src/icons/whatsapp.png" alt="WhatsApp" className="nav-icon" />
+        <img src={whatsappIcon} alt="WhatsApp" className="nav-icon" />
       </button>
 
       <button
@@ -24,7 +27,7 @@ export default function BottomNav({ active, onHome, onWhatsApp, onContact }) {
         onClick={onContact}
         aria-label="Contact"
       >
-        <img src="/src/icons/contact.png" alt="Contact" className="nav-icon" />
+        <img src={contactIcon} alt="Contact" className="nav-icon" />
       </button>
     </div>
   );

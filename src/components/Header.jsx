@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logo from '../logo/Test.png';
 
 export default function Header({ onMenuClick }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +24,7 @@ export default function Header({ onMenuClick }) {
 
       {/* Logo */}
       <div className="header-logo">
-        <img src="/src/logo/Test.png" alt="Logo" className="logo-img" />
+        <img src={logo} alt="Logo" className="logo-img" />
         <span className="logo-text">CarMirror</span>
       </div>
 
