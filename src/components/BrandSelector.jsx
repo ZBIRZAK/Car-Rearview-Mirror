@@ -3,7 +3,7 @@ import React from 'react';
 export default function BrandSelector({ brands, selectedBrand, onSelect, disabled }) {
   return (
     <div className="brand-selector">
-      <h3>Car Brands</h3>
+      <h3>Marques</h3>
       <div className="brand-list">
         {brands.map(brand => (
           <button

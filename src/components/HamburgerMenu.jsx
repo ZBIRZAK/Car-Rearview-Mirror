@@ -23,10 +23,10 @@ export default function HamburgerMenu({ onMenuClick }) {
       {(isOpen || window.innerWidth > 768) && (
         <div className="hamburger-dropdown">
           <button className="menu-item" onClick={() => handleClick('home')}>
-            Home
+            Accueil
           </button>
           <button className="menu-item" onClick={() => handleClick('about')}>
-            About Us
+            A propos
           </button>
           <button className="menu-item" onClick={() => handleClick('contact')}>
             Contact

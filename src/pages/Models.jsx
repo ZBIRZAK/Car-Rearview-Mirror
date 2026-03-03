@@ -5,15 +5,15 @@ export default function Models({ brand, models, onModelSelect }) {
   return (
     <div className="models-view step-shell">
       <div className="view-header">
-        <span className="step-pill">Step 1 of 3</span>
-        <h2>Select {brand.name} Model</h2>
-        <p>Choose your vehicle model to continue to year selection.</p>
+        <span className="step-pill">Etape 1 sur 3</span>
+        <h2>Choisissez le modele {brand.name}</h2>
+        <p>Selectionnez votre modele pour passer a l'annee.</p>
       </div>
       <div className="models-grid">
         {models.map((model, index) => (
           <button key={index} className="model-card" onClick={() => onModelSelect(model)}>
             <h3>{model}</h3>
-            <p className="model-helper">Tap to select</p>
+            <p className="model-helper">Appuyez pour choisir</p>
           </button>
         ))}
       </div>

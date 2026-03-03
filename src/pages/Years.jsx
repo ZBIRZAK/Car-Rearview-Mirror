@@ -8,13 +8,13 @@ export default function Years({ model, years, onYearSelect }) {
   return (
     <div className="years-view step-shell">
       <div className="view-header">
-        <span className="step-pill">Step 2 of 3</span>
-        <h2>Select {model} Year</h2>
-        <p>Choose your vehicle production year to continue.</p>
+        <span className="step-pill">Etape 2 sur 3</span>
+        <h2>Choisissez l'annee de {model}</h2>
+        <p>Selectionnez l'annee de production pour continuer.</p>
       </div>
 
       <div className="year-section">
-        <h3 className="year-section-title">Recent Years</h3>
+        <h3 className="year-section-title">Annees recentes</h3>
         <div className="years-grid">
           {recentYears.map((year) => (
             <button key={year} className="year-card" onClick={() => onYearSelect(year)}>
@@ -25,7 +25,7 @@ export default function Years({ model, years, onYearSelect }) {
       </div>
 
       <div className="year-section">
-        <h3 className="year-section-title">Older Years</h3>
+        <h3 className="year-section-title">Annees anciennes</h3>
         <div className="years-grid years-grid-older">
           {olderYears.map((year) => (
             <button key={year} className="year-card" onClick={() => onYearSelect(year)}>

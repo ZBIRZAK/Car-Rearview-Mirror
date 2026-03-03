@@ -31,10 +31,10 @@ export default function Header({ onMenuClick }) {
       {/* Desktop Navigation */}
       <nav className="header-nav">
         <button className="nav-link" onClick={() => handleClick('home')}>
-          Home
+          Accueil
         </button>
         <button className="nav-link" onClick={() => handleClick('about')}>
-          About Us
+          A propos
         </button>
         <button className="nav-link" onClick={() => handleClick('contact')}>
           Contact
@@ -45,10 +45,10 @@ export default function Header({ onMenuClick }) {
       {isOpen && (
         <div className="mobile-menu">
           <button className="mobile-menu-item" onClick={() => handleClick('home')}>
-            Home
+            Accueil
           </button>
           <button className="mobile-menu-item" onClick={() => handleClick('about')}>
-            About Us
+            A propos
           </button>
           <button className="mobile-menu-item" onClick={() => handleClick('contact')}>
             Contact

@@ -47,17 +47,17 @@ export default function Product({ brand, model, year, productConfig, onChange, o
   return (
     <div className="product-view">
       <div className="view-header">
-        <h2>Configure Your Product</h2>
+        <h2>Configurez votre produit</h2>
         <p>{brand?.name} {model} ({year})</p>
       </div>
 
       <div className="product-layout">
         <div className="product-preview">
           <button type="button" className="product-image-trigger" onClick={openLightbox}>
-            <img src={mirrorProductImage} alt="Car side rear-view mirror" className="product-brand-image" />
+            <img src={mirrorProductImage} alt="Retroviseur exterieur de voiture" className="product-brand-image" />
           </button>
-          <p className="image-hint">Tap image to open full screen</p>
-          <h3>{brand?.name} Mirror</h3>
+          <p className="image-hint">Appuyez sur l'image pour l'ouvrir en plein ecran</p>
+          <h3>Retroviseur {brand?.name}</h3>
           <p>{model} - {year}</p>
         </div>
 
@@ -111,25 +111,25 @@ export default function Product({ brand, model, year, productConfig, onChange, o
           </div>
 
           <button type="button" className="submit-button" onClick={onContinue} disabled={!canContinue}>
-            Continue to Form
+            Continuer vers le formulaire
           </button>
         </div>
       </div>
 
       {isLightboxOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
-          <button type="button" className="lightbox-close" onClick={closeLightbox} aria-label="Close image viewer">
+          <button type="button" className="lightbox-close" onClick={closeLightbox} aria-label="Fermer la visionneuse">
             ×
           </button>
           <div className="lightbox-controls">
             <button type="button" onClick={zoomOut}>-</button>
-            <button type="button" onClick={resetZoom}>Reset</button>
+            <button type="button" onClick={resetZoom}>Reinitialiser</button>
             <button type="button" onClick={zoomIn}>+</button>
           </div>
           <div className="lightbox-image-wrap">
             <img
               src={mirrorProductImage}
-              alt="Car side rear-view mirror full view"
+              alt="Retroviseur exterieur de voiture en grand format"
               className="lightbox-image"
               style={{ transform: `scale(${zoom})` }}
             />

@@ -9,9 +9,9 @@ export default function BottomNav({ active, onHome, onWhatsApp, onContact }) {
       <button
         className={`nav-item ${active === 'home' ? 'active' : ''}`}
         onClick={onHome}
-        aria-label="Home"
+        aria-label="Accueil"
       >
-        <img src={homeIcon} alt="Home" className="nav-icon" />
+        <img src={homeIcon} alt="Accueil" className="nav-icon" />
       </button>
 
       <button

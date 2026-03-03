@@ -4,76 +4,76 @@ export default function Contact() {
   return (
     <div className="contact-view">
       <div className="view-header">
-        <h2>Contact Us</h2>
-        <p>Get in touch with us</p>
+        <h2>Contactez-nous</h2>
+        <p>Prenez contact avec notre equipe</p>
       </div>
       <div className="contact-content">
         <div className="contact-section">
-          <h3>📧 Get In Touch</h3>
-          <p>We'd love to hear from you! Reach out to us through any of the following channels:</p>
+          <h3>📧 Nous contacter</h3>
+          <p>Nous serons ravis d'echanger avec vous. Choisissez l'un des canaux ci-dessous :</p>
         </div>
 
         <div className="contact-methods">
           <div className="contact-card">
             <div className="contact-icon">📧</div>
-            <h4>Email</h4>
+            <h4>E-mail</h4>
             <p>info@carrearviewmirrors.com</p>
             <p>support@carrearviewmirrors.com</p>
           </div>
 
           <div className="contact-card">
             <div className="contact-icon">📱</div>
-            <h4>Phone</h4>
+            <h4>Telephone</h4>
             <p>+1 (555) 123-4567</p>
-            <p className="small">Mon-Fri: 9AM - 6PM EST</p>
+            <p className="small">Lun-Ven : 9h00 - 18h00 EST</p>
           </div>
 
           <div className="contact-card">
             <div className="contact-icon">💬</div>
             <h4>WhatsApp</h4>
             <p>+1 (555) 987-6543</p>
-            <p className="small">24/7 Quick Response</p>
+            <p className="small">Reponse rapide 24/7</p>
           </div>
 
           <div className="contact-card">
             <div className="contact-icon">📍</div>
-            <h4>Address</h4>
+            <h4>Adresse</h4>
             <p>123 Auto Parts Street</p>
             <p>Detroit, MI 48201</p>
           </div>
         </div>
 
         <div className="business-hours">
-          <h3>🕐 Business Hours</h3>
+          <h3>🕐 Horaires d'ouverture</h3>
           <div className="hours-list">
             <div className="hour-item">
-              <span>Monday - Friday</span>
-              <span>9:00 AM - 6:00 PM EST</span>
+              <span>Lundi - Vendredi</span>
+              <span>9h00 - 18h00 EST</span>
             </div>
             <div className="hour-item">
-              <span>Saturday</span>
-              <span>10:00 AM - 4:00 PM EST</span>
+              <span>Samedi</span>
+              <span>10h00 - 16h00 EST</span>
             </div>
             <div className="hour-item">
-              <span>Sunday</span>
-              <span>Closed</span>
+              <span>Dimanche</span>
+              <span>Ferme</span>
             </div>
           </div>
         </div>
 
         <div className="faq-section">
-          <h3>❓ Frequently Asked Questions</h3>
+          <h3>❓ Questions frequentes</h3>
           <div className="faq-item">
-            <h4>How long does shipping take?</h4>
-            <p>Standard shipping takes 3-5 business days. Express shipping available for 1-2 business days.</p>
+            <h4>Combien de temps prend la livraison ?</h4>
+            <p>La livraison standard prend 3 a 5 jours ouvrables. La livraison express est possible en 1 a 2 jours.</p>
           </div>
           <div className="faq-item">
-            <h4>Do you offer international shipping?</h4>
-            <p>Yes, we ship worldwide with additional shipping costs and customs fees.</p>
+            <h4>Proposez-vous la livraison internationale ?</h4>
+            <p>Oui, nous livrons a l'international avec des frais de livraison et de douane supplementaires.</p>
           </div>
           <div className="faq-item">
-            <h4>What's your return policy?</h4>
-            <p>We offer 30-day returns for unused products in original packaging.</p>
+            <h4>Quelle est votre politique de retour ?</h4>
+            <p>Nous acceptons les retours sous 30 jours pour les produits non utilises dans leur emballage d'origine.</p>
           </div>
         </div>
       </div>

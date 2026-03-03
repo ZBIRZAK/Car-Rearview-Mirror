@@ -7,90 +7,90 @@ export default function Home() {
         {/* Hero Section */}
         <div className="hero-section">
           <div className="hero-text">
-            <h1 className="app-title">Premium Car Rearview Mirrors</h1>
+            <h1 className="app-title">Retroviseurs Auto Premium</h1>
             <p className="app-description">
-              Find the perfect rearview mirror for your vehicle. Quality products, competitive prices, and fast delivery guaranteed.
+              Trouvez le retroviseur ideal pour votre vehicule. Produits de qualite, prix competitifs et livraison rapide.
             </p>
-            <button className="cta-button">Get Started</button>
+            <button className="cta-button">Commencer</button>
           </div>
           <div className="hero-image">
-            <div className="image-placeholder">Hero Image</div>
+            <div className="image-placeholder">Image principale</div>
           </div>
         </div>
 
         {/* Featured Products */}
         <div className="featured-section">
-          <h2 className="section-title">Featured Products</h2>
+          <h2 className="section-title">Produits en vedette</h2>
           <div className="featured-grid">
             <div className="featured-item">
               <div className="featured-image">
-                <div className="image-placeholder">Product 1</div>
+                <div className="image-placeholder">Produit 1</div>
               </div>
-              <h3>Universal Fit Mirror</h3>
-              <p>Perfect for most vehicles with premium quality finish</p>
+              <h3>Retroviseur Universel</h3>
+              <p>Compatible avec la plupart des vehicules avec finition premium</p>
             </div>
 
             <div className="featured-item">
               <div className="featured-image">
-                <div className="image-placeholder">Product 2</div>
+                <div className="image-placeholder">Produit 2</div>
               </div>
-              <h3>Anti-Glare Mirror</h3>
-              <p>Reduce night driving glare with advanced technology</p>
+              <h3>Retroviseur Anti-Eblouissement</h3>
+              <p>Reduit l'eblouissement de nuit grace a une technologie avancee</p>
             </div>
 
             <div className="featured-item">
               <div className="featured-image">
-                <div className="image-placeholder">Product 3</div>
+                <div className="image-placeholder">Produit 3</div>
               </div>
-              <h3>Electric Adjustable</h3>
-              <p>Convenient electric controls for easy adjustment</p>
+              <h3>Reglage Electrique</h3>
+              <p>Commandes electriques pratiques pour un ajustement facile</p>
             </div>
           </div>
         </div>
 
         {/* Why Choose Us */}
         <div className="why-section">
-          <h2 className="section-title">Why Choose Us?</h2>
+          <h2 className="section-title">Pourquoi nous choisir ?</h2>
           <div className="why-grid">
             <div className="why-item">
               <div className="why-image">
-                <div className="image-placeholder small">Quality</div>
+                <div className="image-placeholder small">Qualite</div>
               </div>
-              <h3>Premium Quality</h3>
-              <p>All mirrors undergo strict quality control before shipping to ensure reliability</p>
+              <h3>Qualite Premium</h3>
+              <p>Tous nos retroviseurs passent un controle strict avant expedition</p>
             </div>
 
             <div className="why-item">
               <div className="why-image">
-                <div className="image-placeholder small">Fast</div>
+                <div className="image-placeholder small">Rapide</div>
               </div>
-              <h3>Fast Shipping</h3>
-              <p>Quick delivery to your doorstep with tracking information</p>
+              <h3>Livraison Rapide</h3>
+              <p>Livraison rapide a votre adresse avec suivi de colis</p>
             </div>
 
             <div className="why-item">
               <div className="why-image">
-                <div className="image-placeholder small">Price</div>
+                <div className="image-placeholder small">Prix</div>
               </div>
-              <h3>Best Prices</h3>
-              <p>Competitive pricing with no hidden charges or surprises</p>
+              <h3>Meilleurs Prix</h3>
+              <p>Prix competitifs sans frais caches</p>
             </div>
 
             <div className="why-item">
               <div className="why-image">
                 <div className="image-placeholder small">Support</div>
               </div>
-              <h3>24/7 Support</h3>
-              <p>Round-the-clock customer support for all your questions</p>
+              <h3>Support 24/7</h3>
+              <p>Une equipe disponible pour repondre a toutes vos questions</p>
             </div>
           </div>
         </div>
 
         {/* Call to Action */}
         <div className="final-cta">
-          <h2>Ready to upgrade your vehicle?</h2>
-          <p>Browse our collection and find the perfect mirror for your car</p>
-          <button className="cta-button">Explore Now</button>
+          <h2>Pret a ameliorer votre vehicule ?</h2>
+          <p>Parcourez notre collection et trouvez le retroviseur parfait</p>
+          <button className="cta-button">Explorer</button>
         </div>
       </div>
     </div>

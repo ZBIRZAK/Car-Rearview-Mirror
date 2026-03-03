@@ -4,49 +4,49 @@ export default function About() {
   return (
     <div className="about-view">
       <div className="view-header">
-        <h2>About Us</h2>
-        <p>Learn about our mission and values</p>
+        <h2>A propos de nous</h2>
+        <p>Decouvrez notre mission et nos valeurs</p>
       </div>
       <div className="about-content">
         <div className="about-section">
-          <h3>🚗 Our Story</h3>
-          <p>Founded in 2010, Car Rearview Mirror Shop has been dedicated to providing high-quality automotive mirrors and accessories to drivers worldwide. What started as a small family business has grown into a trusted name in the automotive parts industry.</p>
+          <h3>🚗 Notre histoire</h3>
+          <p>Fondee en 2010, Car Rearview Mirror Shop est specialisee dans les retroviseurs et accessoires auto de haute qualite. Ce qui a commence comme une petite entreprise familiale est devenu une reference du secteur.</p>
         </div>
 
         <div className="about-section">
-          <h3>🎯 Our Mission</h3>
-          <p>We believe that every driver deserves clear visibility and safety on the road. Our mission is to deliver premium rearview mirrors that enhance driving experience while maintaining the highest standards of quality and customer service.</p>
+          <h3>🎯 Notre mission</h3>
+          <p>Nous pensons que chaque conducteur merite une visibilite claire et une conduite en securite. Notre mission est de proposer des retroviseurs premium avec un haut niveau de qualite et de service client.</p>
         </div>
 
         <div className="about-section">
-          <h3>✨ Why Choose Us</h3>
+          <h3>✨ Pourquoi nous choisir</h3>
           <div className="features-list">
             <div className="feature-item">
               <span className="feature-icon">🏆</span>
               <div>
-                <h4>Premium Quality</h4>
-                <p>All our mirrors undergo rigorous testing to ensure durability and clarity</p>
+                <h4>Qualite premium</h4>
+                <p>Tous nos retroviseurs sont testes pour garantir durabilite et clarte</p>
               </div>
             </div>
             <div className="feature-item">
               <span className="feature-icon">🚚</span>
               <div>
-                <h4>Fast Delivery</h4>
-                <p>Quick shipping to your doorstep with tracking information</p>
+                <h4>Livraison rapide</h4>
+                <p>Expedition rapide avec suivi jusqu'a votre adresse</p>
               </div>
             </div>
             <div className="feature-item">
               <span className="feature-icon">💰</span>
               <div>
-                <h4>Competitive Prices</h4>
-                <p>Best prices without compromising on quality</p>
+                <h4>Prix competitifs</h4>
+                <p>Les meilleurs prix sans compromis sur la qualite</p>
               </div>
             </div>
             <div className="feature-item">
               <span className="feature-icon">🎧</span>
               <div>
-                <h4>24/7 Support</h4>
-                <p>Our customer service team is always ready to help</p>
+                <h4>Support 24/7</h4>
+                <p>Notre service client est disponible pour vous aider</p>
               </div>
             </div>
           </div>
@@ -54,7 +54,7 @@ export default function About() {
 
         <div className="about-section">
           <h3>🔧 Expertise</h3>
-          <p>With over 14 years of experience in the automotive industry, our team of experts understands the importance of proper rearview mirrors. We work directly with manufacturers to ensure we offer the latest innovations in mirror technology.</p>
+          <p>Avec plus de 14 ans d'experience dans l'automobile, notre equipe comprend l'importance d'un retroviseur adapte. Nous collaborons directement avec les fabricants pour proposer les dernieres innovations.</p>
         </div>
       </div>
     </div>

@@ -89,7 +89,7 @@ function App() {
 
   const handleContinueToForm = () => {
     if (!productConfig.position || !productConfig.productType || !productConfig.adjustmentType) {
-      alert('Please select Position, Product Type, and Adjustment Type');
+      alert('Veuillez selectionner la position, le type de produit et le type de reglage');
       return;
     }
     setCurrentView('form');
@@ -110,26 +110,26 @@ function App() {
     
     // Simple validation
     if (!formData.fullName || !formData.email || !formData.phone) {
-      alert('Please fill in all fields');
+      alert('Veuillez remplir tous les champs');
       return;
     }
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address');
+      alert('Veuillez saisir une adresse email valide');
       return;
     }
     
     // Phone validation (simple)
     const phoneRegex = /^[0-9+\-\s()]+$/;
     if (!phoneRegex.test(formData.phone)) {
-      alert('Please enter a valid phone number');
+      alert('Veuillez saisir un numero de telephone valide');
       return;
     }
     
     // Mock submission - log to console
-    console.log('Form submitted:', {
+    console.log('Formulaire envoye :', {
       brand: selectedBrand?.name,
       model: selectedModel,
       year: selectedYear,
@@ -137,7 +137,7 @@ function App() {
       ...formData
     });
     
-    alert('Thank you for your inquiry! We will contact you soon.');
+    alert('Merci pour votre demande ! Nous vous contacterons rapidement.');
     resetToHome();
   };
 
@@ -151,7 +151,7 @@ function App() {
   // Handle Contact click
   const handleContactClick = () => {
     setActiveNav('contact');
-    alert('Contact us:\nEmail: info@carrearviewmirrors.com\nPhone: +1 (555) 123-4567');
+    alert('Contactez-nous :\nEmail : info@carrearviewmirrors.com\nTelephone : +1 (555) 123-4567');
   };
 
   // Handle menu page navigation
