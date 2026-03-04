@@ -429,7 +429,7 @@ html,body,#root { height: 100%; }
 .cta-button {
   padding: 14px 32px;
   background: linear-gradient(135deg, var(--grad-start), var(--grad-mid), var(--grad-end));
-  color: #fff;
+  color: #000000;
   border: none;
   border-radius: 12px;
   font-weight: 700;
@@ -574,12 +574,12 @@ html,body,#root { height: 100%; }
 .final-cta h2 {
   font-size: 2rem;
   margin: 0 0 12px 0;
-  color: #fff;
+  color: #000000;
 }
 
 .final-cta p {
   font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
   margin-bottom: 24px;
 }
 
@@ -1150,7 +1150,7 @@ html,body,#root { height: 100%; }
 .submit-button {
   width: 100%;
   background: linear-gradient(135deg, var(--grad-start), var(--grad-mid), var(--grad-end));
-  color: #fff;
+  color: #000000;
   border: none;
   padding: 16px;
   border-radius: 12px;
