@@ -1425,7 +1425,7 @@ html,body,#root { height: 100%; }
     left: auto;
     bottom: 86px;
     width: 70px;
-    height: auto;
+    height: fit-content;
     border-radius: 12px;
     padding: 8px 6px;
     z-index: 240;
