@@ -47,7 +47,7 @@ html,body,#root { height: 100%; }
 .hamburger-toggle span {
   width: 20px;
   height: 2px;
-  background: #fff;
+  background: #000000;
   border-radius: 1px;
   transition: all 0.3s ease;
   display: block;
@@ -1203,7 +1203,7 @@ html,body,#root { height: 100%; }
 .hamburger-toggle span {
   width: 24px;
   height: 2px;
-  background: #fff;
+  background: #000000;
   border-radius: 1px;
   transition: all 0.3s ease;
   display: block;
