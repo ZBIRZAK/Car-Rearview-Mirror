@@ -262,6 +262,12 @@ html,body,#root { height: 100%; }
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding-right: 4px;
+  cursor: grab;
+  user-select: none;
+}
+
+.brand-list.dragging {
+  cursor: grabbing;
 }
 
 .brand-list::-webkit-scrollbar {
@@ -290,7 +296,7 @@ html,body,#root { height: 100%; }
 .brand-item.active { background: linear-gradient(180deg, var(--grad-start), var(--grad-mid), var(--grad-end)); box-shadow: 0 6px 18px rgba(198, 167, 94, 0.34);}
 
 .brand-icon { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-.brand-image { width: 36px; height: 36px; object-fit: contain; filter: invert(1);}
+.brand-image { width: 36px; height: 50px; object-fit: contain; filter: invert(1);}
 .brand-name { display: none; }
 
 /* Views */
@@ -1369,6 +1375,21 @@ html,body,#root { height: 100%; }
 
   .brand-selector {
     top: 80px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .brand-selector::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .brand-list {
+    overflow: visible;
+    max-height: none;
+    flex: 0 0 auto;
   }
 }
 
