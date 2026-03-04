@@ -5,21 +5,21 @@ export default function BrandSelector({ brands, selectedBrand, onSelect, disable
   const dragStateRef = useRef({
     dragging: false,
     moved: false,
+    justDragged: false,
     startY: 0,
     startScrollTop: 0,
   });
 
   const handlePointerDown = (event) => {
     if (event.button !== 0) return;
-    event.preventDefault();
+    if (event.pointerType && event.pointerType !== 'mouse') return;
     const selector = selectorRef.current;
     if (!selector) return;
     dragStateRef.current.dragging = true;
     dragStateRef.current.moved = false;
+    dragStateRef.current.justDragged = false;
     dragStateRef.current.startY = event.clientY;
     dragStateRef.current.startScrollTop = selector.scrollTop;
-    selector.classList.add('dragging');
-    selector.setPointerCapture?.(event.pointerId);
   };
 
   const handlePointerMove = (event) => {
@@ -27,21 +27,31 @@ export default function BrandSelector({ brands, selectedBrand, onSelect, disable
     const dragState = dragStateRef.current;
     if (!selector || !dragState.dragging) return;
     const delta = event.clientY - dragState.startY;
-    if (Math.abs(delta) > 3) dragState.moved = true;
+    if (Math.abs(delta) > 3) {
+      dragState.moved = true;
+      selector.classList.add('dragging');
+    }
     selector.scrollTop = dragState.startScrollTop - delta;
+    if (dragState.moved) event.preventDefault();
   };
 
-  const handlePointerEnd = (event) => {
+  const handlePointerEnd = () => {
     const selector = selectorRef.current;
     const dragState = dragStateRef.current;
     if (!selector) return;
+    if (dragState.moved) {
+      dragState.justDragged = true;
+      setTimeout(() => {
+        dragStateRef.current.justDragged = false;
+      }, 120);
+    }
     dragState.dragging = false;
+    dragState.moved = false;
     selector.classList.remove('dragging');
-    selector.releasePointerCapture?.(event.pointerId);
   };
 
   const handleBrandClick = (event, brand) => {
-    if (dragStateRef.current.moved) {
+    if (dragStateRef.current.justDragged) {
       event.preventDefault();
       return;
     }
@@ -56,6 +66,7 @@ export default function BrandSelector({ brands, selectedBrand, onSelect, disable
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
+      onPointerLeave={handlePointerEnd}
       onDragStart={(event) => event.preventDefault()}
     >
       <h3>Marques</h3>
