@@ -242,7 +242,6 @@ html,body,#root { height: 100%; }
   overflow: hidden;
   z-index: 200;
   box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-  height: fit-content;
 }
 
 .brand-selector h3 { display:none; }
@@ -254,6 +253,7 @@ html,body,#root { height: 100%; }
   width: 100%;
   align-items: center;
   flex: 1;
+  max-height: 100%;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -1424,9 +1424,9 @@ html,body,#root { height: 100%; }
     top: 80px;
     right: 8px;
     left: auto;
-    bottom: 86px;
+    bottom: 0;
     width: 70px;
-    height: fit-content;
+    height: auto;
     border-radius: 12px;
     padding: 8px 6px;
     z-index: 240;
@@ -1456,7 +1456,7 @@ html,body,#root { height: 100%; }
 
   .brand-image {
     width: 36px;
-    height: 36px;
+    height: 50px;
   }
 
   .hamburger-dropdown {
