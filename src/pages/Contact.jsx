@@ -44,6 +44,16 @@ export default function Contact() {
                   <p>Reponse rapide</p>
                 </div>
               </a>
+
+              <div className="contact-quick-card">
+                <span className="contact-line-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 1 1 14 0c0 5.8-7 11-7 11z" /><path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /></svg>
+                </span>
+                <div>
+                  <h4>Adresse</h4>
+                  <p>123 Auto Parts Street, Detroit, MI 48201</p>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -115,11 +125,6 @@ export default function Contact() {
         </main>
       </div>
 
-      <div className="contact-address">
-        <span className="contact-address-label">Adresse</span>
-        <p>123 Auto Parts Street, Detroit, MI 48201</p>
-        <p className="contact-address-note">Disponible uniquement pour retraits planifies.</p>
-      </div>
     </div>
   );
 }
