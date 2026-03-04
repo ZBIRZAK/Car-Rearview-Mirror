@@ -16,34 +16,36 @@ export default function Header({ onMenuClick }) {
 
   return (
     <header className="header">
-      {/* Mobile Hamburger */}
-      <button 
-        className={`hamburger-toggle ${isOpen ? 'open' : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Menu"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      <div className="header-inner">
+        {/* Mobile Hamburger */}
+        <button
+          className={`hamburger-toggle ${isOpen ? 'open' : ''}`}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      {/* Logo */}
-      <div className="header-logo">
-        <img src={logo} alt="Logo" className="logo-img" />
+        {/* Logo */}
+        <div className="header-logo">
+          <img src={logo} alt="Logo" className="logo-img" />
+        </div>
+
+        {/* Desktop Navigation */}
+        <nav className="header-nav">
+          <a href="/" className="nav-link" onClick={(event) => handleLinkClick(event, 'home')}>
+            Accueil
+          </a>
+          <a href="/a-propos" className="nav-link" onClick={(event) => handleLinkClick(event, 'about')}>
+            A propos
+          </a>
+          <a href="/contact" className="nav-link" onClick={(event) => handleLinkClick(event, 'contact')}>
+            Contact
+          </a>
+        </nav>
       </div>
-
-      {/* Desktop Navigation */}
-      <nav className="header-nav">
-        <a href="/" className="nav-link" onClick={(event) => handleLinkClick(event, 'home')}>
-          Accueil
-        </a>
-        <a href="/a-propos" className="nav-link" onClick={(event) => handleLinkClick(event, 'about')}>
-          A propos
-        </a>
-        <a href="/contact" className="nav-link" onClick={(event) => handleLinkClick(event, 'contact')}>
-          Contact
-        </a>
-      </nav>
 
       {/* Mobile Menu */}
       {isOpen ? <button className="mobile-menu-backdrop" aria-label="Fermer le menu" onClick={() => setIsOpen(false)} /> : null}

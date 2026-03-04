@@ -22,11 +22,16 @@ html,body,#root { height: 100%; }
   z-index: 250;
   background: linear-gradient(180deg, #060606db, #060606db);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  padding: 12px 20px;
+  padding: 0;
+  height: 70px;
+}
+
+.header-inner {
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
+  padding: 12px 24px;
 }
 
 .hamburger-toggle {
@@ -1270,6 +1275,23 @@ html,body,#root { height: 100%; }
 
 /* Desktop Header */
 @media (min-width: 769px) {
+  .header-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 12px 0;
+  }
+
+  .header-logo {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+  }
+
+  .header-nav {
+    flex: 0 0 auto;
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+
   .hamburger-toggle {
     display: none !important;
   }
@@ -1297,7 +1319,7 @@ html,body,#root { height: 100%; }
     order: 1;
   }
 
-  .header {
+  .header-inner {
     padding: 8px 12px;
   }
 
