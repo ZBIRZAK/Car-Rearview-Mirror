@@ -15,6 +15,8 @@ import Contact from './pages/Contact';
 import CategoryLanding, { categoryContentMap } from './pages/CategoryLanding';
 import { applySeo } from './seo';
 
+const FLOW_STORAGE_KEY = 'crm_flow_state_v1';
+
 const VIEW_TO_PATH = {
   home: '/',
   models: '/modeles',
@@ -62,6 +64,7 @@ function App() {
     message: '',
     consent: false
   });
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const navigateToView = (view, options = {}) => {
     const { categorySlug = null, replace = false } = options;
@@ -91,6 +94,11 @@ function App() {
     setActiveNav('home');
     setShowBrandHint(false);
     setSubmission(null);
+    try {
+      sessionStorage.removeItem(FLOW_STORAGE_KEY);
+    } catch {
+      // ignore storage errors
+    }
   };
 
   // Handle brand selection
@@ -205,23 +213,89 @@ function App() {
   const showBrandRail = ['home', 'models', 'years', 'product', 'form'].includes(currentView);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (mainContentRef.current) {
       mainContentRef.current.scrollTop = 0;
     }
     window.scrollTo(0, 0);
-  }, [currentView, currentCategorySlug]);
+  }, [currentView, currentCategorySlug, isHydrated]);
 
   useEffect(() => {
-    const applyFromPath = (replace = false) => {
-      const route = resolveRoute(window.location.pathname);
-      navigateToView(route.view, { categorySlug: route.categorySlug, replace });
-    };
+    try {
+      const raw = sessionStorage.getItem(FLOW_STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved?.brandId) {
+          const restoredBrand = mockData.brands.find((brand) => brand.id === saved.brandId) || null;
+          setSelectedBrand(restoredBrand);
+        }
+        if (saved?.model) setSelectedModel(saved.model);
+        if (saved?.year) setSelectedYear(Number(saved.year));
+        if (saved?.productConfig) setProductConfig(saved.productConfig);
+        if (saved?.formData) setFormData(saved.formData);
+        if (saved?.submission) setSubmission(saved.submission);
+      }
+    } catch {
+      // ignore storage errors
+    }
 
-    applyFromPath(true);
-    const onPopState = () => applyFromPath(true);
+    const route = resolveRoute(window.location.pathname);
+    navigateToView(route.view, { categorySlug: route.categorySlug, replace: true });
+    setIsHydrated(true);
+
+    const onPopState = () => {
+      const nextRoute = resolveRoute(window.location.pathname);
+      navigateToView(nextRoute.view, { categorySlug: nextRoute.categorySlug, replace: true });
+    };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      const payload = {
+        brandId: selectedBrand?.id || null,
+        model: selectedModel || null,
+        year: selectedYear || null,
+        productConfig,
+        formData,
+        submission,
+      };
+      sessionStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // ignore storage errors
+    }
+  }, [selectedBrand, selectedModel, selectedYear, productConfig, formData, submission, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    // Prevent blank screens after refresh by redirecting to the nearest valid step.
+    if (currentView === 'models' && !selectedBrand) {
+      navigateToView('home', { replace: true });
+      return;
+    }
+
+    if (currentView === 'years' && !selectedModel) {
+      navigateToView(selectedBrand ? 'models' : 'home', { replace: true });
+      return;
+    }
+
+    if (currentView === 'product' && !selectedYear) {
+      navigateToView(selectedModel ? 'years' : (selectedBrand ? 'models' : 'home'), { replace: true });
+      return;
+    }
+
+    if (currentView === 'form' && !selectedYear) {
+      navigateToView(selectedModel ? 'years' : (selectedBrand ? 'models' : 'home'), { replace: true });
+      return;
+    }
+
+    if (currentView === 'success' && !submission) {
+      navigateToView('home', { replace: true });
+    }
+  }, [currentView, selectedBrand, selectedModel, selectedYear, submission, isHydrated]);
 
   useEffect(() => {
     applySeo(currentView, {
