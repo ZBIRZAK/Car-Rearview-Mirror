@@ -24,7 +24,7 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
     }
 
     if (name === 'consent') {
-      if (!value) return 'Veuillez accepter d\'etre contacte.';
+      if (!value) return 'Veuillez accepter les CGV et la Politique de Confidentialite.';
     }
 
     return '';
@@ -140,7 +140,17 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
                 checked={formData.consent}
                 onChange={handleFieldChange}
               />
-              <span>J'accepte d'etre contacte concernant cette demande.</span>
+              <span>
+                J'accepte les{' '}
+                <a className="consent-legal-link" href="/conditions-generales-de-vente">
+                  Conditions Generales de Vente
+                </a>{' '}
+                et la{' '}
+                <a className="consent-legal-link" href="/politique-de-confidentialite">
+                  Politique de Confidentialite
+                </a>
+                .
+              </span>
             </label>
             {errors.consent && <p className="field-error">{errors.consent}</p>}
           </div>

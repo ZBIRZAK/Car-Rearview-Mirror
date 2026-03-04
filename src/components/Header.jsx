@@ -44,6 +44,12 @@ export default function Header({ onMenuClick }) {
           <a href="/contact" className="nav-link" onClick={(event) => handleLinkClick(event, 'contact')}>
             Contact
           </a>
+          <a href="/conditions-generales-de-vente" className="nav-link" onClick={(event) => handleLinkClick(event, 'terms')}>
+            CGV
+          </a>
+          <a href="/politique-de-confidentialite" className="nav-link" onClick={(event) => handleLinkClick(event, 'privacy')}>
+            Confidentialite
+          </a>
         </nav>
       </div>
 
@@ -67,6 +73,14 @@ export default function Header({ onMenuClick }) {
             <a href="/contact" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'contact')}>
               <span className="mobile-menu-item-label">Contact</span>
               <span className="mobile-menu-item-hint">Canaux de support et formulaire</span>
+            </a>
+            <a href="/conditions-generales-de-vente" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'terms')}>
+              <span className="mobile-menu-item-label">Conditions de vente</span>
+              <span className="mobile-menu-item-hint">Cadre legal des commandes</span>
+            </a>
+            <a href="/politique-de-confidentialite" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'privacy')}>
+              <span className="mobile-menu-item-label">Confidentialite</span>
+              <span className="mobile-menu-item-hint">Gestion des donnees personnelles</span>
             </a>
           </div>
         </div>

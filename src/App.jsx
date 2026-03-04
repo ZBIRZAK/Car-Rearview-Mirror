@@ -12,6 +12,8 @@ import Form from './pages/Form';
 import Success from './pages/Success';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 import CategoryLanding, { categoryContentMap } from './pages/CategoryLanding';
 import { applySeo } from './seo';
 
@@ -26,6 +28,8 @@ const VIEW_TO_PATH = {
   success: '/demande-envoyee',
   about: '/a-propos',
   contact: '/contact',
+  terms: '/conditions-generales-de-vente',
+  privacy: '/politique-de-confidentialite',
 };
 
 function resolveRoute(pathname) {
@@ -207,6 +211,16 @@ function App() {
       setSelectedBrand(null);
       setSelectedModel(null);
       setSelectedYear(null);
+    } else if (page === 'terms') {
+      navigateToView('terms');
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setSelectedYear(null);
+    } else if (page === 'privacy') {
+      navigateToView('privacy');
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setSelectedYear(null);
     }
   };
 
@@ -324,6 +338,10 @@ function App() {
         {currentView === 'about' && <About />}
 
         {currentView === 'contact' && <Contact />}
+
+        {currentView === 'terms' && <Terms />}
+
+        {currentView === 'privacy' && <Privacy />}
 
         {currentView === 'models' && (
           <Models

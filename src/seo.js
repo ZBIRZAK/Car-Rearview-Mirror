@@ -142,6 +142,22 @@ function getSeoForView(view, context) {
       indexable: true,
       pageType: 'ContactPage',
     },
+    terms: {
+      title: `Conditions Generales de Vente | ${SITE_NAME}`,
+      description:
+        "Consultez les conditions generales de vente: commandes, prix, livraison, retours, garanties et responsabilites.",
+      keywords: [...BASE_KEYWORDS, 'conditions generales de vente', 'CGV retroviseur exterieur'],
+      indexable: true,
+      pageType: 'WebPage',
+    },
+    privacy: {
+      title: `Politique de Confidentialite | ${SITE_NAME}`,
+      description:
+        "Consultez notre politique de confidentialite: donnees collectees, finalites, conservation et droits des utilisateurs.",
+      keywords: [...BASE_KEYWORDS, 'politique de confidentialite', 'protection des donnees'],
+      indexable: true,
+      pageType: 'WebPage',
+    },
     success: {
       title: `Demande envoyee | ${SITE_NAME}`,
       description:
