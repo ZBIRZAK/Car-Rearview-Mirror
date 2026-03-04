@@ -12,6 +12,31 @@ import Form from './pages/Form';
 import Success from './pages/Success';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import CategoryLanding, { categoryContentMap } from './pages/CategoryLanding';
+import { applySeo } from './seo';
+
+const VIEW_TO_PATH = {
+  home: '/',
+  models: '/modeles',
+  years: '/annees',
+  product: '/produit',
+  form: '/demande',
+  success: '/demande-envoyee',
+  about: '/a-propos',
+  contact: '/contact',
+};
+
+function resolveRoute(pathname) {
+  const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+  const categorySlug = normalized.replace(/^\//, '');
+  if (categoryContentMap[categorySlug]) {
+    return { view: 'category', categorySlug };
+  }
+
+  const match = Object.entries(VIEW_TO_PATH).find(([, path]) => path === normalized);
+  if (match) return { view: match[0], categorySlug: null };
+  return { view: 'home', categorySlug: null };
+}
 
 function App() {
   const mainContentRef = useRef(null);
@@ -20,6 +45,7 @@ function App() {
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [currentView, setCurrentView] = useState('home'); // 'home', 'models', 'years', 'product', 'form', 'success'
+  const [currentCategorySlug, setCurrentCategorySlug] = useState(null);
   const [activeNav, setActiveNav] = useState('home');
   const [showBrandHint, setShowBrandHint] = useState(false);
   const [submission, setSubmission] = useState(null);
@@ -37,12 +63,24 @@ function App() {
     consent: false
   });
 
+  const navigateToView = (view, options = {}) => {
+    const { categorySlug = null, replace = false } = options;
+    const targetPath = view === 'category' ? `/${categorySlug}` : (VIEW_TO_PATH[view] || '/');
+
+    setCurrentView(view);
+    setCurrentCategorySlug(categorySlug);
+
+    if (window.location.pathname !== targetPath) {
+      window.history[replace ? 'replaceState' : 'pushState']({}, '', targetPath);
+    }
+  };
+
   // Reset all selections and return to home
   const resetToHome = () => {
     setSelectedBrand(null);
     setSelectedModel(null);
     setSelectedYear(null);
-    setCurrentView('home');
+    navigateToView('home');
     setProductConfig({
       position: '',
       productType: '',
@@ -66,7 +104,7 @@ function App() {
       adjustmentType: '',
       options: []
     });
-    setCurrentView('models');
+    navigateToView('models');
     setShowBrandHint(false);
   };
 
@@ -80,13 +118,13 @@ function App() {
       adjustmentType: '',
       options: []
     });
-    setCurrentView('years');
+    navigateToView('years');
   };
 
   // Handle year selection
   const handleYearSelect = (year) => {
     setSelectedYear(year);
-    setCurrentView('product');
+    navigateToView('product');
   };
 
   const handleProductConfigChange = (field, value) => {
@@ -97,7 +135,7 @@ function App() {
   };
 
   const handleContinueToForm = () => {
-    setCurrentView('form');
+    navigateToView('form');
   };
 
   // Handle form input changes
@@ -123,7 +161,7 @@ function App() {
 
     console.log('Formulaire envoye :', payload);
     setSubmission(payload);
-    setCurrentView('success');
+    navigateToView('success');
   };
 
   // Handle WhatsApp click
@@ -136,12 +174,12 @@ function App() {
   // Handle Contact click
   const handleContactClick = () => {
     setActiveNav('contact');
-    setCurrentView('contact');
+    navigateToView('contact');
   };
 
   const handleStartSelection = () => {
     if (selectedBrand) {
-      setCurrentView('models');
+      navigateToView('models');
       return;
     }
     setShowBrandHint(true);
@@ -152,12 +190,12 @@ function App() {
     if (page === 'home') {
       resetToHome();
     } else if (page === 'about') {
-      setCurrentView('about');
+      navigateToView('about');
       setSelectedBrand(null);
       setSelectedModel(null);
       setSelectedYear(null);
     } else if (page === 'contact') {
-      setCurrentView('contact');
+      navigateToView('contact');
       setSelectedBrand(null);
       setSelectedModel(null);
       setSelectedYear(null);
@@ -171,7 +209,28 @@ function App() {
       mainContentRef.current.scrollTop = 0;
     }
     window.scrollTo(0, 0);
-  }, [currentView]);
+  }, [currentView, currentCategorySlug]);
+
+  useEffect(() => {
+    const applyFromPath = (replace = false) => {
+      const route = resolveRoute(window.location.pathname);
+      navigateToView(route.view, { categorySlug: route.categorySlug, replace });
+    };
+
+    applyFromPath(true);
+    const onPopState = () => applyFromPath(true);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    applySeo(currentView, {
+      brand: selectedBrand,
+      model: selectedModel,
+      year: selectedYear,
+      categorySlug: currentCategorySlug,
+    });
+  }, [currentView, selectedBrand, selectedModel, selectedYear, currentCategorySlug]);
 
   return (
     <div className="app">
@@ -197,12 +256,12 @@ function App() {
             brand={selectedBrand}
             models={mockData.models[selectedBrand.id] || []}
             onModelSelect={handleModelSelect}
-            onBack={() => setCurrentView('home')}
+            onBack={() => navigateToView('home')}
           />
         )}
 
         {currentView === 'years' && (
-          <Years model={selectedModel} years={mockData.years} onYearSelect={handleYearSelect} onBack={() => setCurrentView('models')} />
+          <Years model={selectedModel} years={mockData.years} onYearSelect={handleYearSelect} onBack={() => navigateToView('models')} />
         )}
 
         {currentView === 'form' && (
@@ -214,7 +273,7 @@ function App() {
             formData={formData}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
-            onBack={() => setCurrentView('product')}
+            onBack={() => navigateToView('product')}
           />
         )}
 
@@ -226,6 +285,13 @@ function App() {
             productConfig={productConfig}
             onChange={handleProductConfigChange}
             onContinue={handleContinueToForm}
+          />
+        )}
+
+        {currentView === 'category' && (
+          <CategoryLanding
+            slug={currentCategorySlug}
+            onStartSelection={handleStartSelection}
           />
         )}
 

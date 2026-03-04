@@ -578,6 +578,115 @@ html,body,#root { height: 100%; }
   margin-bottom: 24px;
 }
 
+.seo-categories {
+  margin: 30px 0 24px;
+}
+
+.seo-intro {
+  margin: -8px auto 18px;
+  max-width: 760px;
+  text-align: center;
+  color: #aab2bb;
+}
+
+.seo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.seo-card {
+  background: linear-gradient(180deg, #0b0b0b, #060606);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.seo-card h3 {
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.seo-card ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 5px;
+}
+
+.seo-card li {
+  color: #aeb4bc;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.seo-card a {
+  color: #ffd9e2;
+  text-decoration: none;
+}
+
+.seo-card a:hover {
+  text-decoration: underline;
+}
+
+.category-view {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.category-shell {
+  background: linear-gradient(180deg, #080808, #0d0d0d);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.category-shell h1 {
+  margin: 10px 0 8px;
+  font-size: 1.7rem;
+}
+
+.category-intro {
+  color: #bcc3cb;
+  margin: 0 0 16px;
+}
+
+.category-block {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.category-block h2 {
+  margin: 0 0 8px;
+  font-size: 1.03rem;
+}
+
+.category-block p {
+  margin: 0;
+  color: #aeb4bc;
+  line-height: 1.55;
+}
+
+.category-block ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 5px;
+}
+
+.category-block li {
+  color: #aeb4bc;
+  font-size: 0.9rem;
+}
+
+.category-actions {
+  margin-top: 12px;
+}
+
 .models-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; }
 .model-card { background: linear-gradient(180deg,#0b0b0b,#121212); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition: all .2s ease; text-align: left; color: #fff; min-height: 92px; display: flex; flex-direction: column; justify-content: center; }
 .model-card h3 { margin: 0 0 8px; font-size: 1.05rem; font-weight: 600; }
@@ -1406,6 +1515,18 @@ html,body,#root { height: 100%; }
 
   .why-grid {
     grid-template-columns: 1fr;
+  }
+
+  .seo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-shell {
+    padding: 16px;
+  }
+
+  .category-shell h1 {
+    font-size: 1.35rem;
   }
 }
 .about-view, .contact-view {

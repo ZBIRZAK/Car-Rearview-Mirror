@@ -138,6 +138,66 @@ export default function Home({ onStartSelection, showBrandHint }) {
           <p>Parcourez notre collection et trouvez le retroviseur parfait</p>
           <button className="cta-button">Explorer</button>
         </div>
+
+        <section className="seo-categories" aria-label="Categories SEO retroviseurs exterieurs">
+          <h2 className="section-title">Retroviseurs exterieurs : recherches populaires</h2>
+          <p className="seo-intro">
+            Trouvez rapidement le bon produit selon le cote, la fonctionnalite et l'usage de votre vehicule.
+          </p>
+          <div className="seo-grid">
+            <article className="seo-card">
+              <h3>Par cote</h3>
+              <ul>
+                <li><a href="/retroviseur-exterieur-gauche">Retroviseur exterieur gauche (cote conducteur)</a></li>
+                <li><a href="/retroviseur-exterieur-droit">Retroviseur exterieur droit (cote passager)</a></li>
+              </ul>
+            </article>
+            <article className="seo-card">
+              <h3>Par fonctionnalite</h3>
+              <ul>
+                <li><a href="/retroviseur-exterieur-electrique">Retroviseur exterieur electrique</a></li>
+                <li><a href="/retroviseur-exterieur-chauffant">Retroviseur exterieur chauffant / degivrant</a></li>
+                <li><a href="/retroviseur-exterieur-rabattable-electriquement">Retroviseur exterieur rabattable electriquement</a></li>
+                <li>Retroviseur avec clignotant integre</li>
+                <li>Retroviseur exterieur photochromatique</li>
+              </ul>
+            </article>
+            <article className="seo-card">
+              <h3>Par type de vehicule</h3>
+              <ul>
+                <li>Retroviseur exterieur pour utilitaire</li>
+                <li>Retroviseur exterieur pour camping-car / fourgon</li>
+                <li>Retroviseur exterieur surbaisse (sport / tuning)</li>
+                <li>Retroviseur exterieur tout-terrain / off-road</li>
+              </ul>
+            </article>
+            <article className="seo-card">
+              <h3>Par type de verre</h3>
+              <ul>
+                <li>Retroviseur grand angle / aspherique</li>
+                <li>Verre de retroviseur convexe</li>
+                <li>Retroviseur exterieur a memoire</li>
+              </ul>
+            </article>
+            <article className="seo-card">
+              <h3>Guides & besoins</h3>
+              <ul>
+                <li>Remplacer retroviseur exterieur</li>
+                <li>Comment demonter retroviseur exterieur</li>
+                <li>Reparation retroviseur exterieur</li>
+                <li>Retroviseur exterieur universel</li>
+              </ul>
+            </article>
+            <article className="seo-card">
+              <h3>Longue traine</h3>
+              <ul>
+                <li>Retroviseur exterieur chauffant gauche pour [Marque Modele]</li>
+                <li>Coque de retroviseur exterieur carbone [Marque Modele]</li>
+                <li>Kit eclairage d'aile pour retroviseur exterieur</li>
+              </ul>
+            </article>
+          </div>
+        </section>
       </div>
     </div>
   );
