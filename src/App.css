@@ -1,6 +1,6 @@
 /* TikTok-style dark theme */
 :root {
-  --bg: #000000;
+  --bg: #0b0b0b;
   --panel: #0b0b0b;
   --muted: #9aa0a6;
   --accent: #fe2c55;
@@ -102,6 +102,7 @@ html,body,#root { height: 100%; }
   transition: all 0.2s ease;
   border-bottom: 2px solid transparent;
   white-space: nowrap;
+  text-decoration: none;
 }
 
 .nav-link:hover {
@@ -148,6 +149,7 @@ html,body,#root { height: 100%; }
   border-radius: 12px;
   display: grid;
   gap: 2px;
+  text-decoration: none;
 }
 
 .mobile-menu-header {
@@ -681,6 +683,15 @@ html,body,#root { height: 100%; }
 .category-block li {
   color: #aeb4bc;
   font-size: 0.9rem;
+}
+
+.category-block a {
+  color: #ffd9e2;
+  text-decoration: none;
+}
+
+.category-block a:hover {
+  text-decoration: underline;
 }
 
 .category-actions {
@@ -1707,7 +1718,7 @@ html,body,#root { height: 100%; }
   color: #ffb7c6;
 }
 
-.contact-hero h2 {
+.contact-hero h1 {
   margin: 0 0 10px;
   font-size: 1.8rem;
 }
@@ -1946,7 +1957,7 @@ html,body,#root { height: 100%; }
     padding: 16px;
   }
 
-  .contact-hero h2 {
+  .contact-hero h1 {
     font-size: 1.45rem;
   }
 
@@ -1978,7 +1989,7 @@ html,body,#root { height: 100%; }
   color: #ffb7c6;
 }
 
-.about-hero h2 {
+.about-hero h1 {
   margin: 0 0 10px;
   font-size: 1.8rem;
 }
@@ -2139,7 +2150,7 @@ html,body,#root { height: 100%; }
     padding: 16px;
   }
 
-  .about-hero h2 {
+  .about-hero h1 {
     font-size: 1.45rem;
   }
 

@@ -40,7 +40,7 @@ export default function About() {
     <div className="about-view about-v2">
       <div className="about-hero">
         <p className="about-kicker">A propos de nous</p>
-        <h2>A propos de nous</h2>
+        <h1>A propos de nous</h1>
         <p>
           Nous aidons les conducteurs a trouver rapidement le bon retroviseur,
           avec un parcours simple et un support humain.

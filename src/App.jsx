@@ -244,7 +244,7 @@ function App() {
         />
       ) : null}
 
-      <div ref={mainContentRef} className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
+      <main ref={mainContentRef} className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
         {currentView === 'home' && <Home onStartSelection={handleStartSelection} showBrandHint={showBrandHint} />}
 
         {currentView === 'about' && <About />}
@@ -302,7 +302,7 @@ function App() {
             onWhatsApp={handleWhatsAppClick}
           />
         )}
-      </div>
+      </main>
 
       <BottomNav active={activeNav} onHome={resetToHome} onWhatsApp={handleWhatsAppClick} onContact={handleContactClick} />
     </div>

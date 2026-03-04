@@ -71,6 +71,7 @@ export const categoryContentMap = {
 export default function CategoryLanding({ slug, onStartSelection }) {
   const data = categoryContentMap[slug];
   if (!data) return null;
+  const relatedSlugs = Object.keys(categoryContentMap).filter((item) => item !== slug);
 
   return (
     <div className="category-view">
@@ -91,6 +92,17 @@ export default function CategoryLanding({ slug, onStartSelection }) {
         <div className="category-block">
           <h2>{data.faqTitle}</h2>
           <p>{data.faqText}</p>
+        </div>
+
+        <div className="category-block">
+          <h2>Categories associees</h2>
+          <ul>
+            {relatedSlugs.map((relatedSlug) => (
+              <li key={relatedSlug}>
+                <a href={`/${relatedSlug}`}>{categoryContentMap[relatedSlug].h1}</a>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="category-actions">

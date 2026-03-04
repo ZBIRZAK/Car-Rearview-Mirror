@@ -5,7 +5,7 @@ export default function Contact() {
     <div className="contact-view contact-v2">
       <div className="contact-hero">
         <p className="contact-kicker">Support client</p>
-        <h2>Contactez-nous</h2>
+        <h1>Contactez-nous</h1>
         <p>Une question sur un retroviseur, la compatibilite ou la livraison ? Notre equipe vous repond rapidement.</p>
       </div>
 

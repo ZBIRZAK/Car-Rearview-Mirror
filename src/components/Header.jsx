@@ -9,6 +9,11 @@ export default function Header({ onMenuClick }) {
     setIsOpen(false);
   };
 
+  const handleLinkClick = (event, page) => {
+    event.preventDefault();
+    handleClick(page);
+  };
+
   return (
     <header className="header">
       {/* Mobile Hamburger */}
@@ -29,15 +34,15 @@ export default function Header({ onMenuClick }) {
 
       {/* Desktop Navigation */}
       <nav className="header-nav">
-        <button className="nav-link" onClick={() => handleClick('home')}>
+        <a href="/" className="nav-link" onClick={(event) => handleLinkClick(event, 'home')}>
           Accueil
-        </button>
-        <button className="nav-link" onClick={() => handleClick('about')}>
+        </a>
+        <a href="/a-propos" className="nav-link" onClick={(event) => handleLinkClick(event, 'about')}>
           A propos
-        </button>
-        <button className="nav-link" onClick={() => handleClick('contact')}>
+        </a>
+        <a href="/contact" className="nav-link" onClick={(event) => handleLinkClick(event, 'contact')}>
           Contact
-        </button>
+        </a>
       </nav>
 
       {/* Mobile Menu */}
@@ -49,18 +54,18 @@ export default function Header({ onMenuClick }) {
             <p className="mobile-menu-subtitle">Accedez rapidement aux pages principales</p>
           </div>
           <div className="mobile-menu-actions">
-            <button className="mobile-menu-item" onClick={() => handleClick('home')}>
+            <a href="/" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'home')}>
               <span className="mobile-menu-item-label">Accueil</span>
               <span className="mobile-menu-item-hint">Retour a la selection</span>
-            </button>
-            <button className="mobile-menu-item" onClick={() => handleClick('about')}>
+            </a>
+            <a href="/a-propos" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'about')}>
               <span className="mobile-menu-item-label">A propos</span>
               <span className="mobile-menu-item-hint">Notre histoire et nos valeurs</span>
-            </button>
-            <button className="mobile-menu-item" onClick={() => handleClick('contact')}>
+            </a>
+            <a href="/contact" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'contact')}>
               <span className="mobile-menu-item-label">Contact</span>
               <span className="mobile-menu-item-hint">Canaux de support et formulaire</span>
-            </button>
+            </a>
           </div>
         </div>
       )}
