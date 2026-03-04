@@ -73,7 +73,7 @@ export default function Contact() {
             <form className="contact-form-v2">
               <label>
                 Nom complet
-                <input type="text" placeholder="Ex: Zakaria B." />
+                <input type="text" placeholder="Ex: Zakaria Z." />
               </label>
               <label>
                 E-mail
