@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { mockData } from './data/mockData';
 import BrandSelector from './components/BrandSelector';
@@ -14,6 +14,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 
 function App() {
+  const mainContentRef = useRef(null);
   // State management
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
@@ -165,6 +166,13 @@ function App() {
 
   const showBrandRail = ['home', 'models', 'years', 'product', 'form'].includes(currentView);
 
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  }, [currentView]);
+
   return (
     <div className="app">
       <Header onMenuClick={handleMenuClick} />
@@ -177,7 +185,7 @@ function App() {
         />
       ) : null}
 
-      <div className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
+      <div ref={mainContentRef} className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
         {currentView === 'home' && <Home onStartSelection={handleStartSelection} showBrandHint={showBrandHint} />}
 
         {currentView === 'about' && <About />}
