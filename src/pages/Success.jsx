@@ -14,6 +14,7 @@ export default function Success({ submission, onNewRequest, onWhatsApp }) {
           <p><strong>Commande :</strong> {submission.productConfig?.orderScope === 'complete' ? 'Complete' : submission.productConfig?.orderScope === 'piece' ? 'Piece' : 'Non definie'}</p>
           <p><strong>Position :</strong> {submission.productConfig?.position}</p>
           <p><strong>Type :</strong> {submission.productConfig?.productType}</p>
+          <p><strong>Piece cible :</strong> {submission.productConfig?.selectedFeature || 'Non definie'}</p>
           <p><strong>Reglage :</strong> {submission.productConfig?.adjustmentType}</p>
           <p><strong>Options :</strong> {submission.productConfig?.options?.length ? submission.productConfig.options.join(', ') : 'Aucune'}</p>
           <p><strong>Client :</strong> {submission.fullName}</p>

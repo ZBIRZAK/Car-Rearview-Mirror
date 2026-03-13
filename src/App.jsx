@@ -56,6 +56,7 @@ function App() {
   const [submission, setSubmission] = useState(null);
   const [productConfig, setProductConfig] = useState({
     orderScope: '',
+    selectedFeature: '',
     position: '',
     productType: '',
     adjustmentType: '',
@@ -90,6 +91,7 @@ function App() {
     navigateToView('home');
     setProductConfig({
       orderScope: '',
+      selectedFeature: '',
       position: '',
       productType: '',
       adjustmentType: '',
@@ -113,6 +115,7 @@ function App() {
     setSelectedYear(null);
     setProductConfig({
       orderScope: '',
+      selectedFeature: '',
       position: '',
       productType: '',
       adjustmentType: '',
@@ -128,6 +131,7 @@ function App() {
     setSelectedYear(null);
     setProductConfig({
       orderScope: '',
+      selectedFeature: '',
       position: '',
       productType: '',
       adjustmentType: '',

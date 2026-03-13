@@ -76,6 +76,7 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
           <p><strong>Commande :</strong> {productConfig?.orderScope === 'complete' ? 'Complete' : productConfig?.orderScope === 'piece' ? 'Piece' : 'Non definie'}</p>
           <p><strong>Position :</strong> {productConfig?.position || 'Aucune'}</p>
           <p><strong>Type :</strong> {productConfig?.productType}</p>
+          <p><strong>Piece cible :</strong> {productConfig?.selectedFeature || 'Non definie'}</p>
           <p><strong>Réglage:</strong> {productConfig?.adjustmentType}</p>
           <p><strong>Options:</strong> {productConfig?.options?.length ? productConfig.options.join(', ') : 'Aucune'}</p>
         </div>

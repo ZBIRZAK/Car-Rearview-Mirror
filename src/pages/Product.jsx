@@ -21,18 +21,18 @@ const adjustmentTypes = [
 ];
 
 const featureCards = [
-  { key: 'Glace retroviseur', label: 'Glace', feature: 'Verre du retroviseur', icon: 'glass' },
-  { key: 'Rabattement electrique', label: 'Rabattement', feature: 'Rabattement electrique', icon: 'folding' },
-  { key: 'Eclairage sous retroviseur', label: 'Sous-eclairage', feature: 'Lumiere sous retroviseur', icon: 'underlight' },
-  { key: 'Forme retroviseur', label: 'Forme', feature: 'Forme du retroviseur', icon: 'shape' },
-  { key: 'Chauffage glace', label: 'Chauffage', feature: 'Chauffage de la glace', icon: 'heating' },
-  { key: 'Memoire position', label: 'Memoire', feature: 'Memoire de position', icon: 'memory' },
-  { key: 'Reglage electrique', label: 'Reglage electrique', feature: 'Commande electrique', icon: 'adjustment' },
-  { key: 'Anti-eblouissement', label: 'Anti-eblouissement', feature: 'Verre anti-lumiere', icon: 'antiLight' },
-  { key: 'Clignotant', label: 'Clignotant', feature: 'Lampe / indicateur', icon: 'lamp' },
-  { key: 'Commande directionnelle', label: 'Commande', feature: 'Controle du mouvement', icon: 'controller' },
-  { key: 'Angle mort', label: 'Angle mort', feature: 'Detection angle mort', icon: 'blindSpot' },
-  { key: 'Camera', label: 'Camera', feature: 'Camera integree', icon: 'camera' },
+  { key: 'Glace retroviseur', label: 'Glace', feature: 'Verre du retroviseur', icon: 'glass', pieceType: 'Glace de retroviseur uniquement', optionHints: ['Chauffage glace', 'Anti-eblouissement', 'Angle mort'] },
+  { key: 'Rabattement electrique', label: 'Rabattement', feature: 'Rabattement electrique', icon: 'folding', pieceType: 'Moteur de reglage', optionHints: ['Electrique', 'Rabattable', 'Memoire position'] },
+  { key: 'Eclairage sous retroviseur', label: 'Sous-eclairage', feature: 'Lumiere sous retroviseur', icon: 'underlight', pieceType: 'Clignotant integre seul', optionHints: ['Eclairage sous retroviseur', 'Lumiere simple', 'Lumiere dynamique'] },
+  { key: 'Forme retroviseur', label: 'Forme', feature: 'Forme du retroviseur', icon: 'shape', pieceType: 'Coque / Cache exterieur uniquement', optionHints: ['Cache', 'Couleurs', 'Carbone', 'Batman'] },
+  { key: 'Chauffage glace', label: 'Chauffage', feature: 'Chauffage de la glace', icon: 'heating', pieceType: 'Glace de retroviseur uniquement', optionHints: ['Chauffage glace', 'Glace retroviseur'] },
+  { key: 'Memoire position', label: 'Memoire', feature: 'Memoire de position', icon: 'memory', pieceType: 'Moteur de reglage', optionHints: ['Memoire position', 'Reglage electrique'] },
+  { key: 'Reglage electrique', label: 'Reglage electrique', feature: 'Commande electrique', icon: 'adjustment', pieceType: 'Moteur de reglage', optionHints: ['Reglage electrique', 'Commande directionnelle'] },
+  { key: 'Anti-eblouissement', label: 'Anti-eblouissement', feature: 'Verre anti-lumiere', icon: 'antiLight', pieceType: 'Glace de retroviseur uniquement', optionHints: ['Anti-eblouissement', 'Glace retroviseur'] },
+  { key: 'Clignotant', label: 'Clignotant', feature: 'Lampe / indicateur', icon: 'lamp', pieceType: 'Clignotant integre seul', optionHints: ['Clignotant', 'Lumiere simple', 'Lumiere dynamique'] },
+  { key: 'Commande directionnelle', label: 'Commande', feature: 'Controle du mouvement', icon: 'controller', pieceType: 'Moteur de reglage', optionHints: ['Commande directionnelle', 'Reglage electrique'] },
+  { key: 'Angle mort', label: 'Angle mort', feature: 'Detection angle mort', icon: 'blindSpot', pieceType: 'Glace de retroviseur uniquement', optionHints: ['Angle mort', 'Anti-eblouissement'] },
+  { key: 'Camera', label: 'Camera', feature: 'Camera integree', icon: 'camera', pieceType: 'Support / Platine de fixation', optionHints: ['Camera', 'Support / Platine'] },
 ];
 
 const optionGroups = [
@@ -176,10 +176,13 @@ export default function Product({ brand, model, year, productConfig, onChange, o
   const [zoom, setZoom] = useState(1);
   const [showValidationHint, setShowValidationHint] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [showManualPiecePicker, setShowManualPiecePicker] = useState(false);
 
   const selectedOptions = productConfig.options || [];
   const isCompleteOrder = productConfig.orderScope === 'complete';
   const isPieceOrder = productConfig.orderScope === 'piece';
+  const selectedFeatureKey = productConfig.selectedFeature || '';
+  const selectedFeature = featureCards.find((item) => item.key === selectedFeatureKey) || null;
 
   const requiredMissing = useMemo(() => {
     const missing = [];
@@ -213,10 +216,20 @@ export default function Product({ brand, model, year, productConfig, onChange, o
     onChange('options', nextOptions);
   };
 
+  const handleFeatureSelect = (feature) => {
+    onChange('selectedFeature', feature.key);
+    onChange('orderScope', 'piece');
+    onChange('productType', feature.pieceType);
+    setShowManualPiecePicker(false);
+  };
+
+  const advancedStepNumber = isCompleteOrder ? 6 : 5;
+
   const handleOrderScopeSelect = (scope) => {
     if (scope === 'complete') {
       onChange('orderScope', 'complete');
       onChange('productType', completeTypeLabel);
+      onChange('selectedFeature', '');
       return;
     }
 
@@ -225,6 +238,18 @@ export default function Product({ brand, model, year, productConfig, onChange, o
       onChange('productType', '');
     }
   };
+
+  const contextualOptionGroups = useMemo(() => {
+    if (!isPieceOrder || !selectedFeature) return optionGroups;
+
+    return [
+      {
+        title: 'OPTIONS RECOMMANDEES POUR CETTE PIECE',
+        options: selectedFeature.optionHints,
+      },
+      ...optionGroups,
+    ];
+  }, [isPieceOrder, selectedFeature]);
 
   const handleContinue = () => {
     if (!canContinue) {
@@ -249,22 +274,44 @@ export default function Product({ brand, model, year, productConfig, onChange, o
           </button>
           <p className="image-hint">Appuyez sur l'image pour zoomer</p>
 
+          {!isCompleteOrder ? (
+            <div className="piece-slider-block">
+              <p className="piece-slider-title">Choisissez la piece via icone (definit automatiquement commande piece).</p>
+              <div className="piece-slider" role="listbox" aria-label="Selection de piece par icone">
+                {featureCards.map((card) => (
+                  <button
+                    key={card.key}
+                    type="button"
+                    className={`piece-icon-btn ${selectedFeatureKey === card.key ? 'active' : ''}`}
+                    onClick={() => handleFeatureSelect(card)}
+                  >
+                    <span className="piece-icon-art">
+                      <FeatureIcon type={card.icon} />
+                    </span>
+                    <span className="piece-icon-label">{card.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <div className="product-mini-summary">
             <p><strong>Commande :</strong> {isCompleteOrder ? 'Complete' : isPieceOrder ? 'Piece' : 'Non definie'}</p>
             <p><strong>Position :</strong> {productConfig.position || 'Aucune'}</p>
             <p><strong>Type :</strong> {productConfig.productType || 'Aucun'}</p>
+            <p><strong>Piece cible :</strong> {selectedFeature?.label || 'Non definie'}</p>
             <p><strong>Reglage :</strong> {productConfig.adjustmentType || (isPieceOrder ? 'Optionnel' : 'Aucun')}</p>
             <p><strong>Options :</strong> {selectedOptions.length ? selectedOptions.join(', ') : 'Aucune'}</p>
           </div>
 
-            {/* {requiredMissing.length ? (
+            {requiredMissing.length ? (
               <div className="missing-required-box">
                 <p>Champs requis manquants:</p>
                 <ul>
                   {requiredMissing.map((item) => <li key={item}>{item}</li>)}
                 </ul>
               </div>
-            ) : null} */}
+            ) : null}
         </aside>
 
         <div className="product-config">
@@ -313,7 +360,9 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             <p className="config-help">
               {isCompleteOrder
                 ? 'Mode complet: type deja defini.'
-                : 'Mode piece: choisissez la piece exacte.'}
+                : selectedFeature && !showManualPiecePicker
+                  ? 'Piece definie via l icone selectionnee.'
+                  : 'Mode piece: choisissez la piece exacte.'}
             </p>
 
             {isCompleteOrder ? (
@@ -323,19 +372,41 @@ export default function Product({ brand, model, year, productConfig, onChange, o
                 </button>
               </div>
             ) : (
-              <div className="choice-list piece-type-grid">
-                {pieceTypes.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={`choice-btn ${productConfig.productType === item ? 'active' : ''}`}
-                    onClick={() => onChange('productType', item)}
-                    disabled={!isPieceOrder}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
+              <>
+                {selectedFeature && !showManualPiecePicker ? (
+                  <div className="choice-list">
+                    <button type="button" className="choice-btn active">
+                      {productConfig.productType}
+                    </button>
+                    <button
+                      type="button"
+                      className="secondary-button"
+                      onClick={() => setShowManualPiecePicker(true)}
+                    >
+                      Changer la piece manuellement
+                    </button>
+                  </div>
+                ) : (
+                  <div className="choice-list piece-type-grid">
+                    {pieceTypes.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        className={`choice-btn ${productConfig.productType === item ? 'active' : ''}`}
+                        onClick={() => {
+                          onChange('productType', item);
+                          const match = featureCards.find((card) => card.pieceType === item);
+                          if (match) onChange('selectedFeature', match.key);
+                          setShowManualPiecePicker(false);
+                        }}
+                        disabled={!isPieceOrder}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </section>
 
@@ -360,26 +431,28 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             </div>
           </section>
 
-          <section className="config-group">
-            <h3>5. Fonctionnalites visibles (optionnel)</h3>
-            <p className="config-help">Selectionnez les icones que vous voyez sur votre retroviseur.</p>
-            <div className="feature-grid">
-              {featureCards.map((card) => (
-                <button
-                  key={card.key}
-                  type="button"
-                  className={`feature-card ${selectedOptions.includes(card.key) ? 'active' : ''}`}
-                  onClick={() => toggleOption(card.key)}
-                >
-                  <span className="feature-card-icon">
-                    <FeatureIcon type={card.icon} />
-                  </span>
-                  <span className="feature-card-title">{card.label}</span>
-                  <span className="feature-card-sub">{card.feature}</span>
-                </button>
-              ))}
-            </div>
-          </section>
+          {isCompleteOrder ? (
+            <section className="config-group">
+              <h3>5. Options du retroviseur (optionnel)</h3>
+              <p className="config-help">Choisissez les options visibles pour votre retroviseur complet.</p>
+              <div className="feature-grid">
+                {featureCards.map((card) => (
+                  <button
+                    key={card.key}
+                    type="button"
+                    className={`feature-card ${selectedOptions.includes(card.key) ? 'active' : ''}`}
+                    onClick={() => toggleOption(card.key)}
+                  >
+                    <span className="feature-card-icon">
+                      <FeatureIcon type={card.icon} />
+                    </span>
+                    <span className="feature-card-title">{card.label}</span>
+                    <span className="feature-card-sub">{card.feature}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <div className="advanced-toggle-wrap">
             <button
@@ -393,11 +466,11 @@ export default function Product({ brand, model, year, productConfig, onChange, o
 
           {showAdvancedOptions ? (
             <section className="config-group">
-              <h3>6. Details supplementaires (optionnel)</h3>
+              <h3>{advancedStepNumber}. Details supplementaires (optionnel)</h3>
               <p className="config-help">Options techniques detaillees par categorie.</p>
               <div className="option-groups">
-                {optionGroups.map((group) => (
-                  <div key={group.title} className="option-group">
+                  {contextualOptionGroups.map((group) => (
+                    <div key={group.title} className="option-group">
                     <p className="option-group-title">{group.title}</p>
                     <div className="option-chip-list">
                       {group.options.map((optionLabel) => (
