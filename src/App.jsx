@@ -6,7 +6,6 @@ import BottomNav from './components/BottomNav';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Models from './pages/Models';
-import Years from './pages/Years';
 import Product from './pages/Product';
 import Form from './pages/Form';
 import Success from './pages/Success';
@@ -56,6 +55,7 @@ function App() {
   const [showBrandHint, setShowBrandHint] = useState(false);
   const [submission, setSubmission] = useState(null);
   const [productConfig, setProductConfig] = useState({
+    orderScope: '',
     position: '',
     productType: '',
     adjustmentType: '',
@@ -89,6 +89,7 @@ function App() {
     setSelectedYear(null);
     navigateToView('home');
     setProductConfig({
+      orderScope: '',
       position: '',
       productType: '',
       adjustmentType: '',
@@ -111,6 +112,7 @@ function App() {
     setSelectedModel(null);
     setSelectedYear(null);
     setProductConfig({
+      orderScope: '',
       position: '',
       productType: '',
       adjustmentType: '',
@@ -125,12 +127,12 @@ function App() {
     setSelectedModel(model);
     setSelectedYear(null);
     setProductConfig({
+      orderScope: '',
       position: '',
       productType: '',
       adjustmentType: '',
       options: []
     });
-    navigateToView('years');
   };
 
   // Handle year selection
@@ -285,24 +287,24 @@ function App() {
   useEffect(() => {
     if (!isHydrated) return;
 
+    if (currentView === 'years') {
+      navigateToView('models', { replace: true });
+      return;
+    }
+
     // Prevent blank screens after refresh by redirecting to the nearest valid step.
     if (currentView === 'models' && !selectedBrand) {
       navigateToView('home', { replace: true });
       return;
     }
 
-    if (currentView === 'years' && !selectedModel) {
-      navigateToView(selectedBrand ? 'models' : 'home', { replace: true });
-      return;
-    }
-
     if (currentView === 'product' && !selectedYear) {
-      navigateToView(selectedModel ? 'years' : (selectedBrand ? 'models' : 'home'), { replace: true });
+      navigateToView(selectedModel ? 'models' : (selectedBrand ? 'models' : 'home'), { replace: true });
       return;
     }
 
     if (currentView === 'form' && !selectedYear) {
-      navigateToView(selectedModel ? 'years' : (selectedBrand ? 'models' : 'home'), { replace: true });
+      navigateToView(selectedModel ? 'models' : (selectedBrand ? 'models' : 'home'), { replace: true });
       return;
     }
 
@@ -343,17 +345,16 @@ function App() {
 
         {currentView === 'privacy' && <Privacy />}
 
-        {currentView === 'models' && (
+        {(currentView === 'models' || currentView === 'years') && (
           <Models
             brand={selectedBrand}
             models={mockData.models[selectedBrand.id] || []}
+            selectedModel={selectedModel}
+            years={mockData.years}
             onModelSelect={handleModelSelect}
+            onYearSelect={handleYearSelect}
             onBack={() => navigateToView('home')}
           />
-        )}
-
-        {currentView === 'years' && (
-          <Years model={selectedModel} years={mockData.years} onYearSelect={handleYearSelect} onBack={() => navigateToView('models')} />
         )}
 
         {currentView === 'form' && (
