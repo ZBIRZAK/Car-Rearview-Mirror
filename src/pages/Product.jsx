@@ -357,7 +357,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
 
           {!isCompleteOrder ? (
             <div className="piece-slider-block">
-              <p className="piece-slider-title">Choisissez la piece via icone (definit automatiquement commande piece).</p>
+              <p className="piece-slider-title">Vous voulez seulement une piece ? Choisissez-en une.</p>
               <div className="piece-slider" role="listbox" aria-label="Selection de piece par icone">
                 {pieceSelectorCards.map((card) => (
                   <button
@@ -377,23 +377,23 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             </div>
           ) : null}
 
-          <div className="product-mini-summary">
+          {/* <div className="product-mini-summary">
             <p><strong>Commande :</strong> {isCompleteOrder ? 'Complete' : isPieceOrder ? 'Piece' : 'Non definie'}</p>
             <p><strong>Position :</strong> {productConfig.position || 'Aucune'}</p>
             <p><strong>Type :</strong> {productConfig.productType || 'Aucun'}</p>
             <p><strong>Piece cible :</strong> {selectedFeature?.label || 'Non definie'}</p>
             <p><strong>Reglage :</strong> {productConfig.adjustmentType || (isPieceOrder ? 'Optionnel' : 'Aucun')}</p>
             <p><strong>Options :</strong> {selectedOptions.length ? selectedOptions.join(', ') : 'Aucune'}</p>
-          </div>
+          </div> */}
 
-            {requiredMissing.length ? (
+            {/* {requiredMissing.length ? (
               <div className="missing-required-box">
                 <p>Champs requis manquants:</p>
                 <ul>
                   {requiredMissing.map((item) => <li key={item}>{item}</li>)}
                 </ul>
               </div>
-            ) : null}
+            ) : null} */}
         </aside>
 
         <div className="product-config">
