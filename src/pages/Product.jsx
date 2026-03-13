@@ -35,6 +35,13 @@ const featureCards = [
   { key: 'Camera', label: 'Camera', feature: 'Camera integree', icon: 'camera', pieceType: 'Support / Platine de fixation', optionHints: ['Camera', 'Support / Platine'] },
 ];
 
+const pieceSelectorCards = [
+  { key: 'GLASS', label: 'GLASS', icon: 'glass', pieceType: 'Glace de retroviseur uniquement' },
+  { key: 'MIRROR', label: 'MIRROR', icon: 'shape', pieceType: 'Support / Platine de fixation' },
+  { key: 'COVER', label: 'COVER', icon: 'shape', pieceType: 'Coque / Cache exterieur uniquement' },
+  { key: 'SINGLE', label: 'SINGLE', icon: 'lamp', pieceType: 'Clignotant integre seul' },
+];
+
 const optionGroups = [
   {
     title: 'GLASS',
@@ -53,6 +60,32 @@ const optionGroups = [
     options: ['Cache', 'Couleurs', 'Carbone', 'Batman'],
   },
 ];
+
+const pieceOptionGroups = [
+  {
+    title: 'GLASS',
+    options: ['Heating', 'Anti-light', 'Blind spot'],
+  },
+  {
+    title: 'MIRROR',
+    options: ['ELECTRIC / MANUAL', 'FOLDING', 'Underlight', 'LAMP', 'CAMERA', 'Memory'],
+  },
+  {
+    title: 'COVER',
+    options: ['COLORS', 'CARBON', 'BATMAN'],
+  },
+  {
+    title: 'SINGLE',
+    options: ['DINAMIC'],
+  },
+];
+
+const pieceSuggestedOptionsByCategory = {
+  GLASS: ['Heating', 'Anti-light', 'Blind spot'],
+  MIRROR: ['ELECTRIC / MANUAL', 'FOLDING', 'Underlight', 'LAMP', 'CAMERA', 'Memory'],
+  COVER: ['COLORS', 'CARBON', 'BATMAN'],
+  SINGLE: ['DINAMIC'],
+};
 
 function FeatureIcon({ type }) {
   if (type === 'glass') {
@@ -182,7 +215,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
   const isCompleteOrder = productConfig.orderScope === 'complete';
   const isPieceOrder = productConfig.orderScope === 'piece';
   const selectedFeatureKey = productConfig.selectedFeature || '';
-  const selectedFeature = featureCards.find((item) => item.key === selectedFeatureKey) || null;
+  const selectedFeature = pieceSelectorCards.find((item) => item.key === selectedFeatureKey) || null;
 
   const requiredMissing = useMemo(() => {
     const missing = [];
@@ -240,16 +273,14 @@ export default function Product({ brand, model, year, productConfig, onChange, o
   };
 
   const contextualOptionGroups = useMemo(() => {
-    if (!isPieceOrder || !selectedFeature) return optionGroups;
+    if (isPieceOrder) return pieceOptionGroups;
+    return optionGroups;
+  }, [isPieceOrder]);
 
-    return [
-      {
-        title: 'OPTIONS RECOMMANDEES POUR CETTE PIECE',
-        options: selectedFeature.optionHints,
-      },
-      ...optionGroups,
-    ];
-  }, [isPieceOrder, selectedFeature]);
+  const pieceSuggestedOptions = useMemo(() => {
+    if (!isPieceOrder) return [];
+    return pieceSuggestedOptionsByCategory[selectedFeatureKey] || [];
+  }, [isPieceOrder, selectedFeatureKey]);
 
   const handleContinue = () => {
     if (!canContinue) {
@@ -262,7 +293,6 @@ export default function Product({ brand, model, year, productConfig, onChange, o
   return (
     <div className="product-view">
       <div className="view-header">
-        <span className="step-pill">Etape 3 sur 4</span>
         <h2>Configurez votre demande</h2>
         <p>{brand?.name} {model} ({year})</p>
       </div>
@@ -278,7 +308,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             <div className="piece-slider-block">
               <p className="piece-slider-title">Choisissez la piece via icone (definit automatiquement commande piece).</p>
               <div className="piece-slider" role="listbox" aria-label="Selection de piece par icone">
-                {featureCards.map((card) => (
+                {pieceSelectorCards.map((card) => (
                   <button
                     key={card.key}
                     type="button"
@@ -317,7 +347,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
         <div className="product-config">
           <section className="config-group">
             <h3>1. Type de commande</h3>
-            <p className="config-help">Choisissez ce que vous voulez commander.</p>
+            {/* <p className="config-help">Choisissez ce que vous voulez commander.</p> */}
             <div className="order-scope-grid">
               <button
                 type="button"
@@ -340,7 +370,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
 
           <section className="config-group">
             <h3>2. Cote du retroviseur</h3>
-            <p className="config-help">Choisissez le cote: conducteur ou passager.</p>
+            {/* <p className="config-help">Choisissez le cote: conducteur ou passager.</p> */}
             <div className="choice-list position-choice-list">
               {positions.map((item) => (
                 <button
@@ -355,7 +385,42 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             </div>
           </section>
 
-          <section className="config-group">
+          {isPieceOrder && pieceSuggestedOptions.length ? (
+            <section className="config-group">
+              <h3>Options pour la piece selectionnee ({selectedFeatureKey || 'PIECE'})</h3>
+              {/* <p className="config-help">
+                Ces options sont facultatives. Vous pouvez choisir une ou plusieurs options, ou aucune (piece seule).
+              </p> */}
+              <div className="piece-options-stack">
+                <div className="option-chip-list">
+                  <button
+                    type="button"
+                    className={`option-chip ${pieceSuggestedOptions.every((item) => !selectedOptions.includes(item)) ? 'active' : ''}`}
+                    onClick={() => {
+                      const nextOptions = selectedOptions.filter((item) => !pieceSuggestedOptions.includes(item));
+                      onChange('options', nextOptions);
+                    }}
+                  >
+                    Juste la piece (sans option)
+                  </button>
+                </div>
+                <div className="option-chip-list">
+                  {pieceSuggestedOptions.map((optionLabel) => (
+                    <button
+                      key={optionLabel}
+                      type="button"
+                      className={`option-chip ${selectedOptions.includes(optionLabel) ? 'active' : ''}`}
+                      onClick={() => toggleOption(optionLabel)}
+                    >
+                      {optionLabel}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {/* <section className="config-group">
             <h3>3. Produit a commander</h3>
             <p className="config-help">
               {isCompleteOrder
@@ -395,8 +460,8 @@ export default function Product({ brand, model, year, productConfig, onChange, o
                         className={`choice-btn ${productConfig.productType === item ? 'active' : ''}`}
                         onClick={() => {
                           onChange('productType', item);
-                          const match = featureCards.find((card) => card.pieceType === item);
-                          if (match) onChange('selectedFeature', match.key);
+                      const match = pieceSelectorCards.find((card) => card.pieceType === item);
+                      if (match) onChange('selectedFeature', match.key);
                           setShowManualPiecePicker(false);
                         }}
                         disabled={!isPieceOrder}
@@ -408,28 +473,26 @@ export default function Product({ brand, model, year, productConfig, onChange, o
                 )}
               </>
             )}
-          </section>
+          </section> */}
 
-          <section className="config-group">
-            <h3>4. Type de reglage {isPieceOrder ? '(optionnel)' : ''}</h3>
-            <p className="config-help">
-              {isPieceOrder
-                ? 'Si vous ne savez pas, laissez vide. Notre equipe verifiera avec vous.'
-                : 'Obligatoire pour un retroviseur complet.'}
-            </p>
-            <div className="choice-list">
-              {adjustmentTypes.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  className={`choice-btn ${productConfig.adjustmentType === item ? 'active' : ''}`}
-                  onClick={() => onChange('adjustmentType', item)}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </section>
+          {isCompleteOrder ? (
+            <section className="config-group">
+              <h3>4. Type de reglage</h3>
+              <p className="config-help">Obligatoire pour un retroviseur complet.</p>
+              <div className="choice-list">
+                {adjustmentTypes.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className={`choice-btn ${productConfig.adjustmentType === item ? 'active' : ''}`}
+                    onClick={() => onChange('adjustmentType', item)}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {isCompleteOrder ? (
             <section className="config-group">

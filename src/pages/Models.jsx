@@ -12,12 +12,11 @@ export default function Models({ brand, models, selectedModel, years, onModelSel
 
   return (
     <div className="models-view step-shell">
-      <div className="view-header">
-        <span className="step-pill">Etape 1 sur 3</span>
+      {/* <div className="view-header">
         <h2>Choisissez le modele et l'annee {brand.name}</h2>
         <p>Selectionnez d'abord un modele, puis l'annee dans la colonne de droite.</p>
         <p className="selected-brand-chip">Marque selectionnee : {brand.name}</p>
-      </div>
+      </div> */}
 
       <div className="step-toolbar">
         {/* <button type="button" className="secondary-button step-back" onClick={onBack}>Changer la marque</button> */}

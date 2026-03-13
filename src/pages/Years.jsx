@@ -14,7 +14,6 @@ export default function Years({ model, years, onYearSelect, onBack }) {
   return (
     <div className="years-view step-shell">
       <div className="view-header">
-        <span className="step-pill">Etape 2 sur 3</span>
         <h2>Choisissez l'annee de {model}</h2>
         <p>Selectionnez l'annee de production pour continuer.</p>
       </div>

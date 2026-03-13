@@ -229,7 +229,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
 /* Right vertical brand selector */
 .brand-selector {
-  width: 80px;
+  width: 72px;
   position: fixed;
   right: 12px;
   top: 80px;
@@ -276,8 +276,8 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .brand-item {
-  width: 56px;
-  height: 56px;
+  width: 50px;
+  height: 50px;
   border-radius: 16px;
   background: var(--glass);
   color: #fff;
@@ -298,8 +298,8 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
 .brand-icon { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
 .brand-image {
-  width: 36px;
-  height: 50px;
+  width: 30px;
+  height: 42px;
   object-fit: contain;
   filter: invert(1);
   pointer-events: none;
@@ -318,19 +318,6 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 24px;
-}
-
-.step-pill {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.78rem;
-  letter-spacing: 0.3px;
-  color: #ead9ae;
-  background: rgba(198, 167, 94, 0.22);
-  border: 1px solid rgba(198, 167, 94, 0.45);
-  border-radius: 999px;
-  padding: 4px 10px;
-  margin-bottom: 10px;
 }
 
 .selected-brand-chip {
@@ -782,7 +769,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
 .models-years-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr);
   gap: 16px;
 }
 
@@ -792,6 +779,18 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   border-radius: 12px;
   padding: 14px;
   background: rgba(255, 255, 255, 0.01);
+  overflow: hidden;
+  position: relative;
+}
+
+.models-column::after,
+.years-column::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  pointer-events: none;
 }
 
 .models-column .models-grid {
@@ -799,40 +798,43 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   max-height: 420px;
   overflow-y: auto;
   padding-right: 6px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .models-column .models-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.models-column .models-grid::-webkit-scrollbar-thumb {
-  background: rgba(198, 167, 94, 0.35);
-  border-radius: 999px;
+  width: 0;
+  height: 0;
 }
 
 .years-column .years-grid {
-  grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .years-column.disabled {
+  opacity: 1;
+  overflow-x: hidden;
+}
+
+.years-column.disabled .year-section,
+.years-column.disabled .years-grid,
+.years-column.disabled .year-card,
+.years-column.disabled .year-section-title {
   opacity: 0.75;
 }
 
 .years-column .year-section {
   max-height: 420px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 6px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .years-column .year-section::-webkit-scrollbar {
-  width: 6px;
-}
-
-.years-column .year-section::-webkit-scrollbar-thumb {
-  background: rgba(198, 167, 94, 0.35);
-  border-radius: 999px;
+  width: 0;
+  height: 0;
 }
 
 .years-column .year-card:disabled {
@@ -941,15 +943,13 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   padding-bottom: 4px;
   scroll-snap-type: x mandatory;
   max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .piece-slider::-webkit-scrollbar {
-  height: 6px;
-}
-
-.piece-slider::-webkit-scrollbar-thumb {
-  background: rgba(198, 167, 94, 0.35);
-  border-radius: 999px;
+  width: 0;
+  height: 0;
 }
 
 .piece-icon-btn {
@@ -1204,22 +1204,30 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .option-chip-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 8px;
+}
+
+.piece-options-stack {
+  display: grid;
+  gap: 12px;
+  margin: 8px 0;
 }
 
 .option-chip {
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #0d0d0d;
   color: #d7dde4;
-  border-radius: 999px;
-  padding: 7px 10px;
-  font-size: 0.78rem;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: normal;
   overflow-wrap: anywhere;
+  width: 100%;
+  text-align: left;
 }
 
 .option-chip:hover {
@@ -1810,7 +1818,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
     right: 8px;
     left: auto;
     bottom: 0;
-    width: 70px;
+    width: 62px;
     height: auto;
     border-radius: 12px;
     padding: 8px 6px;
@@ -1833,15 +1841,15 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   }
 
   .brand-item {
-    width: 55px;
-    height: 55px;
+    width: 48px;
+    height: 48px;
     min-width: 44px;
     border-radius: 10px;
   }
 
   .brand-image {
-    width: 36px;
-    height: 50px;
+    width: 28px;
+    height: 40px;
   }
 
   .hamburger-dropdown {
@@ -1871,8 +1879,12 @@ html,body,#root { height: 100%; overflow-x: hidden; }
     gap: 12px;
   }
 
+  .years-column .years-grid {
+    grid-template-columns: 1fr;
+  }
+
   .models-years-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.52fr) minmax(0, 1.48fr);
     gap: 10px;
     align-items: stretch;
   }
@@ -1921,7 +1933,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   }
 
   .model-card, .year-card {
-    padding: 16px;
+    padding: 8px;
   }
 
   .years-view, .models-view, .form-view {

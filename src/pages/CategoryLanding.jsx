@@ -76,7 +76,6 @@ export default function CategoryLanding({ slug, onStartSelection }) {
   return (
     <div className="category-view">
       <div className="category-shell">
-        <span className="step-pill">Categorie SEO</span>
         <h1>{data.h1}</h1>
         <p className="category-intro">{data.intro}</p>
 
