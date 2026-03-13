@@ -34,7 +34,7 @@ export const mockData = {
   ],
   models: {
     1: ['Camry', 'Corolla', 'RAV4', 'Prius', 'Highlander', "test"], // Toyota
-    2: ['3 Series', '5 Series', 'X3', 'X5', 'i3'], // BMW
+    2: ['3 Series', '5 Series', 'X3', 'X5', 'i3', 'i3', 'i3', 'i3', 'i3', 'i3', 'i3', 'i3', 'i3', 'i3'], // BMW
     3: ['C-Class', 'E-Class', 'S-Class', 'GLE', 'GLC'], // Mercedes
     4: ['A4', 'A6', 'Q5', 'Q7', 'TT'], // Audi
     5: ['Civic', 'Accord', 'CR-V', 'Pilot', 'Odyssey'], // Honda
