@@ -2100,6 +2100,57 @@ html,body,#root { height: 100%; overflow-x: hidden; }
     font-size: 1.35rem;
   }
 }
+
+@media (max-width: 420px) {
+  .main-content {
+    padding: 0 12px;
+    padding-right: 76px;
+  }
+
+  .brand-selector {
+    right: 6px;
+    width: 56px;
+    padding: 8px 5px;
+  }
+
+  .brand-item {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .brand-image {
+    width: 24px;
+    height: 34px;
+  }
+
+  .models-years-layout {
+    grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.4fr);
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .models-column,
+  .years-column {
+    padding: 8px;
+  }
+
+  .years-column .year-section,
+  .models-column .models-grid {
+    padding-right: 0;
+  }
+
+  .year-card {
+    padding: 12px 6px;
+    border-radius: 8px;
+  }
+
+  .year-card h3 {
+    font-size: 0.9rem;
+  }
+}
+
 .about-view, .contact-view {
   min-height: calc(100vh - 160px);
 }
