@@ -1,4 +1,5 @@
 import React from 'react';
+import { useI18n } from '../i18n';
 
 const heroMirrorImage = 'https://images.pexels.com/photos/1686880/pexels-photo-1686880.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1800&h=1200';
 const featuredOneImage = 'https://images.pexels.com/photos/17168615/pexels-photo-17168615.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
@@ -38,20 +39,21 @@ function WhyLineIcon({ type }) {
 }
 
 export default function Home({ onStartSelection, showBrandHint }) {
+  const { t } = useI18n();
   return (
     <div className="home-view">
       <div className="home-content">
         {/* Hero Section */}
         <div className="hero-section">
           <div className="hero-text">
-            <h1 className="app-title">Retroviseurs Auto Premium</h1>
+            <h1 className="app-title">{t('home_title', 'Retroviseurs Auto Premium')}</h1>
             <p className="app-description">
-              Trouvez le retroviseur ideal pour votre vehicule. Produits de qualite, prix competitifs et livraison rapide.
+              {t('home_desc', 'Trouvez le retroviseur ideal pour votre vehicule. Produits de qualite, prix competitifs et livraison rapide.')}
             </p>
-            <button className="cta-button" onClick={onStartSelection}>Choisir ma marque</button>
-            <p className="time-estimate">Temps estime : 30 secondes</p>
+            <button className="cta-button" onClick={onStartSelection}>{t('home_cta', 'Choisir ma marque')}</button>
+            <p className="time-estimate">{t('home_time', 'Temps estime : 30 secondes')}</p>
             {showBrandHint ? (
-              <p className="brand-hint">Commencez par choisir une marque dans la barre laterale droite.</p>
+              <p className="brand-hint">{t('home_hint', 'Commencez par choisir une marque dans la barre laterale droite.')}</p>
             ) : null}
             <div className="trust-strip">
               <span>Livraison rapide</span>

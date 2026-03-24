@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useI18n } from '../i18n';
 
 export default function Form({ brand, model, year, productConfig, formData, onChange, onSubmit, onBack }) {
   if (!year) return null;
+  const { t } = useI18n();
 
   const [errors, setErrors] = useState({});
 
@@ -63,8 +65,8 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
   return (
     <div className="form-view">
       <form className="lead-form form-shell" onSubmit={handleFormSubmit}>
-        <h2>Derniere etape : vos coordonnees</h2>
-        <p className="form-subtitle">Nous vous contacterons avec la meilleure option et le meilleur prix.</p>
+        <h2>{t('form_title', 'Derniere etape : vos coordonnees')}</h2>
+        <p className="form-subtitle">{t('form_subtitle', 'Nous vous contacterons avec la meilleure option et le meilleur prix.')}</p>
 
         <div className="form-meta-row">
           <span className="form-meta-chip">{brand?.name}</span>
@@ -83,54 +85,54 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
 
         <div className="form-grid">
           <div className="form-group">
-            <label htmlFor="fullName">Nom complet</label>
+            <label htmlFor="fullName">{t('form_full_name', 'Nom complet')}</label>
             <input
               id="fullName"
               name="fullName"
               value={formData.fullName}
               onChange={handleFieldChange}
-              placeholder="Entrez votre nom complet"
+              placeholder={t('form_full_name_ph', 'Entrez votre nom complet')}
               aria-invalid={Boolean(errors.fullName)}
             />
             {errors.fullName && <p className="field-error">{errors.fullName}</p>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Adresse email</label>
+            <label htmlFor="email">{t('form_email', 'Adresse email')}</label>
             <input
               id="email"
               type="email"
               name="email"
               value={formData.email}
               onChange={handleFieldChange}
-              placeholder="Entrez votre email"
+              placeholder={t('form_email_ph', 'Entrez votre email')}
               aria-invalid={Boolean(errors.email)}
             />
             {errors.email && <p className="field-error">{errors.email}</p>}
           </div>
 
           <div className="form-group form-group-full">
-            <label htmlFor="phone">Numero de telephone</label>
+            <label htmlFor="phone">{t('form_phone', 'Numero de telephone')}</label>
             <input
               id="phone"
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleFieldChange}
-              placeholder="Entrez votre numero de telephone"
+              placeholder={t('form_phone_ph', 'Entrez votre numero de telephone')}
               aria-invalid={Boolean(errors.phone)}
             />
             {errors.phone && <p className="field-error">{errors.phone}</p>}
           </div>
 
           <div className="form-group form-group-full">
-            <label htmlFor="message">Message (optionnel)</label>
+            <label htmlFor="message">{t('form_message', 'Message (optionnel)')}</label>
             <textarea
               id="message"
               name="message"
               value={formData.message}
               onChange={handleFieldChange}
-              placeholder="Ajoutez un detail utile (reference, couleur, cote exact, etc.)"
+              placeholder={t('form_message_ph', 'Ajoutez un detail utile (reference, couleur, cote exact, etc.)')}
               rows={4}
             />
           </div>
@@ -160,8 +162,8 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
         </div>
 
         <div className="form-actions">
-          <button type="button" className="secondary-button" onClick={onBack}>Retour</button>
-          <button type="submit" className="submit-button">Envoyer la demande</button>
+          <button type="button" className="secondary-button" onClick={onBack}>{t('back', 'Retour')}</button>
+          <button type="submit" className="submit-button">{t('send_request', 'Envoyer la demande')}</button>
         </div>
       </form>
     </div>

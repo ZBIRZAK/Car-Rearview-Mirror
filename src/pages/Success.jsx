@@ -1,13 +1,15 @@
 import React from 'react';
+import { useI18n } from '../i18n';
 
 export default function Success({ submission, onNewRequest, onWhatsApp }) {
   if (!submission) return null;
+  const { t } = useI18n();
 
   return (
     <div className="success-view form-shell">
       <div className="success-card">
-        <h2>Demande envoyee avec succes</h2>
-        <p>Merci. Notre equipe vous contactera rapidement avec une offre adaptee.</p>
+        <h2>{t('success_title', 'Demande envoyee avec succes')}</h2>
+        <p>{t('success_subtitle', 'Merci. Notre equipe vous contactera rapidement avec une offre adaptee.')}</p>
 
         <div className="product-summary">
           <p><strong>Vehicule :</strong> {submission.brand} {submission.model} ({submission.year})</p>
@@ -25,10 +27,10 @@ export default function Success({ submission, onNewRequest, onWhatsApp }) {
 
         <div className="form-actions">
           <button type="button" className="secondary-button" onClick={onNewRequest}>
-            Nouvelle demande
+            {t('new_request', 'Nouvelle demande')}
           </button>
           <button type="button" className="submit-button" onClick={onWhatsApp}>
-            Continuer sur WhatsApp
+            {t('whatsapp_continue', 'Continuer sur WhatsApp')}
           </button>
         </div>
       </div>

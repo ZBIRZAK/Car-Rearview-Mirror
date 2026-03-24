@@ -1,8 +1,12 @@
 import React, { useMemo, useState } from 'react';
+import { speakFr, stopSpeech, supportsSpeech } from '../utils/speech';
+import { useI18n } from '../i18n';
 
 export default function Models({ brand, models, selectedModel, years, onModelSelect, onYearSelect, onBack }) {
   if (!brand) return null;
   const [query, setQuery] = useState('');
+  const canSpeak = supportsSpeech();
+  const { t, language } = useI18n();
 
   const filteredModels = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -25,7 +29,7 @@ export default function Models({ brand, models, selectedModel, years, onModelSel
           className="step-search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Rechercher un modele..."
+          placeholder={t('models_search', 'Rechercher un modele...')}
           inputMode="search"
           autoComplete="off"
         />

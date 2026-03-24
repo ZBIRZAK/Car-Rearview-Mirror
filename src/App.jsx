@@ -15,6 +15,9 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import CategoryLanding, { categoryContentMap } from './pages/CategoryLanding';
 import { applySeo } from './seo';
+import { useI18n } from './i18n';
+import Dashboard from './pages/Dashboard';
+import { createRequest } from './lib/requestsApi';
 
 const FLOW_STORAGE_KEY = 'crm_flow_state_v1';
 
@@ -29,6 +32,7 @@ const VIEW_TO_PATH = {
   contact: '/contact',
   terms: '/conditions-generales-de-vente',
   privacy: '/politique-de-confidentialite',
+  dashboard: '/dashboard',
 };
 
 function resolveRoute(pathname) {
@@ -44,6 +48,7 @@ function resolveRoute(pathname) {
 }
 
 function App() {
+  const { language } = useI18n();
   const mainContentRef = useRef(null);
   // State management
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -166,7 +171,7 @@ function App() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
@@ -177,8 +182,19 @@ function App() {
       ...formData
     };
 
-    console.log('Formulaire envoye :', payload);
-    setSubmission(payload);
+    let persisted = null;
+    try {
+      persisted = await createRequest(payload);
+    } catch (error) {
+      console.error('Supabase insert failed, fallback to local success:', error);
+    }
+
+    setSubmission({
+      ...payload,
+      requestId: persisted?.id || null,
+      status: persisted?.status || 'local',
+      created_at: persisted?.created_at || null,
+    });
     navigateToView('success');
   };
 
@@ -224,6 +240,11 @@ function App() {
       setSelectedYear(null);
     } else if (page === 'privacy') {
       navigateToView('privacy');
+      setSelectedBrand(null);
+      setSelectedModel(null);
+      setSelectedYear(null);
+    } else if (page === 'dashboard') {
+      navigateToView('dashboard');
       setSelectedBrand(null);
       setSelectedModel(null);
       setSelectedYear(null);
@@ -327,7 +348,7 @@ function App() {
   }, [currentView, selectedBrand, selectedModel, selectedYear, currentCategorySlug]);
 
   return (
-    <div className="app">
+    <div className={`app ${language === 'ar' ? 'lang-ar' : 'lang-fr'}`}>
       <Header onMenuClick={handleMenuClick} />
       {showBrandRail ? (
         <BrandSelector
@@ -348,6 +369,8 @@ function App() {
         {currentView === 'terms' && <Terms />}
 
         {currentView === 'privacy' && <Privacy />}
+
+        {currentView === 'dashboard' && <Dashboard />}
 
         {(currentView === 'models' || currentView === 'years') && (
           <Models

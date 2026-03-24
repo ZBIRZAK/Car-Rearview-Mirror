@@ -1,5 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import mirrorProductImage from '../images/side-rear-view-mirror-on-a-car-transparent-background-png.webp';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useI18n } from '../i18n';
+import completeMirrorImage1 from '../images/retroviseur complet-BMW-X3-1.jpeg';
+import completeMirrorImage2 from '../images/retroviseur complet-BMW-X3-2.jpeg';
+
+const productPreviewImage = 'https://images.pexels.com/photos/1686880/pexels-photo-1686880.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1800&h=1200';
+const completePreviewImages = [completeMirrorImage1, completeMirrorImage2];
 
 const positions = ['Cote conducteur', 'Cote passager'];
 const completeTypeLabel = 'Retroviseur complet (ensemble pret a monter)';
@@ -40,6 +45,14 @@ const pieceSelectorCards = [
   { key: 'MIRROR', label: 'MIRROR', subtitle: 'Corps', icon: 'pieceMirror', pieceType: 'Support / Platine de fixation' },
   { key: 'COVER', label: 'COVER', subtitle: 'Coque', icon: 'pieceCover', pieceType: 'Coque / Cache exterieur uniquement' },
   { key: 'SINGLE', label: 'SINGLE', subtitle: 'Lumiere', icon: 'pieceSingle', pieceType: 'Clignotant integre seul' },
+];
+
+const productCatalogCards = [
+  { key: 'COMPLETE', label: 'Retroviseur complet', subtitle: 'Produit complet', icon: 'shape', previewFocus: 'complete', imageSrc: completeMirrorImage1 },
+  { ...pieceSelectorCards[0], previewFocus: 'glass' },
+  { ...pieceSelectorCards[1], previewFocus: 'mirror' },
+  { ...pieceSelectorCards[2], previewFocus: 'cover' },
+  { ...pieceSelectorCards[3], previewFocus: 'single' },
 ];
 
 const optionGroups = [
@@ -253,20 +266,48 @@ function FeatureIcon({ type }) {
   );
 }
 
+function CatalogPreview({ focus, imageSrc }) {
+  const focusClass = focus ? `focus-${focus}` : '';
+  return (
+    <span className={`catalog-preview ${focusClass}`}>
+      <img key={imageSrc || productPreviewImage} className="catalog-preview-image" src={imageSrc || productPreviewImage} alt="" />
+      <span className="catalog-preview-shade" />
+    </span>
+  );
+}
+
 export default function Product({ brand, model, year, productConfig, onChange, onContinue }) {
   if (!year) return null;
+  const { t, language } = useI18n();
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [showValidationHint, setShowValidationHint] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  const [showManualPiecePicker, setShowManualPiecePicker] = useState(false);
+  const [completePreviewIndex, setCompletePreviewIndex] = useState(0);
+  const [catalogCompleteImageIndex, setCatalogCompleteImageIndex] = useState(0);
 
   const selectedOptions = productConfig.options || [];
   const isCompleteOrder = productConfig.orderScope === 'complete';
   const isPieceOrder = productConfig.orderScope === 'piece';
   const selectedFeatureKey = productConfig.selectedFeature || '';
   const selectedFeature = pieceSelectorCards.find((item) => item.key === selectedFeatureKey) || null;
+  const selectedCatalogCard = productCatalogCards.find((item) => {
+    if (item.key === 'COMPLETE') return isCompleteOrder;
+    return selectedFeatureKey === item.key;
+  }) || null;
+  const hasCatalogSelection = Boolean(productConfig.orderScope);
+  const isCompleteCatalogSelection = selectedCatalogCard?.key === 'COMPLETE';
+  const selectedPreviewImage = isCompleteCatalogSelection
+    ? completePreviewImages[completePreviewIndex] || completePreviewImages[0]
+    : (selectedCatalogCard?.imageSrc || productPreviewImage);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCatalogCompleteImageIndex((prev) => (prev + 1) % completePreviewImages.length);
+    }, 2600);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const requiredMissing = useMemo(() => {
     const missing = [];
@@ -300,27 +341,33 @@ export default function Product({ brand, model, year, productConfig, onChange, o
     onChange('options', nextOptions);
   };
 
-  const handleFeatureSelect = (feature) => {
-    onChange('selectedFeature', feature.key);
-    onChange('orderScope', 'piece');
-    onChange('productType', feature.pieceType);
-    setShowManualPiecePicker(false);
-  };
-
   const advancedStepNumber = isCompleteOrder ? 6 : 5;
 
-  const handleOrderScopeSelect = (scope) => {
-    if (scope === 'complete') {
+  const handleCatalogSelect = (item) => {
+    if (item.key === 'COMPLETE') {
       onChange('orderScope', 'complete');
       onChange('productType', completeTypeLabel);
       onChange('selectedFeature', '');
+      onChange('adjustmentType', '');
+      onChange('options', []);
       return;
     }
 
     onChange('orderScope', 'piece');
-    if (productConfig.productType === completeTypeLabel) {
-      onChange('productType', '');
-    }
+    onChange('selectedFeature', item.key);
+    onChange('productType', item.pieceType);
+    onChange('adjustmentType', '');
+    onChange('options', []);
+  };
+
+  const resetCatalogSelection = () => {
+    onChange('orderScope', '');
+    onChange('selectedFeature', '');
+    onChange('productType', '');
+    onChange('adjustmentType', '');
+    onChange('options', []);
+    setShowValidationHint(false);
+    setCompletePreviewIndex(0);
   };
 
   const contextualOptionGroups = useMemo(() => {
@@ -333,6 +380,21 @@ export default function Product({ brand, model, year, productConfig, onChange, o
     return pieceSuggestedOptionsByCategory[selectedFeatureKey] || [];
   }, [isPieceOrder, selectedFeatureKey]);
 
+  const positionLabel = (item) => {
+    if (item === 'Cote conducteur') return t('side_driver', 'Cote conducteur');
+    if (item === 'Cote passager') return t('side_passenger', 'Cote passager');
+    return item;
+  };
+
+  const pieceCardLabel = (card) => {
+    if (language !== 'ar') return { label: card.label, subtitle: card.subtitle };
+    if (card.key === 'GLASS') return { label: 'زجاج', subtitle: 'زجاج المرآة' };
+    if (card.key === 'MIRROR') return { label: 'مرآة', subtitle: 'الهيكل + الحركة' };
+    if (card.key === 'COVER') return { label: 'غطاء', subtitle: 'الغطاء الخارجي' };
+    if (card.key === 'SINGLE') return { label: 'إشارة', subtitle: 'وحدة الإضاءة' };
+    return { label: card.label, subtitle: card.subtitle };
+  };
+
   const handleContinue = () => {
     if (!canContinue) {
       setShowValidationHint(true);
@@ -344,36 +406,37 @@ export default function Product({ brand, model, year, productConfig, onChange, o
   return (
     <div className="product-view">
       <div className="view-header">
-        <h2>Configurez votre demande</h2>
-        <p>{brand?.name} {model} ({year})</p>
+        <h2>{t('product_title', 'Configurez votre demande')}</h2>
+        <p>{brand?.name} {model} ({year}) - {t('product_subtitle_suffix', 'suivez simplement les etapes ci-dessous')}</p>
       </div>
 
-      <div className="product-layout">
-        <aside className="product-preview product-preview-v2">
-          <button type="button" className="product-image-trigger" onClick={openLightbox}>
-            <img src={mirrorProductImage} alt="Retroviseur exterieur de voiture" className="product-brand-image" />
-          </button>
-          <p className="image-hint">Appuyez sur l'image pour zoomer</p>
-
-          {!isCompleteOrder ? (
-            <div className="piece-slider-block">
-              <p className="piece-slider-title">Vous voulez seulement une piece ? Choisissez-en une.</p>
-              <div className="piece-slider" role="listbox" aria-label="Selection de piece par icone">
-                {pieceSelectorCards.map((card) => (
-                  <button
-                    key={card.key}
-                    type="button"
-                    className={`piece-icon-btn ${selectedFeatureKey === card.key ? 'active' : ''}`}
-                    onClick={() => handleFeatureSelect(card)}
-                  >
-                    <span className="piece-icon-art">
-                      <FeatureIcon type={card.icon} />
-                    </span>
-                    <span className="piece-icon-label">{card.label}</span>
-                    <span className="piece-icon-subtitle">{card.subtitle}</span>
-                  </button>
-                ))}
-              </div>
+      <div className={`product-layout ${hasCatalogSelection ? '' : 'catalog-only'}`}>
+        {hasCatalogSelection ? (
+        <aside className="catalog-preview-overlay">
+          {selectedCatalogCard ? (
+            <div className="piece-slider-block product-image-preview-block" role="region" aria-label="Apercu produit selectionne">
+              <p className="piece-slider-title">Apercu du produit selectionne</p>
+              <button type="button" className="product-image-trigger" onClick={openLightbox}>
+                <CatalogPreview focus={selectedCatalogCard.previewFocus} imageSrc={selectedPreviewImage} />
+              </button>
+              {isCompleteCatalogSelection ? (
+                <div className="preview-thumbnails" role="listbox" aria-label="Images du retroviseur complet">
+                  {completePreviewImages.map((imgSrc, idx) => (
+                    <button
+                      key={imgSrc}
+                      type="button"
+                      className={`preview-thumb-btn ${completePreviewIndex === idx ? 'active' : ''}`}
+                      onClick={() => setCompletePreviewIndex(idx)}
+                      aria-label={`Image ${idx + 1}`}
+                    >
+                      <img src={imgSrc} alt="" />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <p className="product-preview-caption">
+                <strong>{pieceCardLabel(selectedCatalogCard).label}</strong> - {pieceCardLabel(selectedCatalogCard).subtitle}
+              </p>
             </div>
           ) : null}
 
@@ -395,33 +458,37 @@ export default function Product({ brand, model, year, productConfig, onChange, o
               </div>
             ) : null} */}
         </aside>
+        ) : null}
 
         <div className="product-config">
-          <section className="config-group">
-            <h3>1. Type de commande</h3>
-            {/* <p className="config-help">Choisissez ce que vous voulez commander.</p> */}
-            <div className="order-scope-grid">
-              <button
-                type="button"
-                className={`order-scope-card ${isCompleteOrder ? 'active' : ''}`}
-                onClick={() => handleOrderScopeSelect('complete')}
-              >
-                <span className="order-scope-title">Retroviseur complet</span>
-                <span className="order-scope-sub">Produit complet pret a monter</span>
-              </button>
-              <button
-                type="button"
-                className={`order-scope-card ${isPieceOrder ? 'active' : ''}`}
-                onClick={() => handleOrderScopeSelect('piece')}
-              >
-                <span className="order-scope-title">Piece uniquement</span>
-                <span className="order-scope-sub">Exemple: seulement la glace</span>
-              </button>
-            </div>
-          </section>
+          {!hasCatalogSelection ? (
+            <section className="config-group">
+              <h3>{t('product_catalog_title', 'Choisissez le produit a commander')}</h3>
+              <p className="config-help">{t('product_catalog_help', 'Selectionnez un produit pour ouvrir sa page d options.')}</p>
+              <div className="order-scope-grid product-catalog-grid">
+                {productCatalogCards.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className="catalog-product-card"
+                    onClick={() => handleCatalogSelect(item)}
+                  >
+                    <CatalogPreview
+                      focus={item.previewFocus}
+                      imageSrc={item.key === 'COMPLETE' ? completePreviewImages[catalogCompleteImageIndex] : item.imageSrc}
+                    />
+                    <span className="order-scope-title">{pieceCardLabel(item).label}</span>
+                    <span className="order-scope-sub">{pieceCardLabel(item).subtitle}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
-          <section className="config-group">
-            <h3>2. Cote du retroviseur</h3>
+          {hasCatalogSelection ? (
+            <section className="config-group">
+            <h3>{t('product_step2', '2. Cote du retroviseur')}</h3>
+            <p className="config-help">{t('product_step2_help', 'Selectionnez le cote du vehicule concerne.')}</p>
             {/* <p className="config-help">Choisissez le cote: conducteur ou passager.</p> */}
             <div className="choice-list position-choice-list">
               {positions.map((item) => (
@@ -431,15 +498,17 @@ export default function Product({ brand, model, year, productConfig, onChange, o
                   className={`choice-btn ${productConfig.position === item ? 'active' : ''}`}
                   onClick={() => onChange('position', item)}
                 >
-                  {item}
+                  {positionLabel(item)}
                 </button>
               ))}
             </div>
-          </section>
+            </section>
+          ) : null}
 
-          {isPieceOrder && pieceSuggestedOptions.length ? (
+          {hasCatalogSelection && isPieceOrder && pieceSuggestedOptions.length ? (
             <section className="config-group">
-              <h3>Options pour la piece selectionnee ({selectedFeatureKey || 'PIECE'})</h3>
+              <h3>{t('product_piece_options_title', '3. Options pour la piece')} ({selectedFeatureKey || 'PIECE'})</h3>
+              <p className="config-help">{t('product_piece_options_help', 'Options facultatives. Choisissez "Juste la piece" si vous ne voulez rien ajouter.')}</p>
               {/* <p className="config-help">
                 Ces options sont facultatives. Vous pouvez choisir une ou plusieurs options, ou aucune (piece seule).
               </p> */}
@@ -453,7 +522,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
                       onChange('options', nextOptions);
                     }}
                   >
-                    Juste la piece (sans option)
+                    {t('product_only_piece', 'Juste la piece (sans option)')}
                   </button>
                 </div>
                 <div className="option-chip-list">
@@ -527,7 +596,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             )}
           </section> */}
 
-          {isCompleteOrder ? (
+          {hasCatalogSelection && isCompleteOrder ? (
             <section className="config-group">
               <h3>4. Type de reglage</h3>
               <p className="config-help">Obligatoire pour un retroviseur complet.</p>
@@ -546,7 +615,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             </section>
           ) : null}
 
-          {isCompleteOrder ? (
+          {hasCatalogSelection && isCompleteOrder ? (
             <section className="config-group">
               <h3>5. Options du retroviseur (optionnel)</h3>
               <p className="config-help">Choisissez les options visibles pour votre retroviseur complet.</p>
@@ -569,7 +638,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             </section>
           ) : null}
 
-          <div className="advanced-toggle-wrap">
+          {/* <div className="advanced-toggle-wrap">
             <button
               type="button"
               className="secondary-button advanced-toggle-btn"
@@ -577,9 +646,9 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             >
               {showAdvancedOptions ? 'Masquer les options avancees' : 'Afficher les options avancees'}
             </button>
-          </div>
+          </div> */}
 
-          {showAdvancedOptions ? (
+          {/* {showAdvancedOptions ? (
             <section className="config-group">
               <h3>{advancedStepNumber}. Details supplementaires (optionnel)</h3>
               <p className="config-help">Options techniques detaillees par categorie.</p>
@@ -603,16 +672,20 @@ export default function Product({ brand, model, year, productConfig, onChange, o
                 ))}
               </div>
             </section>
-          ) : null}
+          ) : null} */}
 
-          <button type="button" className="submit-button" onClick={handleContinue}>
-            Continuer vers le formulaire
-          </button>
+          {hasCatalogSelection ? (
+            <>
+              <button type="button" className="submit-button" onClick={handleContinue}>
+                {t('continue_form', 'Continuer vers le formulaire')}
+              </button>
 
-          {showValidationHint && !canContinue ? (
-            <p className="inline-hint-error">
-              Merci de completer les champs requis avant de continuer.
-            </p>
+              {showValidationHint && !canContinue ? (
+                <p className="inline-hint-error">
+                  Merci de completer les champs requis avant de continuer.
+                </p>
+              ) : null}
+            </>
           ) : null}
         </div>
       </div>
@@ -629,7 +702,7 @@ export default function Product({ brand, model, year, productConfig, onChange, o
           </div>
           <div className="lightbox-image-wrap">
             <img
-              src={mirrorProductImage}
+              src={selectedPreviewImage}
               alt="Retroviseur exterieur de voiture en grand format"
               className="lightbox-image"
               style={{ transform: `scale(${zoom})` }}
