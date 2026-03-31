@@ -1,10 +1,12 @@
 import React from 'react';
 import homeIcon from '../icons/home.png';
 import whatsappIcon from '../icons/whatsapp.png';
+import wechatIcon from '../icons/wechat.png';
+import instagramIcon from '../icons/facebook-messenger.png';
 import contactIcon from '../icons/contact.png';
 import { useI18n } from '../i18n';
 
-export default function BottomNav({ active, onHome, onWhatsApp, onContact }) {
+export default function BottomNav({ active, onHome, onWhatsApp, onWeChat, onInstagram, onContact }) {
   const { t } = useI18n();
   return (
     <div className="bottom-nav">
@@ -22,6 +24,22 @@ export default function BottomNav({ active, onHome, onWhatsApp, onContact }) {
         aria-label="WhatsApp"
       >
         <img src={whatsappIcon} alt="WhatsApp" className="nav-icon" />
+      </button>
+
+      <button
+        className={`nav-item ${active === 'wechat' ? 'active' : ''}`}
+        onClick={onWeChat}
+        aria-label="WeChat"
+      >
+        <img src={wechatIcon} alt="WeChat" className="nav-icon" />
+      </button>
+
+      <button
+        className={`nav-item ${active === 'instagram' ? 'active' : ''}`}
+        onClick={onInstagram}
+        aria-label="Instagram"
+      >
+        <img src={instagramIcon} alt="Instagram" className="nav-icon" />
       </button>
 
       <button

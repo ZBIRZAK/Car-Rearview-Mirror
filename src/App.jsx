@@ -20,6 +20,42 @@ import Dashboard from './pages/Dashboard';
 import { createRequest } from './lib/requestsApi';
 
 const FLOW_STORAGE_KEY = 'crm_flow_state_v1';
+const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '1234567890').replace(/\D/g, '');
+const WECHAT_URL = import.meta.env.VITE_WECHAT_URL || 'https://www.wechat.com/';
+const INSTAGRAM_URL = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/';
+const PRODUCT_CATALOG_LIST = [
+  { key: 'COMPLETE', label: 'Retroviseur complet' },
+  { key: 'GLASS', label: 'GLASS' },
+  { key: 'MIRROR', label: 'MIRROR' },
+  { key: 'COVER', label: 'COVER' },
+  { key: 'SINGLE', label: 'SINGLE' },
+];
+const createEmptyProductConfig = () => ({
+  orderScope: '',
+  selectedFeature: '',
+  position: '',
+  productType: '',
+  adjustmentType: '',
+  options: []
+});
+
+const sanitizeMessageCell = (value) => String(value ?? '-')
+  .replace(/\|/g, '/')
+  .replace(/\s*\n+\s*/g, ' ')
+  .trim() || '-';
+
+const isSameQuoteItem = (a, b) => (
+  a.brand === b.brand
+  && a.model === b.model
+  && String(a.year) === String(b.year)
+  && a.orderScope === b.orderScope
+  && a.productType === b.productType
+  && a.selectedFeature === b.selectedFeature
+  && a.position === b.position
+  && a.adjustmentType === b.adjustmentType
+  && a.optionsText === b.optionsText
+  && a.selectedCatalogKey === b.selectedCatalogKey
+);
 
 const VIEW_TO_PATH = {
   home: '/',
@@ -59,14 +95,8 @@ function App() {
   const [activeNav, setActiveNav] = useState('home');
   const [showBrandHint, setShowBrandHint] = useState(false);
   const [submission, setSubmission] = useState(null);
-  const [productConfig, setProductConfig] = useState({
-    orderScope: '',
-    selectedFeature: '',
-    position: '',
-    productType: '',
-    adjustmentType: '',
-    options: []
-  });
+  const [productConfig, setProductConfig] = useState(createEmptyProductConfig);
+  const [quoteItems, setQuoteItems] = useState([]);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -75,6 +105,81 @@ function App() {
     consent: false
   });
   const [isHydrated, setIsHydrated] = useState(false);
+
+  const resolveSelectedCatalogKey = (config) => {
+    if (config.orderScope === 'complete') return 'COMPLETE';
+    if (config.orderScope === 'piece' && config.selectedFeature) return config.selectedFeature;
+    return '';
+  };
+
+  const buildQuotePayload = (config = productConfig) => {
+    const orderScopeLabel = config.orderScope === 'complete' ? 'Retroviseur complet' : 'Piece';
+    const optionsText = Array.isArray(config.options) && config.options.length
+      ? config.options.join(', ')
+      : 'Aucune';
+
+    return {
+      brand: selectedBrand?.name || '-',
+      model: selectedModel || '-',
+      year: selectedYear || '-',
+      orderScope: orderScopeLabel,
+      productType: config.productType || '-',
+      selectedFeature: config.selectedFeature || '-',
+      position: config.position || '-',
+      adjustmentType: config.adjustmentType || '-',
+      optionsText,
+      selectedCatalogKey: resolveSelectedCatalogKey(config),
+    };
+  };
+
+  const openWhatsAppQuote = () => {
+    const currentPayload = buildQuotePayload();
+    const allRequests = quoteItems.length && isSameQuoteItem(quoteItems[quoteItems.length - 1], currentPayload)
+      ? [...quoteItems]
+      : [...quoteItems, currentPayload];
+    const productMatrixLines = [
+      '| Produit | Selection |',
+      '|---------|-----------|',
+      ...PRODUCT_CATALOG_LIST.map((item) => {
+        const isSelected = currentPayload.selectedCatalogKey === item.key;
+        return `| ${sanitizeMessageCell(item.label)} | ${isSelected ? 'Oui' : 'Non'} |`;
+      }),
+    ];
+
+    const messageLines = allRequests.length === 1
+      ? [
+          'Bonjour, je veux une demande de devis pour 1 produit.',
+          `Marque: ${sanitizeMessageCell(currentPayload.brand)}`,
+          `Modele: ${sanitizeMessageCell(currentPayload.model)}`,
+          `Annee: ${sanitizeMessageCell(currentPayload.year)}`,
+          `Type de commande: ${sanitizeMessageCell(currentPayload.orderScope)}`,
+          `Produit: ${sanitizeMessageCell(currentPayload.productType)}`,
+          `Piece: ${sanitizeMessageCell(currentPayload.selectedFeature)}`,
+          `Cote: ${sanitizeMessageCell(currentPayload.position)}`,
+          `Type de reglage: ${sanitizeMessageCell(currentPayload.adjustmentType)}`,
+          `Options: ${sanitizeMessageCell(currentPayload.optionsText)}`,
+          '',
+          'Table produits selectionnes:',
+          ...productMatrixLines,
+        ]
+      : [
+          `Bonjour, je veux une demande de devis pour ${allRequests.length} produits.`,
+          '',
+          'Table des commandes:',
+          '| # | Marque | Modele | Annee | Commande | Produit | Piece | Cote | Reglage | Options |',
+          '|---|--------|--------|-------|----------|---------|-------|------|---------|---------|',
+          ...allRequests.map((item, index) => (
+            `| ${index + 1} | ${sanitizeMessageCell(item.brand)} | ${sanitizeMessageCell(item.model)} | ${sanitizeMessageCell(item.year)} | ${sanitizeMessageCell(item.orderScope)} | ${sanitizeMessageCell(item.productType)} | ${sanitizeMessageCell(item.selectedFeature)} | ${sanitizeMessageCell(item.position)} | ${sanitizeMessageCell(item.adjustmentType)} | ${sanitizeMessageCell(item.optionsText)} |`
+          )),
+          '',
+          'Table produits (dernier produit selectionne):',
+          ...productMatrixLines,
+        ];
+
+    const message = encodeURIComponent(messageLines.join('\n'));
+    setActiveNav('whatsapp');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+  };
 
   const navigateToView = (view, options = {}) => {
     const { categorySlug = null, replace = false } = options;
@@ -94,14 +199,8 @@ function App() {
     setSelectedModel(null);
     setSelectedYear(null);
     navigateToView('home');
-    setProductConfig({
-      orderScope: '',
-      selectedFeature: '',
-      position: '',
-      productType: '',
-      adjustmentType: '',
-      options: []
-    });
+    setProductConfig(createEmptyProductConfig());
+    setQuoteItems([]);
     setFormData({ fullName: '', email: '', phone: '', message: '', consent: false });
     setActiveNav('home');
     setShowBrandHint(false);
@@ -118,14 +217,8 @@ function App() {
     setSelectedBrand(brand);
     setSelectedModel(null);
     setSelectedYear(null);
-    setProductConfig({
-      orderScope: '',
-      selectedFeature: '',
-      position: '',
-      productType: '',
-      adjustmentType: '',
-      options: []
-    });
+    setProductConfig(createEmptyProductConfig());
+    setQuoteItems([]);
     navigateToView('models');
     setShowBrandHint(false);
   };
@@ -134,14 +227,8 @@ function App() {
   const handleModelSelect = (model) => {
     setSelectedModel(model);
     setSelectedYear(null);
-    setProductConfig({
-      orderScope: '',
-      selectedFeature: '',
-      position: '',
-      productType: '',
-      adjustmentType: '',
-      options: []
-    });
+    setProductConfig(createEmptyProductConfig());
+    setQuoteItems([]);
   };
 
   // Handle year selection
@@ -158,7 +245,20 @@ function App() {
   };
 
   const handleContinueToForm = () => {
-    navigateToView('form');
+    openWhatsAppQuote();
+  };
+
+  const handleContinueShopping = () => {
+    const currentPayload = buildQuotePayload();
+    setQuoteItems((prev) => {
+      const lastItem = prev[prev.length - 1];
+      if (lastItem && isSameQuoteItem(lastItem, currentPayload)) {
+        return prev;
+      }
+      return [...prev, currentPayload];
+    });
+    setProductConfig(createEmptyProductConfig());
+    navigateToView('product');
   };
 
   // Handle form input changes
@@ -201,8 +301,17 @@ function App() {
   // Handle WhatsApp click
   const handleWhatsAppClick = () => {
     setActiveNav('whatsapp');
-    // Mock WhatsApp link
-    window.open('https://wa.me/1234567890', '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank');
+  };
+
+  const handleWeChatClick = () => {
+    setActiveNav('wechat');
+    window.open(WECHAT_URL, '_blank');
+  };
+
+  const handleInstagramClick = () => {
+    setActiveNav('instagram');
+    window.open(INSTAGRAM_URL, '_blank');
   };
 
   // Handle Contact click
@@ -251,7 +360,8 @@ function App() {
     }
   };
 
-  const showBrandRail = ['home', 'models', 'years', 'product', 'form'].includes(currentView);
+  const showBrandRail = ['home', 'models', 'years', 'form'].includes(currentView)
+    || (currentView === 'product' && !productConfig.orderScope);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -273,6 +383,7 @@ function App() {
         if (saved?.model) setSelectedModel(saved.model);
         if (saved?.year) setSelectedYear(Number(saved.year));
         if (saved?.productConfig) setProductConfig(saved.productConfig);
+        if (Array.isArray(saved?.quoteItems)) setQuoteItems(saved.quoteItems);
         if (saved?.formData) setFormData(saved.formData);
         if (saved?.submission) setSubmission(saved.submission);
       }
@@ -300,6 +411,7 @@ function App() {
         model: selectedModel || null,
         year: selectedYear || null,
         productConfig,
+        quoteItems,
         formData,
         submission,
       };
@@ -307,7 +419,7 @@ function App() {
     } catch {
       // ignore storage errors
     }
-  }, [selectedBrand, selectedModel, selectedYear, productConfig, formData, submission, isHydrated]);
+  }, [selectedBrand, selectedModel, selectedYear, productConfig, quoteItems, formData, submission, isHydrated]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -403,8 +515,10 @@ function App() {
             model={selectedModel}
             year={selectedYear}
             productConfig={productConfig}
+            quoteItemsCount={quoteItems.length}
             onChange={handleProductConfigChange}
             onContinue={handleContinueToForm}
+            onContinueShopping={handleContinueShopping}
           />
         )}
 
@@ -424,7 +538,14 @@ function App() {
         )}
       </main>
 
-      <BottomNav active={activeNav} onHome={resetToHome} onWhatsApp={handleWhatsAppClick} onContact={handleContactClick} />
+      <BottomNav
+        active={activeNav}
+        onHome={resetToHome}
+        onWhatsApp={handleWhatsAppClick}
+        onWeChat={handleWeChatClick}
+        onInstagram={handleInstagramClick}
+        onContact={handleContactClick}
+      />
     </div>
   );
 }

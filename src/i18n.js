@@ -49,7 +49,9 @@ const translations = {
     product_piece_options_title: '3. Options pour la piece',
     product_piece_options_help: 'Options facultatives. Choisissez "Juste la piece" si vous ne voulez rien ajouter.',
     product_only_piece: 'Juste la piece (sans option)',
-    continue_form: 'Continuer vers le formulaire',
+    continue_form: 'Demande devis',
+    continue_shopping: 'Continuer vos achats',
+    quote_items_count: 'Produits ajoutes',
 
     form_title: 'Derniere etape : vos coordonnees',
     form_subtitle: 'Nous vous contacterons avec la meilleure option et le meilleur prix.',
@@ -116,7 +118,9 @@ const translations = {
     product_piece_options_title: '3. خيارات القطعة',
     product_piece_options_help: 'خيارات إضافية. اختر "القطعة فقط" إذا لا تريد إضافات.',
     product_only_piece: 'القطعة فقط (بدون خيارات)',
-    continue_form: 'متابعة إلى الاستمارة',
+    continue_form: 'طلب عرض سعر',
+    continue_shopping: 'مواصلة التسوق',
+    quote_items_count: 'المنتجات المضافة',
 
     form_title: 'الخطوة الأخيرة: معلوماتك',
     form_subtitle: 'سنتواصل معك بأفضل عرض وسعر.',

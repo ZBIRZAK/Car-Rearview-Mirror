@@ -276,7 +276,16 @@ function CatalogPreview({ focus, imageSrc }) {
   );
 }
 
-export default function Product({ brand, model, year, productConfig, onChange, onContinue }) {
+export default function Product({
+  brand,
+  model,
+  year,
+  productConfig,
+  quoteItemsCount = 0,
+  onChange,
+  onContinue,
+  onContinueShopping,
+}) {
   if (!year) return null;
   const { t, language } = useI18n();
 
@@ -403,11 +412,32 @@ export default function Product({ brand, model, year, productConfig, onChange, o
     onContinue();
   };
 
+  const handleContinueShoppingClick = () => {
+    if (!canContinue) {
+      setShowValidationHint(true);
+      return;
+    }
+    onContinueShopping();
+  };
+
   return (
     <div className="product-view">
-      <div className="view-header">
-        <h2>{t('product_title', 'Configurez votre demande')}</h2>
-        <p>{brand?.name} {model} ({year}) - {t('product_subtitle_suffix', 'suivez simplement les etapes ci-dessous')}</p>
+      <div className="view-header product-view-header">
+        {hasCatalogSelection ? (
+          <button
+            type="button"
+            className="product-back-icon-btn"
+            onClick={resetCatalogSelection}
+            aria-label={t('product_back_to_list', 'Retour a la liste des produits')}
+            title={t('product_back_to_list', 'Retour a la liste des produits')}
+          >
+            <span aria-hidden="true">←</span>
+          </button>
+        ) : null}
+        <div className="product-header-text">
+          <h2>{t('product_title', 'Configurez votre demande')}</h2>
+          <p>{brand?.name} {model} ({year}) </p>
+        </div>
       </div>
 
       <div className={`product-layout ${hasCatalogSelection ? '' : 'catalog-only'}`}>
@@ -415,7 +445,6 @@ export default function Product({ brand, model, year, productConfig, onChange, o
         <aside className="catalog-preview-overlay">
           {selectedCatalogCard ? (
             <div className="piece-slider-block product-image-preview-block" role="region" aria-label="Apercu produit selectionne">
-              <p className="piece-slider-title">Apercu du produit selectionne</p>
               <button type="button" className="product-image-trigger" onClick={openLightbox}>
                 <CatalogPreview focus={selectedCatalogCard.previewFocus} imageSrc={selectedPreviewImage} />
               </button>
@@ -460,11 +489,9 @@ export default function Product({ brand, model, year, productConfig, onChange, o
         </aside>
         ) : null}
 
-        <div className="product-config">
+        <div className={`product-config ${!hasCatalogSelection ? 'catalog-list-only' : ''} ${hasCatalogSelection ? 'product-config-single-block' : ''}`}>
           {!hasCatalogSelection ? (
-            <section className="config-group">
-              <h3>{t('product_catalog_title', 'Choisissez le produit a commander')}</h3>
-              <p className="config-help">{t('product_catalog_help', 'Selectionnez un produit pour ouvrir sa page d options.')}</p>
+            <section className="config-group product-catalog-section">
               <div className="order-scope-grid product-catalog-grid">
                 {productCatalogCards.map((item) => (
                   <button
@@ -537,6 +564,29 @@ export default function Product({ brand, model, year, productConfig, onChange, o
                     </button>
                   ))}
                 </div>
+              </div>
+            </section>
+          ) : null}
+
+          {hasCatalogSelection && isCompleteOrder ? (
+            <section className="config-group">
+              <h3>5. Options du retroviseur (optionnel)</h3>
+              <p className="config-help">Choisissez les options visibles pour votre retroviseur complet.</p>
+              <div className="feature-grid">
+                {featureCards.map((card) => (
+                  <button
+                    key={card.key}
+                    type="button"
+                    className={`feature-card ${selectedOptions.includes(card.key) ? 'active' : ''}`}
+                    onClick={() => toggleOption(card.key)}
+                  >
+                    <span className="feature-card-icon">
+                      <FeatureIcon type={card.icon} />
+                    </span>
+                    <span className="feature-card-title">{card.label}</span>
+                    <span className="feature-card-sub">{card.feature}</span>
+                  </button>
+                ))}
               </div>
             </section>
           ) : null}
@@ -615,29 +665,6 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             </section>
           ) : null}
 
-          {hasCatalogSelection && isCompleteOrder ? (
-            <section className="config-group">
-              <h3>5. Options du retroviseur (optionnel)</h3>
-              <p className="config-help">Choisissez les options visibles pour votre retroviseur complet.</p>
-              <div className="feature-grid">
-                {featureCards.map((card) => (
-                  <button
-                    key={card.key}
-                    type="button"
-                    className={`feature-card ${selectedOptions.includes(card.key) ? 'active' : ''}`}
-                    onClick={() => toggleOption(card.key)}
-                  >
-                    <span className="feature-card-icon">
-                      <FeatureIcon type={card.icon} />
-                    </span>
-                    <span className="feature-card-title">{card.label}</span>
-                    <span className="feature-card-sub">{card.feature}</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
           {/* <div className="advanced-toggle-wrap">
             <button
               type="button"
@@ -674,32 +701,41 @@ export default function Product({ brand, model, year, productConfig, onChange, o
             </section>
           ) : null} */}
 
-          {hasCatalogSelection ? (
-            <>
-              <button type="button" className="submit-button" onClick={handleContinue}>
-                {t('continue_form', 'Continuer vers le formulaire')}
-              </button>
-
-              {showValidationHint && !canContinue ? (
-                <p className="inline-hint-error">
-                  Merci de completer les champs requis avant de continuer.
-                </p>
-              ) : null}
-            </>
-          ) : null}
         </div>
       </div>
+
+      {hasCatalogSelection ? (
+        <>
+          <div className="product-actions-stack">
+            <button type="button" className="submit-button" onClick={handleContinue}>
+              {t('continue_form', 'Demande devis')}
+            </button>
+            <button type="button" className="secondary-button product-action-btn" onClick={handleContinueShoppingClick}>
+              {t('continue_shopping', 'Continuer vos achats')}
+            </button>
+            <p className="quote-items-counter">
+              {t('quote_items_count', 'Produits ajoutes')}: <strong>{quoteItemsCount}</strong>
+            </p>
+          </div>
+
+          {showValidationHint && !canContinue ? (
+            <p className="inline-hint-error">
+              Merci de completer les champs requis avant de continuer.
+            </p>
+          ) : null}
+        </>
+      ) : null}
 
       {isLightboxOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
           <button type="button" className="lightbox-close" onClick={closeLightbox} aria-label="Fermer la visionneuse">
             ×
           </button>
-          <div className="lightbox-controls">
+          {/* <div className="lightbox-controls">
             <button type="button" onClick={zoomOut}>-</button>
             <button type="button" onClick={resetZoom}>Reinitialiser</button>
             <button type="button" onClick={zoomIn}>+</button>
-          </div>
+          </div> */}
           <div className="lightbox-image-wrap">
             <img
               src={selectedPreviewImage}
