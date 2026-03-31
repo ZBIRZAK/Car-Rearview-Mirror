@@ -23,13 +23,6 @@ const FLOW_STORAGE_KEY = 'crm_flow_state_v1';
 const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '1234567890').replace(/\D/g, '');
 const WECHAT_URL = import.meta.env.VITE_WECHAT_URL || 'https://www.wechat.com/';
 const INSTAGRAM_URL = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/';
-const PRODUCT_CATALOG_LIST = [
-  { key: 'COMPLETE', label: 'Retroviseur complet' },
-  { key: 'GLASS', label: 'GLASS' },
-  { key: 'MIRROR', label: 'MIRROR' },
-  { key: 'COVER', label: 'COVER' },
-  { key: 'SINGLE', label: 'SINGLE' },
-];
 const createEmptyProductConfig = () => ({
   orderScope: '',
   selectedFeature: '',
@@ -137,46 +130,28 @@ function App() {
     const allRequests = quoteItems.length && isSameQuoteItem(quoteItems[quoteItems.length - 1], currentPayload)
       ? [...quoteItems]
       : [...quoteItems, currentPayload];
-    const productMatrixLines = [
-      '| Produit | Selection |',
-      '|---------|-----------|',
-      ...PRODUCT_CATALOG_LIST.map((item) => {
-        const isSelected = currentPayload.selectedCatalogKey === item.key;
-        return `| ${sanitizeMessageCell(item.label)} | ${isSelected ? 'Oui' : 'Non'} |`;
-      }),
-    ];
+    const messageLines = ['Bonjour, je veux une demande de devis.'];
 
-    const messageLines = allRequests.length === 1
-      ? [
-          'Bonjour, je veux une demande de devis pour 1 produit.',
-          `Marque: ${sanitizeMessageCell(currentPayload.brand)}`,
-          `Modele: ${sanitizeMessageCell(currentPayload.model)}`,
-          `Annee: ${sanitizeMessageCell(currentPayload.year)}`,
-          `Type de commande: ${sanitizeMessageCell(currentPayload.orderScope)}`,
-          `Produit: ${sanitizeMessageCell(currentPayload.productType)}`,
-          `Piece: ${sanitizeMessageCell(currentPayload.selectedFeature)}`,
-          `Cote: ${sanitizeMessageCell(currentPayload.position)}`,
-          `Type de reglage: ${sanitizeMessageCell(currentPayload.adjustmentType)}`,
-          `Options: ${sanitizeMessageCell(currentPayload.optionsText)}`,
-          '',
-          'Table produits selectionnes:',
-          ...productMatrixLines,
-        ]
-      : [
-          `Bonjour, je veux une demande de devis pour ${allRequests.length} produits.`,
-          '',
-          'Table des commandes:',
-          '| # | Marque | Modele | Annee | Commande | Produit | Piece | Cote | Reglage | Options |',
-          '|---|--------|--------|-------|----------|---------|-------|------|---------|---------|',
-          ...allRequests.map((item, index) => (
-            `| ${index + 1} | ${sanitizeMessageCell(item.brand)} | ${sanitizeMessageCell(item.model)} | ${sanitizeMessageCell(item.year)} | ${sanitizeMessageCell(item.orderScope)} | ${sanitizeMessageCell(item.productType)} | ${sanitizeMessageCell(item.selectedFeature)} | ${sanitizeMessageCell(item.position)} | ${sanitizeMessageCell(item.adjustmentType)} | ${sanitizeMessageCell(item.optionsText)} |`
-          )),
-          '',
-          'Table produits (dernier produit selectionne):',
-          ...productMatrixLines,
-        ];
+    allRequests.forEach((item, index) => {
+      messageLines.push('');
+      if (allRequests.length > 1) {
+        messageLines.push(`Produit ${index + 1}:`);
+      }
+      messageLines.push(`Marque: ${sanitizeMessageCell(item.brand)}`);
+      messageLines.push(`Modele: ${sanitizeMessageCell(item.model)}`);
+      messageLines.push(`Annee: ${sanitizeMessageCell(item.year)}`);
+      messageLines.push(`Type de commande: ${sanitizeMessageCell(item.orderScope)}`);
+      messageLines.push(`Produit: ${sanitizeMessageCell(item.productType)}`);
+      messageLines.push(`Piece: ${sanitizeMessageCell(item.selectedFeature)}`);
+      messageLines.push(`Cote: ${sanitizeMessageCell(item.position)}`);
+      messageLines.push(`Type de reglage: ${sanitizeMessageCell(item.adjustmentType)}`);
+      messageLines.push(`Options: ${sanitizeMessageCell(item.optionsText)}`);
+      if (allRequests.length > 1 && index < allRequests.length - 1) {
+        messageLines.push('------------------------------');
+      }
+    });
 
-    const message = encodeURIComponent(messageLines.join('\n'));
+    const message = encodeURIComponent(messageLines.join('\r\n'));
     setActiveNav('whatsapp');
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
   };
@@ -218,7 +193,6 @@ function App() {
     setSelectedModel(null);
     setSelectedYear(null);
     setProductConfig(createEmptyProductConfig());
-    setQuoteItems([]);
     navigateToView('models');
     setShowBrandHint(false);
   };
@@ -228,7 +202,6 @@ function App() {
     setSelectedModel(model);
     setSelectedYear(null);
     setProductConfig(createEmptyProductConfig());
-    setQuoteItems([]);
   };
 
   // Handle year selection
