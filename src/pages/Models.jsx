@@ -59,7 +59,7 @@ export default function Models({ brand, models, selectedModel, years, onModelSel
               ))}
             </div>
           </div>
-          {!selectedModel ? <p className="empty-state">Selectionnez un modele pour activer le choix d annee.</p> : null}
+          {/* {!selectedModel ? <p className="empty-state">Selectionnez un modele pour activer le choix d annee.</p> : null} */}
         </section>
 
         <section className="models-column">
