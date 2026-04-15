@@ -14,11 +14,11 @@ export default function ProductActions({
   return (
     <>
       <div className="product-actions-stack">
-        <button type="button" className="submit-button" onClick={onContinue}>
-          {t('continue_form', 'Demande devis')}
+        <button type="button" className="submit-button product-action-primary" onClick={onContinue}>
+          {t('product_price_btn', 'Prix')}
         </button>
-        <button type="button" className="secondary-button product-action-btn" onClick={onContinueShopping}>
-          {t('continue_shopping', 'Continuer vos achats')}
+        <button type="button" className="secondary-button product-action-btn product-action-secondary" onClick={onContinueShopping}>
+          {t('product_add_other_btn', "Ajouter d'autre produits")}
         </button>
         <p className="quote-items-counter">
           {t('quote_items_count', 'Produits ajoutes')}: <strong>{quoteItemsCount}</strong>

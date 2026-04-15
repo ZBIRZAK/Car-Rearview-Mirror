@@ -36,7 +36,7 @@ export default function Models({ brand, models, selectedModel, years, onModelSel
       </div>
 
       <div className="models-years-layout">
-        <section className={`years-column ${selectedModel ? '' : 'disabled'}`}>
+        <section className="years-column">
           {/* <h3 className="year-section-title">
             {selectedModel ? `Annees disponibles pour ${selectedModel}` : "Selectionnez d'abord un modele"}
           </h3> */}
@@ -59,7 +59,7 @@ export default function Models({ brand, models, selectedModel, years, onModelSel
               ))}
             </div>
           </div>
-          {/* {!selectedModel ? <p className="empty-state">Choisissez un modele a droite pour activer les annees.</p> : null} */}
+          {!selectedModel ? <p className="empty-state">Selectionnez un modele pour activer le choix d annee.</p> : null}
         </section>
 
         <section className="models-column">

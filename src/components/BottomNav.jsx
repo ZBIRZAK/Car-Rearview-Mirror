@@ -6,10 +6,10 @@ import instagramIcon from '../icons/facebook-messenger.png';
 import contactIcon from '../icons/contact.png';
 import { useI18n } from '../i18n';
 
-export default function BottomNav({ active, onHome, onWhatsApp, onWeChat, onInstagram, onContact }) {
+export default function BottomNav({ active, onHome, onWhatsApp, onWeChat, onInstagram, onContact, className = '' }) {
   const { t } = useI18n();
   return (
-    <div className="bottom-nav">
+    <div className={`bottom-nav ${className}`.trim()}>
       <button
         className={`nav-item ${active === 'home' ? 'active' : ''}`}
         onClick={onHome}

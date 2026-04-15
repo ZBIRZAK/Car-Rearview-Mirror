@@ -15,6 +15,16 @@ import { fetchProductAdminConfig, saveProductAdminConfig } from '../lib/productC
 import { COMPLETE_OPTION_DEFS, DEFAULT_PRODUCT_ADMIN_CONFIG, PIECE_OPTION_DEFS, PRODUCT_KEYS } from '../config/productAdminConfig';
 import { hasSupabaseConfig } from '../lib/supabaseClient';
 import { mockData } from '../data/mockData';
+import glaceOptionIcon from '../images/new-icones/Glace.png';
+import sousEclairageOptionIcon from '../images/new-icones/Sous-eclairage.png';
+import formeOptionIcon from '../images/new-icones/Forme.png';
+import chauffageOptionIcon from '../images/new-icones/Chauffage.png';
+import memoireOptionIcon from '../images/new-icones/Memoire.png';
+import antiEblouissementOptionIcon from '../images/new-icones/Anti-eblouissement.png';
+import cameraOptionIcon from '../images/new-icones/Camera.png';
+import angleMortOptionIcon from '../images/new-icones/Angle mort.png';
+import reglageIcon from '../images/new-icones/Reglage.png';
+import rabattementIcon from '../images/new-icones/rabattement.png';
 
 function formatDate(value) {
   if (!value) return '-';
@@ -38,6 +48,26 @@ const OPTION_ICON_MARK = {
   controller: '🎛️',
   blindSpot: '⚠️',
   camera: '📷',
+};
+
+const OPTION_IMAGE_BY_KEY = {
+  'Glace retroviseur': glaceOptionIcon,
+  'Eclairage sous retroviseur': sousEclairageOptionIcon,
+  'Forme retroviseur': formeOptionIcon,
+  'Chauffage glace': chauffageOptionIcon,
+  'Memoire position': memoireOptionIcon,
+  'Anti-eblouissement': antiEblouissementOptionIcon,
+  Camera: cameraOptionIcon,
+  'Angle mort': angleMortOptionIcon,
+  Heating: chauffageOptionIcon,
+  'Anti-light': antiEblouissementOptionIcon,
+  'Blind spot': angleMortOptionIcon,
+  'ELECTRIC / MANUAL': reglageIcon,
+  FOLDING: rabattementIcon,
+  Underlight: sousEclairageOptionIcon,
+  LAMP: sousEclairageOptionIcon,
+  CAMERA: cameraOptionIcon,
+  Memory: memoireOptionIcon,
 };
 
 export default function Dashboard({
@@ -73,6 +103,7 @@ export default function Dashboard({
   const [adminPassword, setAdminPassword] = useState('');
   const [authBusy, setAuthBusy] = useState(false);
   const [authError, setAuthError] = useState('');
+  const getOptionIconImage = (option) => OPTION_IMAGE_BY_KEY[option?.key] || OPTION_IMAGE_BY_KEY[option?.label] || '';
 
   const handleAdminSignIn = async (event) => {
     event.preventDefault();
@@ -991,7 +1022,14 @@ export default function Dashboard({
                       checked={(productAdminConfig.completeOptionKeys || []).includes(option.key)}
                       onChange={() => toggleCompleteOption(option.key)}
                     />
-                    <span>{OPTION_ICON_MARK[option.icon] || '▫️'} {option.label}</span>
+                    <span className="dashboard-option-label">
+                      {getOptionIconImage(option) ? (
+                        <img src={getOptionIconImage(option)} alt="" className="dashboard-option-icon" loading="lazy" decoding="async" />
+                      ) : (
+                        <span className="dashboard-option-emoji">{OPTION_ICON_MARK[option.icon] || '▫️'}</span>
+                      )}
+                      <span>{option.label}</span>
+                    </span>
                   </label>
                 ))}
               </div>
@@ -1006,7 +1044,14 @@ export default function Dashboard({
                         checked={(productAdminConfig.pieceOptionsByKey?.[pieceKey] || []).includes(option.key)}
                         onChange={() => togglePieceOption(pieceKey, option.key)}
                       />
-                      <span>{OPTION_ICON_MARK[option.icon] || '▫️'} {option.label}</span>
+                      <span className="dashboard-option-label">
+                        {getOptionIconImage(option) ? (
+                          <img src={getOptionIconImage(option)} alt="" className="dashboard-option-icon" loading="lazy" decoding="async" />
+                        ) : (
+                          <span className="dashboard-option-emoji">{OPTION_ICON_MARK[option.icon] || '▫️'}</span>
+                        )}
+                        <span>{option.label}</span>
+                      </span>
                     </label>
                   ))}
                 </div>

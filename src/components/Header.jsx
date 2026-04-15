@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import logo from '../logo/Test.svg';
 import { useI18n } from '../i18n';
 
-export default function Header({ onMenuClick }) {
+export default function Header({ onMenuClick, showProductBack = false, onProductBack }) {
   const [isOpen, setIsOpen] = useState(false);
   const { language, setLanguage, t } = useI18n();
 
@@ -30,9 +30,21 @@ export default function Header({ onMenuClick }) {
           <span></span>
         </button>
 
-        {/* Logo */}
+        {/* Logo / Product Back */}
         <div className="header-logo">
-          <img src={logo} alt="Logo" className="logo-img" />
+          {showProductBack ? (
+            <button
+              type="button"
+              className="product-back-icon-btn"
+              onClick={onProductBack}
+              aria-label={t('product_back_to_list', 'Retour a la liste des produits')}
+              title={t('product_back_to_list', 'Retour a la liste des produits')}
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+          ) : (
+            <img src={logo} alt="Logo" className="logo-img" />
+          )}
         </div>
 
         {/* Desktop Navigation */}

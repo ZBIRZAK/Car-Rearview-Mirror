@@ -1,7 +1,8 @@
 import completeMirrorImage1 from '../../images/retroviseur complet-BMW-X3-1.jpeg';
 import completeMirrorImage2 from '../../images/retroviseur complet-BMW-X3-2.jpeg';
+import heroImage from '../../images/hero-image.jpeg';
 
-export const productPreviewImage = 'https://images.pexels.com/photos/1686880/pexels-photo-1686880.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1800&h=1200';
+export const productPreviewImage = heroImage;
 
 const completePreviewImages = [completeMirrorImage1, completeMirrorImage2];
 
@@ -18,15 +19,11 @@ export const completeTypeLabel = 'Retroviseur complet (ensemble pret a monter)';
 
 export const featureCards = [
   { key: 'Glace retroviseur', label: 'Glace', feature: 'Verre du retroviseur', icon: 'glass' },
-  { key: 'Rabattement electrique', label: 'Rabattement', feature: 'Rabattement electrique', icon: 'folding' },
   { key: 'Eclairage sous retroviseur', label: 'Sous-eclairage', feature: 'Lumiere sous retroviseur', icon: 'underlight' },
   { key: 'Forme retroviseur', label: 'Forme', feature: 'Forme du retroviseur', icon: 'shape' },
   { key: 'Chauffage glace', label: 'Chauffage', feature: 'Chauffage de la glace', icon: 'heating' },
   { key: 'Memoire position', label: 'Memoire', feature: 'Memoire de position', icon: 'memory' },
-  { key: 'Reglage electrique', label: 'Reglage electrique', feature: 'Commande electrique', icon: 'adjustment' },
   { key: 'Anti-eblouissement', label: 'Anti-eblouissement', feature: 'Verre anti-lumiere', icon: 'antiLight' },
-  { key: 'Clignotant', label: 'Clignotant', feature: 'Lampe / indicateur', icon: 'lamp' },
-  { key: 'Commande directionnelle', label: 'Commande', feature: 'Controle du mouvement', icon: 'controller' },
   { key: 'Angle mort', label: 'Angle mort', feature: 'Detection angle mort', icon: 'blindSpot' },
   { key: 'Camera', label: 'Camera', feature: 'Camera integree', icon: 'camera' },
 ];

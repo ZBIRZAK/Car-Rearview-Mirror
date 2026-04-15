@@ -5,6 +5,7 @@ import CatalogPreview from './product/CatalogPreview';
 import ProductCatalogSection from './product/ProductCatalogSection';
 import ProductOptionsSection from './product/ProductOptionsSection';
 import ProductActions from './product/ProductActions';
+import productHeaderCarIcon from '../images/new-icones/car-icone-header.png';
 import {
   completeTypeLabel,
   defaultProductImagesByKey,
@@ -15,14 +16,6 @@ import {
   productCatalogCards,
   productPreviewImage,
 } from './product/constants';
-
-const adjustmentTypes = [
-  'Reglage manuel',
-  'Reglage electrique',
-  'Rabattable manuel',
-  'Rabattable electrique',
-  'Rabattement automatique',
-];
 
 export default function Product({
   brand,
@@ -189,8 +182,8 @@ export default function Product({
   );
 
   const positionLabel = (item) => {
-    if (item === 'Cote conducteur') return t('side_driver', 'Cote conducteur');
-    if (item === 'Cote passager') return t('side_passenger', 'Cote passager');
+    if (item === 'Cote conducteur') return t('side_driver', 'Conducteur');
+    if (item === 'Cote passager') return t('side_passenger', 'Passager');
     return item;
   };
 
@@ -222,21 +215,18 @@ export default function Product({
   return (
     <div className="product-view">
       <div className="view-header product-view-header">
-        {hasCatalogSelection ? (
-          <button
-            type="button"
-            className="product-back-icon-btn"
-            onClick={resetCatalogSelection}
-            aria-label={t('product_back_to_list', 'Retour a la liste des produits')}
-            title={t('product_back_to_list', 'Retour a la liste des produits')}
-          >
-            <span aria-hidden="true">←</span>
-          </button>
-        ) : null}
-        {/* <div className="product-header-text">
-          <h2>{t('product_title', 'Configurez votre demande')}</h2>
-          <p>{brand?.name} {model} ({year}) </p>
-        </div> */}
+        <img
+          src={productHeaderCarIcon}
+          alt=""
+          className="product-header-icon"
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="product-header-text">
+          <h2>{[brand?.name, model, year].filter(Boolean).join('-')}</h2>
+          {/* <p>{t('product_title', 'Configurez votre demande')}</p> */}
+        </div>
       </div>
 
       <div className={`product-layout ${hasCatalogSelection ? '' : 'catalog-only'}`}>
@@ -298,7 +288,6 @@ export default function Product({
             pieceOptionIconByLabel={pieceOptionIconByLabel}
             isCompleteOrder={isCompleteOrder}
             visibleFeatureCards={visibleFeatureCards}
-            adjustmentTypes={adjustmentTypes}
           />
         </div>
       </div>

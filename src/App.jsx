@@ -197,9 +197,12 @@ function App() {
   }, [catalogData.modelsByBrand, selectedBrandId]);
 
   const availableYears = useMemo(() => {
-    if (!selectedBrandId || !selectedModel) return [];
+    if (!selectedBrandId) return [];
     const yearMap = catalogData.yearsByBrandModel[String(selectedBrandId)] || {};
-    return yearMap[selectedModel] || [];
+    if (selectedModel) return yearMap[selectedModel] || [];
+    return Array.from(new Set(Object.values(yearMap).flat().map((year) => Number(year))))
+      .filter((year) => Number.isFinite(year))
+      .sort((a, b) => b - a);
   }, [catalogData.yearsByBrandModel, selectedBrandId, selectedModel]);
 
   const resolveSelectedCatalogKey = (config) => {
@@ -447,8 +450,14 @@ function App() {
     await signOutSupabase();
   };
 
+  const handleHeaderProductBack = () => {
+    setProductConfig(createEmptyProductConfig());
+  };
+
   const showBrandRail = ['home', 'models', 'years', 'form'].includes(currentView)
     || (currentView === 'product' && !productConfig.orderScope);
+  const showHeaderProductBack = currentView === 'product' && Boolean(productConfig.orderScope);
+  const isSingleProductSelection = currentView === 'product' && Boolean(productConfig.orderScope);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -667,8 +676,12 @@ function App() {
   }, [currentView, selectedBrand, selectedModel, selectedYear, currentCategorySlug]);
 
   return (
-    <div className={`app ${language === 'ar' ? 'lang-ar' : 'lang-fr'}`}>
-      <Header onMenuClick={handleMenuClick} />
+    <div className={`app ${language === 'ar' ? 'lang-ar' : 'lang-fr'}${isSingleProductSelection ? ' single-product-nav-offset' : ''}`}>
+      <Header
+        onMenuClick={handleMenuClick}
+        showProductBack={showHeaderProductBack}
+        onProductBack={handleHeaderProductBack}
+      />
       {showBrandRail ? (
         <BrandSelector
           brands={catalogData.brands}
@@ -760,6 +773,7 @@ function App() {
       </main>
 
       <BottomNav
+        className={isSingleProductSelection ? 'bottom-nav-single-product' : ''}
         active={activeNav}
         onHome={resetToHome}
         onWhatsApp={handleWhatsAppClick}

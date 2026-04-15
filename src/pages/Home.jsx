@@ -1,14 +1,29 @@
 import React from 'react';
 import { useI18n } from '../i18n';
+import heroMirrorImage from '../images/hero-image.jpeg';
 
-const heroMirrorImage = 'https://images.pexels.com/photos/1686880/pexels-photo-1686880.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1800&h=1200';
 const featuredOneImage = 'https://images.pexels.com/photos/17168615/pexels-photo-17168615.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
 const featuredTwoImage = 'https://images.pexels.com/photos/15360851/pexels-photo-15360851.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
 const featuredThreeImage = 'https://images.pexels.com/photos/12152813/pexels-photo-12152813.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
 const mechanicContacts = [
-  { name: 'Garage Atlas Auto', address: '12 Rue Al Massira, Casablanca', phone: '+212612345678' },
-  { name: 'Meca Express', address: '45 Avenue Hassan II, Rabat', phone: '+212623456789' },
-  { name: 'Service Auto Nord', address: '8 Boulevard Mohammed V, Tanger', phone: '+212634567890' },
+  {
+    name: 'Garage Atlas Auto',
+    address: '12 Rue Al Massira, Casablanca',
+    phone: '+212612345678',
+    image: 'https://images.pexels.com/photos/13065690/pexels-photo-13065690.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=700&h=500',
+  },
+  {
+    name: 'Meca Express',
+    address: '45 Avenue Hassan II, Rabat',
+    phone: '+212623456789',
+    image: 'https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=700&h=500',
+  },
+  {
+    name: 'Service Auto Nord',
+    address: '8 Boulevard Mohammed V, Tanger',
+    phone: '+212634567890',
+    image: 'https://images.pexels.com/photos/3806249/pexels-photo-3806249.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=700&h=500',
+  },
 ];
 
 function WhyLineIcon({ type }) {
@@ -52,6 +67,12 @@ export default function Home({ onStartSelection, showBrandHint }) {
         <div className="hero-section">
           <div className="hero-image">
             <img src={heroMirrorImage} alt="Retroviseur principal" className="hero-photo" />
+            <div className="hero-image-overlay-text" aria-hidden="true">
+              <span className="hero-overlay-line hero-overlay-white">VOTRE</span>
+              <span className="hero-overlay-line hero-overlay-gold">RETROVISEUR,</span>
+              <span className="hero-overlay-line hero-overlay-white">NOTRE</span>
+              <span className="hero-overlay-line hero-overlay-gold">EXPERTISE.</span>
+            </div>
           </div>
           <div className="hero-text">
             <h1 className="app-title">{t('home_title', 'Retroviseurs Auto Premium')}</h1>
@@ -79,6 +100,7 @@ export default function Home({ onStartSelection, showBrandHint }) {
               const waPhone = contact.phone.replace(/\D/g, '');
               return (
                 <article key={contact.phone} className="mechanic-contact-card">
+                  <img src={contact.image} alt={contact.name} className="mechanic-contact-image" />
                   <h3>{contact.name}</h3>
                   <p>{contact.address}</p>
                   <p className="mechanic-contact-phone">{contact.phone}</p>
