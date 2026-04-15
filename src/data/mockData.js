@@ -17,20 +17,6 @@ export const mockData = {
     { id: 7, name: 'Volkswagen', icon: volkswagenImage, isImage: true },
     { id: 9, name: 'Nissan', icon: nissanImage, isImage: true },
     { id: 10, name: 'Renault', icon: renaultImage, isImage: true },
-    { id: 11, name: 'Toyota', icon: toyotaImage, isImage: true },
-    { id: 12, name: 'BMW', icon: bmwImage, isImage: true  },
-    { id: 13, name: 'Mercedes', icon: mercedesImage, isImage: true },
-    { id: 14, name: 'Audi', icon: audiImage, isImage: true },
-    { id: 15, name: 'hyundai', icon: hyundaiImage, isImage: true },
-    { id: 17, name: 'Volkswagen', icon: volkswagenImage, isImage: true },
-    { id: 19, name: 'Nissan', icon: nissanImage, isImage: true },
-    { id: 20, name: 'Renault', icon: renaultImage, isImage: true },
-    { id: 21, name: 'Mercedes', icon: mercedesImage, isImage: true },
-    { id: 22, name: 'Audi', icon: audiImage, isImage: true },
-    { id: 23, name: 'hyundai', icon: hyundaiImage, isImage: true },
-    { id: 24, name: 'Volkswagen', icon: volkswagenImage, isImage: true },
-    { id: 25, name: 'Nissan', icon: nissanImage, isImage: true },
-    { id: 26, name: 'Renault', icon: renaultImage, isImage: true },
   ],
   models: {
     1: ['Camry', 'Corolla', 'RAV4', 'Prius', 'Highlander', "test"], // Toyota
@@ -43,8 +29,6 @@ export const mockData = {
     8: ['Altima', 'Sentra', 'Rogue', 'Pathfinder', 'Maxima'], // Nissan
     9: ['Camry', 'Corolla', 'RAV4', 'Prius', 'Highlander'], // Toyota
     10: ['3 Series', '5 Series', 'X3', 'X5', 'i3'], // BMW
-
-
   },
   years: Array.from({ length: 20 }, (_, i) => 2024 - i)
 };

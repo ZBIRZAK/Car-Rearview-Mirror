@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import { mockData } from './data/mockData';
 import BrandSelector from './components/BrandSelector';
@@ -18,6 +18,16 @@ import { applySeo } from './seo';
 import { useI18n } from './i18n';
 import Dashboard from './pages/Dashboard';
 import { createRequest } from './lib/requestsApi';
+import { fetchCatalogSnapshot } from './lib/catalogApi';
+import { fetchProductAdminConfig } from './lib/productConfigApi';
+import { DEFAULT_PRODUCT_ADMIN_CONFIG } from './config/productAdminConfig';
+import {
+  getSupabaseSession,
+  hasSupabaseConfig,
+  onSupabaseAuthStateChange,
+  signInWithEmailPassword,
+  signOutSupabase,
+} from './lib/supabaseClient';
 
 const FLOW_STORAGE_KEY = 'crm_flow_state_v1';
 const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '1234567890').replace(/\D/g, '');
@@ -31,6 +41,70 @@ const createEmptyProductConfig = () => ({
   adjustmentType: '',
   options: []
 });
+
+function createFallbackCatalog() {
+  const yearsByBrandModel = {};
+  Object.entries(mockData.models).forEach(([brandId, modelList]) => {
+    yearsByBrandModel[brandId] = {};
+    modelList.forEach((modelName) => {
+      yearsByBrandModel[brandId][modelName] = [...mockData.years];
+    });
+  });
+  return {
+    brands: mockData.brands,
+    modelsByBrand: mockData.models,
+    yearsByBrandModel,
+  };
+}
+
+function createCatalogFromSnapshot(snapshot, fallbackYears = mockData.years) {
+  const modelsByBrand = {};
+  const yearsByBrandModel = {};
+  const modelKeyById = {};
+
+  (snapshot.brands || []).forEach((brand) => {
+    const brandId = String(brand.id);
+    modelsByBrand[brandId] = [];
+    yearsByBrandModel[brandId] = {};
+  });
+
+  (snapshot.models || []).forEach((model) => {
+    const brandId = String(model.brand_id);
+    const modelName = model.name;
+    if (!modelsByBrand[brandId]) modelsByBrand[brandId] = [];
+    if (!yearsByBrandModel[brandId]) yearsByBrandModel[brandId] = {};
+    if (!modelsByBrand[brandId].includes(modelName)) {
+      modelsByBrand[brandId].push(modelName);
+    }
+    yearsByBrandModel[brandId][modelName] = [];
+    modelKeyById[model.id] = { brandId, modelName };
+  });
+
+  (snapshot.years || []).forEach((row) => {
+    const target = modelKeyById[row.model_id];
+    if (!target) return;
+    const currentYears = yearsByBrandModel[target.brandId][target.modelName] || [];
+    yearsByBrandModel[target.brandId][target.modelName] = [...currentYears, row.year];
+  });
+
+  Object.keys(modelsByBrand).forEach((brandId) => {
+    modelsByBrand[brandId].forEach((modelName) => {
+      const years = yearsByBrandModel[brandId][modelName] || [];
+      yearsByBrandModel[brandId][modelName] = years.length ? years : [...fallbackYears];
+    });
+  });
+
+  return {
+    brands: (snapshot.brands || []).map((brand) => ({
+      id: String(brand.id),
+      name: brand.name,
+      icon: brand.logo_url || String(brand.name || '?').slice(0, 1).toUpperCase(),
+      isImage: Boolean(brand.logo_url),
+    })),
+    modelsByBrand,
+    yearsByBrandModel,
+  };
+}
 
 const sanitizeMessageCell = (value) => String(value ?? '-')
   .replace(/\|/g, '/')
@@ -79,8 +153,14 @@ function resolveRoute(pathname) {
 function App() {
   const { language } = useI18n();
   const mainContentRef = useRef(null);
+  const fallbackCatalog = useRef(createFallbackCatalog()).current;
   // State management
-  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [catalogData, setCatalogData] = useState(
+    hasSupabaseConfig
+      ? { brands: [], modelsByBrand: {}, yearsByBrandModel: {} }
+      : fallbackCatalog
+  );
+  const [selectedBrandId, setSelectedBrandId] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [currentView, setCurrentView] = useState('home'); // 'home', 'models', 'years', 'product', 'form', 'success'
@@ -98,6 +178,29 @@ function App() {
     consent: false
   });
   const [isHydrated, setIsHydrated] = useState(false);
+  const [catalogResolved, setCatalogResolved] = useState(false);
+  const [catalogLoading, setCatalogLoading] = useState(hasSupabaseConfig);
+  const [productAdminConfig, setProductAdminConfig] = useState(null);
+  const [productAdminConfigLoading, setProductAdminConfigLoading] = useState(false);
+  const [adminSession, setAdminSession] = useState(null);
+  const [adminAuthLoading, setAdminAuthLoading] = useState(hasSupabaseConfig);
+  const productConfigCacheRef = useRef({});
+
+  const selectedBrand = useMemo(
+    () => catalogData.brands.find((brand) => String(brand.id) === String(selectedBrandId)) || null,
+    [catalogData.brands, selectedBrandId]
+  );
+
+  const availableModels = useMemo(() => {
+    if (!selectedBrandId) return [];
+    return catalogData.modelsByBrand[String(selectedBrandId)] || [];
+  }, [catalogData.modelsByBrand, selectedBrandId]);
+
+  const availableYears = useMemo(() => {
+    if (!selectedBrandId || !selectedModel) return [];
+    const yearMap = catalogData.yearsByBrandModel[String(selectedBrandId)] || {};
+    return yearMap[selectedModel] || [];
+  }, [catalogData.yearsByBrandModel, selectedBrandId, selectedModel]);
 
   const resolveSelectedCatalogKey = (config) => {
     if (config.orderScope === 'complete') return 'COMPLETE';
@@ -154,6 +257,9 @@ function App() {
     const message = encodeURIComponent(messageLines.join('\r\n'));
     setActiveNav('whatsapp');
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+    // Start a fresh quote after sending so old items are not mixed into next request.
+    setQuoteItems([]);
+    setProductConfig(createEmptyProductConfig());
   };
 
   const navigateToView = (view, options = {}) => {
@@ -170,7 +276,7 @@ function App() {
 
   // Reset all selections and return to home
   const resetToHome = () => {
-    setSelectedBrand(null);
+    setSelectedBrandId(null);
     setSelectedModel(null);
     setSelectedYear(null);
     navigateToView('home');
@@ -189,7 +295,7 @@ function App() {
 
   // Handle brand selection
   const handleBrandSelect = (brand) => {
-    setSelectedBrand(brand);
+    setSelectedBrandId(String(brand.id));
     setSelectedModel(null);
     setSelectedYear(null);
     setProductConfig(createEmptyProductConfig());
@@ -294,7 +400,7 @@ function App() {
   };
 
   const handleStartSelection = () => {
-    if (selectedBrand) {
+    if (selectedBrandId) {
       navigateToView('models');
       return;
     }
@@ -307,30 +413,38 @@ function App() {
       resetToHome();
     } else if (page === 'about') {
       navigateToView('about');
-      setSelectedBrand(null);
+      setSelectedBrandId(null);
       setSelectedModel(null);
       setSelectedYear(null);
     } else if (page === 'contact') {
       navigateToView('contact');
-      setSelectedBrand(null);
+      setSelectedBrandId(null);
       setSelectedModel(null);
       setSelectedYear(null);
     } else if (page === 'terms') {
       navigateToView('terms');
-      setSelectedBrand(null);
+      setSelectedBrandId(null);
       setSelectedModel(null);
       setSelectedYear(null);
     } else if (page === 'privacy') {
       navigateToView('privacy');
-      setSelectedBrand(null);
+      setSelectedBrandId(null);
       setSelectedModel(null);
       setSelectedYear(null);
     } else if (page === 'dashboard') {
       navigateToView('dashboard');
-      setSelectedBrand(null);
+      setSelectedBrandId(null);
       setSelectedModel(null);
       setSelectedYear(null);
     }
+  };
+
+  const handleAdminLogin = async (email, password) => {
+    await signInWithEmailPassword(email, password);
+  };
+
+  const handleAdminLogout = async () => {
+    await signOutSupabase();
   };
 
   const showBrandRail = ['home', 'models', 'years', 'form'].includes(currentView)
@@ -350,8 +464,7 @@ function App() {
       if (raw) {
         const saved = JSON.parse(raw);
         if (saved?.brandId) {
-          const restoredBrand = mockData.brands.find((brand) => brand.id === saved.brandId) || null;
-          setSelectedBrand(restoredBrand);
+          setSelectedBrandId(String(saved.brandId));
         }
         if (saved?.model) setSelectedModel(saved.model);
         if (saved?.year) setSelectedYear(Number(saved.year));
@@ -380,7 +493,7 @@ function App() {
     if (!isHydrated) return;
     try {
       const payload = {
-        brandId: selectedBrand?.id || null,
+        brandId: selectedBrandId || null,
         model: selectedModel || null,
         year: selectedYear || null,
         productConfig,
@@ -392,7 +505,7 @@ function App() {
     } catch {
       // ignore storage errors
     }
-  }, [selectedBrand, selectedModel, selectedYear, productConfig, quoteItems, formData, submission, isHydrated]);
+  }, [selectedBrandId, selectedModel, selectedYear, productConfig, quoteItems, formData, submission, isHydrated]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -403,25 +516,146 @@ function App() {
     }
 
     // Prevent blank screens after refresh by redirecting to the nearest valid step.
-    if (currentView === 'models' && !selectedBrand) {
+    if (currentView === 'models' && !selectedBrandId) {
       navigateToView('home', { replace: true });
       return;
     }
 
     if (currentView === 'product' && !selectedYear) {
-      navigateToView(selectedModel ? 'models' : (selectedBrand ? 'models' : 'home'), { replace: true });
+      navigateToView(selectedModel ? 'models' : (selectedBrandId ? 'models' : 'home'), { replace: true });
       return;
     }
 
     if (currentView === 'form' && !selectedYear) {
-      navigateToView(selectedModel ? 'models' : (selectedBrand ? 'models' : 'home'), { replace: true });
+      navigateToView(selectedModel ? 'models' : (selectedBrandId ? 'models' : 'home'), { replace: true });
       return;
     }
 
     if (currentView === 'success' && !submission) {
       navigateToView('home', { replace: true });
     }
-  }, [currentView, selectedBrand, selectedModel, selectedYear, submission, isHydrated]);
+  }, [currentView, selectedBrandId, selectedModel, selectedYear, submission, isHydrated]);
+
+  useEffect(() => {
+    let active = true;
+    if (!hasSupabaseConfig) {
+      setAdminAuthLoading(false);
+      return undefined;
+    }
+    const loadSession = async () => {
+      try {
+        const session = await getSupabaseSession();
+        if (active) setAdminSession(session);
+      } finally {
+        if (active) setAdminAuthLoading(false);
+      }
+    };
+    loadSession();
+    const unsubscribe = onSupabaseAuthStateChange((session) => {
+      if (!active) return;
+      setAdminSession(session);
+      setAdminAuthLoading(false);
+    });
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadCatalog = async () => {
+      if (hasSupabaseConfig) setCatalogLoading(true);
+      try {
+        const snapshot = await fetchCatalogSnapshot();
+        if (cancelled) return;
+        const mapped = createCatalogFromSnapshot(snapshot);
+        if (mapped.brands.length) setCatalogData(mapped);
+      } catch {
+        // Keep fallback catalog when Supabase catalog is unavailable.
+        if (!cancelled) setCatalogData(fallbackCatalog);
+      } finally {
+        if (!cancelled) {
+          setCatalogResolved(true);
+          setCatalogLoading(false);
+        }
+      }
+    };
+    loadCatalog();
+    return () => {
+      cancelled = true;
+    };
+  }, [fallbackCatalog]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadProductConfig = async () => {
+      if (!selectedBrandId || !selectedModel || !selectedYear) {
+        setProductAdminConfig(DEFAULT_PRODUCT_ADMIN_CONFIG);
+        setProductAdminConfigLoading(false);
+        return;
+      }
+      const scopeKey = `${selectedBrandId}__${selectedModel}__${selectedYear}`;
+      const cachedConfig = productConfigCacheRef.current[scopeKey];
+      if (cachedConfig) {
+        setProductAdminConfig(cachedConfig);
+        setProductAdminConfigLoading(false);
+      } else {
+        setProductAdminConfigLoading(true);
+      }
+      try {
+        const config = await fetchProductAdminConfig({
+          brandId: selectedBrandId,
+          model: selectedModel,
+          year: selectedYear,
+        });
+        if (!cancelled && config) {
+          setProductAdminConfig(config);
+          productConfigCacheRef.current[scopeKey] = config;
+        }
+      } catch {
+        if (!cancelled) {
+          const fallback = cachedConfig || DEFAULT_PRODUCT_ADMIN_CONFIG;
+          setProductAdminConfig(fallback);
+          productConfigCacheRef.current[scopeKey] = fallback;
+        }
+      } finally {
+        if (!cancelled) setProductAdminConfigLoading(false);
+      }
+    };
+    loadProductConfig();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedBrandId, selectedModel, selectedYear]);
+
+  useEffect(() => {
+    if (!catalogResolved) return;
+    if (!selectedBrandId) return;
+    const brandExists = catalogData.brands.some((brand) => String(brand.id) === String(selectedBrandId));
+    if (!brandExists) {
+      setSelectedBrandId(null);
+      setSelectedModel(null);
+      setSelectedYear(null);
+    }
+  }, [catalogData.brands, selectedBrandId, catalogResolved]);
+
+  useEffect(() => {
+    if (!catalogResolved) return;
+    if (!selectedModel) return;
+    if (!availableModels.includes(selectedModel)) {
+      setSelectedModel(null);
+      setSelectedYear(null);
+    }
+  }, [availableModels, selectedModel, catalogResolved]);
+
+  useEffect(() => {
+    if (!catalogResolved) return;
+    if (!selectedYear) return;
+    if (!availableYears.includes(selectedYear)) {
+      setSelectedYear(null);
+    }
+  }, [availableYears, selectedYear, catalogResolved]);
 
   useEffect(() => {
     applySeo(currentView, {
@@ -437,14 +671,18 @@ function App() {
       <Header onMenuClick={handleMenuClick} />
       {showBrandRail ? (
         <BrandSelector
-          brands={mockData.brands}
+          brands={catalogData.brands}
           selectedBrand={selectedBrand}
           onSelect={handleBrandSelect}
-          disabled={false}
+          disabled={catalogLoading}
         />
       ) : null}
 
       <main ref={mainContentRef} className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
+        {catalogLoading && (currentView === 'home' || currentView === 'models' || currentView === 'years') ? (
+          <div className="loading-card">Chargement du catalogue...</div>
+        ) : null}
+
         {currentView === 'home' && <Home onStartSelection={handleStartSelection} showBrandHint={showBrandHint} />}
 
         {currentView === 'about' && <About />}
@@ -455,14 +693,22 @@ function App() {
 
         {currentView === 'privacy' && <Privacy />}
 
-        {currentView === 'dashboard' && <Dashboard />}
+        {currentView === 'dashboard' && (
+          <Dashboard
+            isAdminAuthenticated={Boolean(adminSession?.user)}
+            authLoading={adminAuthLoading}
+            adminUserEmail={adminSession?.user?.email || ''}
+            onAdminLogin={handleAdminLogin}
+            onAdminLogout={handleAdminLogout}
+          />
+        )}
 
         {(currentView === 'models' || currentView === 'years') && (
           <Models
             brand={selectedBrand}
-            models={mockData.models[selectedBrand.id] || []}
+            models={availableModels}
             selectedModel={selectedModel}
-            years={mockData.years}
+            years={availableYears}
             onModelSelect={handleModelSelect}
             onYearSelect={handleYearSelect}
             onBack={() => navigateToView('home')}
@@ -488,6 +734,8 @@ function App() {
             model={selectedModel}
             year={selectedYear}
             productConfig={productConfig}
+            productAdminConfig={productAdminConfig}
+            productConfigLoading={productAdminConfigLoading}
             quoteItemsCount={quoteItems.length}
             onChange={handleProductConfigChange}
             onContinue={handleContinueToForm}

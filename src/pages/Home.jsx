@@ -5,6 +5,11 @@ const heroMirrorImage = 'https://images.pexels.com/photos/1686880/pexels-photo-1
 const featuredOneImage = 'https://images.pexels.com/photos/17168615/pexels-photo-17168615.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
 const featuredTwoImage = 'https://images.pexels.com/photos/15360851/pexels-photo-15360851.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
 const featuredThreeImage = 'https://images.pexels.com/photos/12152813/pexels-photo-12152813.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
+const mechanicContacts = [
+  { name: 'Garage Atlas Auto', address: '12 Rue Al Massira, Casablanca', phone: '+212612345678' },
+  { name: 'Meca Express', address: '45 Avenue Hassan II, Rabat', phone: '+212623456789' },
+  { name: 'Service Auto Nord', address: '8 Boulevard Mohammed V, Tanger', phone: '+212634567890' },
+];
 
 function WhyLineIcon({ type }) {
   if (type === 'shield') {
@@ -45,13 +50,16 @@ export default function Home({ onStartSelection, showBrandHint }) {
       <div className="home-content">
         {/* Hero Section */}
         <div className="hero-section">
+          <div className="hero-image">
+            <img src={heroMirrorImage} alt="Retroviseur principal" className="hero-photo" />
+          </div>
           <div className="hero-text">
             <h1 className="app-title">{t('home_title', 'Retroviseurs Auto Premium')}</h1>
             <p className="app-description">
               {t('home_desc', 'Trouvez le retroviseur ideal pour votre vehicule. Produits de qualite, prix competitifs et livraison rapide.')}
             </p>
             <button className="cta-button" onClick={onStartSelection}>{t('home_cta', 'Choisir ma marque')}</button>
-            <p className="time-estimate">{t('home_time', 'Temps estime : 30 secondes')}</p>
+            {/* <p className="time-estimate">{t('home_time', 'Temps estime : 30 secondes')}</p> */}
             {showBrandHint ? (
               <p className="brand-hint">{t('home_hint', 'Commencez par choisir une marque dans la barre laterale droite.')}</p>
             ) : null}
@@ -61,10 +69,28 @@ export default function Home({ onStartSelection, showBrandHint }) {
               <span>Support 24/7</span>
             </div>
           </div>
-          <div className="hero-image">
-            <img src={heroMirrorImage} alt="Retroviseur principal" className="hero-photo" />
-          </div>
         </div>
+
+        <section className="mechanic-contacts-section" aria-label="Contacts mecaniciens">
+          <h2 className="section-title">Contacts mecaniciens</h2>
+          <p className="mechanic-contacts-intro">Besoin d'aide pour le montage ? Contactez un mecanicien partenaire.</p>
+          <div className="mechanic-contacts-grid">
+            {mechanicContacts.map((contact) => {
+              const waPhone = contact.phone.replace(/\D/g, '');
+              return (
+                <article key={contact.phone} className="mechanic-contact-card">
+                  <h3>{contact.name}</h3>
+                  <p>{contact.address}</p>
+                  <p className="mechanic-contact-phone">{contact.phone}</p>
+                  <div className="mechanic-contact-actions">
+                    <a href={`tel:${contact.phone}`}>Appeler</a>
+                    <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer">WhatsApp</a>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Featured Products */}
         <div className="featured-section">
