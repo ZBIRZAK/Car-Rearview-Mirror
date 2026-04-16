@@ -93,12 +93,38 @@ export default function ProductOptionsSection({
   const selectRabattement = (value) => {
     onChange('adjustmentType', composeAdjustmentType(selectedReglage, value));
   };
+  const isGlassPiece = isPieceOrder && selectedFeatureKey === 'GLASS';
+  const isCoverPiece = isPieceOrder && selectedFeatureKey === 'COVER';
+  const isSinglePiece = isPieceOrder && selectedFeatureKey === 'SINGLE';
+  const lowerPieceOptions = (pieceSuggestedOptions || []).map((item) => String(item).toLowerCase());
+  const COVER_COLOR_CANDIDATES = ['noir', 'blanc', 'gris', 'bleu', 'rouge', 'carbon'];
+  const mappedCoverColors = (pieceSuggestedOptions || []).filter((item) => COVER_COLOR_CANDIDATES.includes(String(item).toLowerCase()));
+  const coverColorOptions = mappedCoverColors.length ? mappedCoverColors : ['Noir', 'Blanc', 'Gris', 'Bleu', 'Rouge', 'Carbon'];
+  const hasBatmanOption = lowerPieceOptions.includes('batman');
+  const selectedCoverColor = coverColorOptions.find((item) => selectedOptions.some((opt) => String(opt).toLowerCase() === String(item).toLowerCase())) || '';
+  const isBatmanSelected = selectedOptions.some((item) => String(item).toLowerCase() === 'batman');
+  const hasDinamicOption = lowerPieceOptions.includes('dinamic');
+  const isDinamicSelected = selectedOptions.some((item) => String(item).toLowerCase() === 'dinamic');
+  const mappedSingleColors = (pieceSuggestedOptions || []).filter((item) => !['dinamic'].includes(String(item).toLowerCase()));
+  const singleColorOptions = mappedSingleColors.length ? mappedSingleColors : ['Blanc', 'Noir'];
+  const selectedSingleColor = singleColorOptions.find((item) => selectedOptions.some((opt) => String(opt).toLowerCase() === String(item).toLowerCase())) || '';
+  const colorClassToken = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const selectedPositions = Array.isArray(productConfig.position)
+    ? productConfig.position
+    : (productConfig.position ? [productConfig.position] : []);
+
+  const togglePosition = (item) => {
+    const nextPositions = selectedPositions.includes(item)
+      ? selectedPositions.filter((value) => value !== item)
+      : [...selectedPositions, item];
+    onChange('position', nextPositions);
+  };
 
   return (
     <>
       {hasCatalogSelection ? (
         <section className="config-group">
-          <h3>{t('product_step2', '2. Cote du retroviseur')}</h3>
+          <h3>{t('product_step2', '1. Cote du retroviseur')}</h3>
           {/* <p className="config-help">{t('product_step2_help', 'Selectionnez le cote du vehicule concerne.')}</p> */}
           <div className="choice-list position-choice-list">
             {positions.map((item) => (
@@ -108,8 +134,8 @@ export default function ProductOptionsSection({
                 </span>
                 <button
                   type="button"
-                  className={`choice-btn position-choice-btn ${productConfig.position === item ? 'active' : ''}`}
-                  onClick={() => onChange('position', item)}
+                  className={`choice-btn position-choice-btn ${selectedPositions.includes(item) ? 'active' : ''}`}
+                  onClick={() => togglePosition(item)}
                 >
                   <span className="position-choice-label">{positionLabel(item)}</span>
                 </button>
@@ -119,112 +145,250 @@ export default function ProductOptionsSection({
         </section>
       ) : null}
 
-      {hasCatalogSelection && isPieceOrder && pieceSuggestedOptions.length ? (
-        <section className="config-group">
-          <h3>{t('product_piece_options_title', '3. Options pour la piece')} ({selectedFeatureKey || 'PIECE'})</h3>
-          {/* <p className="config-help">{t('product_piece_options_help', 'Options facultatives. Choisissez "Juste la piece" si vous ne voulez rien ajouter.')}</p> */}
-          <div className="feature-grid feature-grid-pill piece-feature-grid">
-            <button
-              type="button"
-              className={`feature-card piece-only-card ${pieceSuggestedOptions.every((item) => !selectedOptions.includes(item)) ? 'active' : ''}`}
-              onClick={() => {
-                const nextOptions = selectedOptions.filter((item) => !pieceSuggestedOptions.includes(item));
-                onChange('options', nextOptions);
-              }}
-            >
-              <span className="feature-card-texts">
-                <span className="feature-card-title">{t('product_only_piece', 'Juste la piece (sans option)')}</span>
-              </span>
-            </button>
-            {pieceSuggestedOptions.map((optionLabel) => (
+      {hasCatalogSelection && isPieceOrder && (pieceSuggestedOptions.length || isCoverPiece || isSinglePiece) ? (
+        isGlassPiece ? (
+          <>
+            {pieceSuggestedOptions.map((optionLabel, index) => {
+              const isSelected = selectedOptions.includes(optionLabel);
+              return (
+                <section key={optionLabel} className="config-group">
+                  <h3>{`${index + 2}. ${optionLabel}`}</h3>
+                  <div className="adjustment-group-row">
+                    {optionImageByLabel[optionLabel] ? (
+                      <span className="adjustment-group-icon-wrap" aria-hidden="true">
+                        <img
+                          src={optionImageByLabel[optionLabel]}
+                          alt=""
+                          className="adjustment-group-icon"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </span>
+                    ) : (
+                      <span className="adjustment-group-icon-wrap" aria-hidden="true" />
+                    )}
+                    <div className="adjustment-choice-row adjustment-choice-row-two">
+                      <button
+                        type="button"
+                        className={`choice-btn ${isSelected ? 'active' : ''}`}
+                        onClick={() => {
+                          if (!isSelected) toggleOption(optionLabel);
+                        }}
+                      >
+                        Oui
+                      </button>
+                      <button
+                        type="button"
+                        className={`choice-btn ${!isSelected ? 'active' : ''}`}
+                        onClick={() => {
+                          if (isSelected) toggleOption(optionLabel);
+                        }}
+                      >
+                        Non
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              );
+            })}
+          </>
+        ) : isCoverPiece ? (
+          <>
+            <section className="config-group">
+              <h3>2. Couleur cover</h3>
+              <div className="adjustment-group-row">
+                <span className="adjustment-group-icon-wrap" aria-hidden="true">
+                  <img src={formeOptionIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
+                </span>
+                <div className="cover-color-grid">
+                  {coverColorOptions.map((colorLabel) => (
+                    <button
+                      key={colorLabel}
+                      type="button"
+                      className={`choice-btn cover-color-btn ${selectedCoverColor === colorLabel ? 'active' : ''}`}
+                      aria-label={colorLabel}
+                      title={colorLabel}
+                      onClick={() => {
+                        const otherOptions = selectedOptions.filter(
+                          (item) => !coverColorOptions.some((color) => color.toLowerCase() === String(item).toLowerCase())
+                        );
+                        onChange('options', [...otherOptions, colorLabel]);
+                      }}
+                    >
+                        <span className={`cover-color-dot cover-dot-${colorClassToken(colorLabel)}`} aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {hasBatmanOption ? (
+              <section className="config-group">
+                <h3>3. Batman</h3>
+                <div className="adjustment-group-row">
+                  <span className="adjustment-group-icon-wrap" aria-hidden="true">
+                    <img src={formeOptionIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
+                  </span>
+                  <div className="adjustment-choice-row adjustment-choice-row-two">
+                    <button
+                      type="button"
+                      className={`choice-btn ${isBatmanSelected ? 'active' : ''}`}
+                      onClick={() => {
+                        if (isBatmanSelected) return;
+                        onChange('options', [...selectedOptions.filter((item) => item !== 'BATMAN' && item !== 'Batman'), 'Batman']);
+                      }}
+                    >
+                      Oui
+                    </button>
+                    <button
+                      type="button"
+                      className={`choice-btn ${!isBatmanSelected ? 'active' : ''}`}
+                      onClick={() => {
+                        if (!isBatmanSelected) return;
+                        onChange('options', selectedOptions.filter((item) => item !== 'BATMAN' && item !== 'Batman'));
+                      }}
+                    >
+                      Non
+                    </button>
+                  </div>
+                </div>
+              </section>
+            ) : null}
+          </>
+        ) : isSinglePiece ? (
+          <>
+            <section className="config-group">
+              <h3>2. Couleur</h3>
+              <div className="adjustment-group-row">
+                <span className="adjustment-group-icon-wrap" aria-hidden="true">
+                  <img src={formeOptionIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
+                </span>
+                <div className="single-color-grid">
+                  {singleColorOptions.map((colorLabel) => (
+                    <button
+                      key={colorLabel}
+                      type="button"
+                      className={`choice-btn cover-color-btn ${selectedSingleColor === colorLabel ? 'active' : ''}`}
+                      aria-label={colorLabel}
+                      title={colorLabel}
+                      onClick={() => {
+                        const otherOptions = selectedOptions.filter(
+                          (item) => !singleColorOptions.some((color) => color.toLowerCase() === String(item).toLowerCase())
+                        );
+                        onChange('options', [...otherOptions, colorLabel]);
+                      }}
+                    >
+                      <span className={`cover-color-dot cover-dot-${colorClassToken(colorLabel)}`} aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {hasDinamicOption ? (
+              <section className="config-group">
+                <h3>3. Dinamic</h3>
+                <div className="adjustment-group-row">
+                  <span className="adjustment-group-icon-wrap" aria-hidden="true">
+                    <img src={sousEclairageOptionIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
+                  </span>
+                  <div className="adjustment-choice-row adjustment-choice-row-two">
+                    <button
+                      type="button"
+                      className={`choice-btn ${isDinamicSelected ? 'active' : ''}`}
+                      onClick={() => {
+                        if (isDinamicSelected) return;
+                        onChange('options', [...selectedOptions.filter((item) => item !== 'DINAMIC'), 'DINAMIC']);
+                      }}
+                    >
+                      Oui
+                    </button>
+                    <button
+                      type="button"
+                      className={`choice-btn ${!isDinamicSelected ? 'active' : ''}`}
+                      onClick={() => {
+                        if (!isDinamicSelected) return;
+                        onChange('options', selectedOptions.filter((item) => item !== 'DINAMIC'));
+                      }}
+                    >
+                      Non
+                    </button>
+                  </div>
+                </div>
+              </section>
+            ) : null}
+          </>
+        ) : (
+          <section className="config-group">
+            <h3>{`${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'PIECE'})`}</h3>
+            <div className="feature-grid">
               <button
-                key={optionLabel}
                 type="button"
-                className={`feature-card ${selectedOptions.includes(optionLabel) ? 'active' : ''}`}
-                onClick={() => toggleOption(optionLabel)}
+                className={`feature-card ${pieceSuggestedOptions.every((item) => !selectedOptions.includes(item)) ? 'active' : ''}`}
+                onClick={() => {
+                  const nextOptions = selectedOptions.filter((item) => !pieceSuggestedOptions.includes(item));
+                  onChange('options', nextOptions);
+                }}
               >
-                {optionImageByLabel[optionLabel] ? (
-                  <span className="feature-card-icon feature-card-icon-pill" aria-hidden="true">
-                    <img
-                      src={optionImageByLabel[optionLabel]}
-                      alt=""
-                      className="feature-card-icon-img"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </span>
-                ) : pieceOptionIconByLabel[optionLabel] ? (
-                  <span className="feature-card-icon feature-card-icon-pill" aria-hidden="true">
-                    <FeatureIcon type={pieceOptionIconByLabel[optionLabel]} />
-                  </span>
-                ) : null}
                 <span className="feature-card-texts">
-                  <span className="feature-card-title">{optionLabel}</span>
+                  <span className="feature-card-title">{t('product_only_piece', 'Juste la piece (sans option)')}</span>
                 </span>
               </button>
-            ))}
-          </div>
-        </section>
+              {pieceSuggestedOptions.map((optionLabel) => (
+                <button
+                  key={optionLabel}
+                  type="button"
+                  className={`feature-card ${selectedOptions.includes(optionLabel) ? 'active' : ''}`}
+                  onClick={() => toggleOption(optionLabel)}
+                >
+                  {optionImageByLabel[optionLabel] ? (
+                    <span className="feature-card-icon" aria-hidden="true">
+                      <img
+                        src={optionImageByLabel[optionLabel]}
+                        alt=""
+                        className="feature-card-icon-img"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </span>
+                  ) : pieceOptionIconByLabel[optionLabel] ? (
+                    <span className="feature-card-icon" aria-hidden="true">
+                      <FeatureIcon type={pieceOptionIconByLabel[optionLabel]} />
+                    </span>
+                  ) : null}
+                  <span className="feature-card-texts">
+                    <span className="feature-card-title">{optionLabel}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )
       ) : null}
 
       {hasCatalogSelection && isCompleteOrder ? (
         <section className="config-group">
-          <h3>4. Type de reglage</h3>
-          <div className="adjustment-selector">
-            <div className="adjustment-group">
-              <p className="adjustment-group-title">• Reglage</p>
-              <div className="adjustment-group-row">
-                <span className="adjustment-group-icon-wrap" aria-hidden="true">
-                  <img src={reglageIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
-                </span>
-                <div className="adjustment-choice-row adjustment-choice-row-two">
-                  <button
-                    type="button"
-                    className={`choice-btn adjustment-choice-btn ${selectedReglage === 'manuel' ? 'active' : ''}`}
-                    onClick={() => selectReglage('manuel')}
-                  >
-                    Manuel
-                  </button>
-                  <button
-                    type="button"
-                    className={`choice-btn adjustment-choice-btn ${selectedReglage === 'electrique' ? 'active' : ''}`}
-                    onClick={() => selectReglage('electrique')}
-                  >
-                    Electrique
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="adjustment-group">
-              <p className="adjustment-group-title">• Rabattement</p>
-              <div className="adjustment-group-row">
-                <span className="adjustment-group-icon-wrap" aria-hidden="true">
-                  <img src={rabattementIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
-                </span>
-                <div className="adjustment-choice-row adjustment-choice-row-three">
-                  <button
-                    type="button"
-                    className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'manuel' ? 'active' : ''}`}
-                    onClick={() => selectRabattement('manuel')}
-                  >
-                    Manuel
-                  </button>
-                  <button
-                    type="button"
-                    className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'electrique' ? 'active' : ''}`}
-                    onClick={() => selectRabattement('electrique')}
-                  >
-                    Electrique
-                  </button>
-                  <button
-                    type="button"
-                    className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'automatique' ? 'active' : ''}`}
-                    onClick={() => selectRabattement('automatique')}
-                  >
-                    Automatique
-                  </button>
-                </div>
+          <h3>2. Reglage</h3>
+          <div className="adjustment-group">
+            <div className="adjustment-group-row">
+              <span className="adjustment-group-icon-wrap" aria-hidden="true">
+                <img src={reglageIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
+              </span>
+              <div className="adjustment-choice-row adjustment-choice-row-two">
+                <button
+                  type="button"
+                  className={`choice-btn adjustment-choice-btn ${selectedReglage === 'manuel' ? 'active' : ''}`}
+                  onClick={() => selectReglage('manuel')}
+                >
+                  Manuel
+                </button>
+                <button
+                  type="button"
+                  className={`choice-btn adjustment-choice-btn ${selectedReglage === 'electrique' ? 'active' : ''}`}
+                  onClick={() => selectReglage('electrique')}
+                >
+                  Electrique
+                </button>
               </div>
             </div>
           </div>
@@ -233,9 +397,45 @@ export default function ProductOptionsSection({
 
       {hasCatalogSelection && isCompleteOrder ? (
         <section className="config-group">
-          <h3>5. Options du retroviseur (optionnel)</h3>
+          <h3>3. Rabattement</h3>
+          <div className="adjustment-group">
+            <div className="adjustment-group-row">
+              <span className="adjustment-group-icon-wrap" aria-hidden="true">
+                <img src={rabattementIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
+              </span>
+              <div className="adjustment-choice-row adjustment-choice-row-three">
+                <button
+                  type="button"
+                  className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'manuel' ? 'active' : ''}`}
+                  onClick={() => selectRabattement('manuel')}
+                >
+                  Manuel
+                </button>
+                <button
+                  type="button"
+                  className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'electrique' ? 'active' : ''}`}
+                  onClick={() => selectRabattement('electrique')}
+                >
+                  Electrique
+                </button>
+                <button
+                  type="button"
+                  className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'automatique' ? 'active' : ''}`}
+                  onClick={() => selectRabattement('automatique')}
+                >
+                  Automatique
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {hasCatalogSelection && isCompleteOrder ? (
+        <section className="config-group">
+          <h3>4. Options du retroviseur (optionnel)</h3>
           {/* <p className="config-help">Choisissez les options visibles pour votre retroviseur complet.</p> */}
-          <div className="feature-grid feature-grid-pill">
+          <div className="feature-grid">
             {visibleFeatureCards.map((card) => (
               <button
                 key={card.key}
@@ -243,7 +443,7 @@ export default function ProductOptionsSection({
                 className={`feature-card ${selectedOptions.includes(card.key) ? 'active' : ''}`}
                 onClick={() => toggleOption(card.key)}
               >
-                <span className="feature-card-icon feature-card-icon-pill">
+                <span className="feature-card-icon">
                   {completeOptionIconByKey[card.key] ? (
                     <img
                       src={completeOptionIconByKey[card.key]}
@@ -259,7 +459,7 @@ export default function ProductOptionsSection({
                 </span>
                 <span className="feature-card-texts">
                   <span className="feature-card-title">{card.label}</span>
-                  {/* <span className="feature-card-sub">{card.feature}</span> */}
+                  <span className="feature-card-sub">{card.feature}</span>
                 </span>
               </button>
             ))}

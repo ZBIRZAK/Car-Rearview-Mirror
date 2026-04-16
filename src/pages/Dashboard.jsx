@@ -15,6 +15,8 @@ import { fetchProductAdminConfig, saveProductAdminConfig } from '../lib/productC
 import { COMPLETE_OPTION_DEFS, DEFAULT_PRODUCT_ADMIN_CONFIG, PIECE_OPTION_DEFS, PRODUCT_KEYS } from '../config/productAdminConfig';
 import { hasSupabaseConfig } from '../lib/supabaseClient';
 import { mockData } from '../data/mockData';
+import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from '../config/homeContentDefaults';
+import { fetchAppSetting, saveAppSetting } from '../lib/appSettingsApi';
 import glaceOptionIcon from '../images/new-icones/Glace.png';
 import sousEclairageOptionIcon from '../images/new-icones/Sous-eclairage.png';
 import formeOptionIcon from '../images/new-icones/Forme.png';
@@ -70,6 +72,9 @@ const OPTION_IMAGE_BY_KEY = {
   Memory: memoireOptionIcon,
 };
 
+const HOME_WHY_ICON_CHOICES = ['shield', 'bolt', 'price', 'support'];
+const EMPTY_MECHANIC_CONTACT = { name: '', address: '', phone: '', image: '' };
+
 export default function Dashboard({
   isAdminAuthenticated = false,
   authLoading = false,
@@ -99,6 +104,10 @@ export default function Dashboard({
   const [savingProductConfig, setSavingProductConfig] = useState(false);
   const [selectedConfigYear, setSelectedConfigYear] = useState(null);
   const [draggingImageRef, setDraggingImageRef] = useState(null);
+  const [homeContentForm, setHomeContentForm] = useState(() => normalizeHomeContent(DEFAULT_HOME_CONTENT));
+  const [homeContentLoading, setHomeContentLoading] = useState(false);
+  const [homeContentSaving, setHomeContentSaving] = useState(false);
+  const [homeContentMessage, setHomeContentMessage] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [authBusy, setAuthBusy] = useState(false);
@@ -202,6 +211,31 @@ export default function Dashboard({
     if (!isAdminAuthenticated) return;
     loadRequests();
     loadBrands();
+  }, [isAdminAuthenticated]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadHomeContent = async () => {
+      if (!isAdminAuthenticated) return;
+      setHomeContentLoading(true);
+      setHomeContentMessage('');
+      try {
+        const stored = await fetchAppSetting('home_content');
+        if (cancelled) return;
+        setHomeContentForm(normalizeHomeContent(stored));
+      } catch (err) {
+        if (!cancelled) {
+          setHomeContentForm(normalizeHomeContent(DEFAULT_HOME_CONTENT));
+          setError(err?.message || 'Failed to load home content.');
+        }
+      } finally {
+        if (!cancelled) setHomeContentLoading(false);
+      }
+    };
+    loadHomeContent();
+    return () => {
+      cancelled = true;
+    };
   }, [isAdminAuthenticated]);
 
   useEffect(() => {
@@ -584,6 +618,155 @@ export default function Dashboard({
     });
   };
 
+  const handleSaveHomeContent = async () => {
+    setHomeContentMessage('');
+    setError('');
+    setHomeContentSaving(true);
+    try {
+      const normalized = normalizeHomeContent(homeContentForm);
+      await saveAppSetting('home_content', normalized);
+      setHomeContentForm(normalized);
+      setHomeContentMessage('Contenu accueil sauvegarde.');
+    } catch (err) {
+      setError(err?.message || 'Failed to save home content.');
+    } finally {
+      setHomeContentSaving(false);
+    }
+  };
+
+  const handleResetHomeContent = () => {
+    setHomeContentMessage('');
+    setHomeContentForm(normalizeHomeContent(DEFAULT_HOME_CONTENT));
+  };
+
+  const updateHomeListValue = (fieldKey, index, value) => {
+    setHomeContentForm((prev) => {
+      const next = [...(prev[fieldKey] || [])];
+      next[index] = value;
+      return { ...prev, [fieldKey]: next };
+    });
+  };
+
+  const updateHomeFeatured = (index, field, value) => {
+    setHomeContentForm((prev) => {
+      const next = [...(prev.featuredItems || [])];
+      next[index] = { ...(next[index] || {}), [field]: value };
+      return { ...prev, featuredItems: next };
+    });
+  };
+
+  const updateMechanicGroupField = (groupIndex, field, value) => {
+    setHomeContentForm((prev) => {
+      const groups = [...(prev.mechanicGroups || [])];
+      groups[groupIndex] = {
+        ...(groups[groupIndex] || {}),
+        [field]: value,
+      };
+      return { ...prev, mechanicGroups: groups };
+    });
+  };
+
+  const updateMechanicContactField = (groupIndex, contactIndex, field, value) => {
+    setHomeContentForm((prev) => {
+      const groups = [...(prev.mechanicGroups || [])];
+      const targetGroup = { ...(groups[groupIndex] || {}), contacts: [...(groups[groupIndex]?.contacts || [])] };
+      targetGroup.contacts[contactIndex] = {
+        ...(targetGroup.contacts[contactIndex] || {}),
+        [field]: value,
+      };
+      groups[groupIndex] = targetGroup;
+      return { ...prev, mechanicGroups: groups };
+    });
+  };
+
+  const addMechanicGroup = () => {
+    setHomeContentForm((prev) => ({
+      ...prev,
+      mechanicGroups: [
+        ...(prev.mechanicGroups || []),
+        { group: 'Nouveau groupe', contacts: [{ ...EMPTY_MECHANIC_CONTACT }] },
+      ],
+    }));
+  };
+
+  const removeMechanicGroup = (groupIndex) => {
+    setHomeContentForm((prev) => ({
+      ...prev,
+      mechanicGroups: (prev.mechanicGroups || []).filter((_, index) => index !== groupIndex),
+    }));
+  };
+
+  const addMechanicContact = (groupIndex) => {
+    setHomeContentForm((prev) => {
+      const groups = [...(prev.mechanicGroups || [])];
+      const targetGroup = { ...(groups[groupIndex] || {}), contacts: [...(groups[groupIndex]?.contacts || [])] };
+      targetGroup.contacts.push({ ...EMPTY_MECHANIC_CONTACT });
+      groups[groupIndex] = targetGroup;
+      return { ...prev, mechanicGroups: groups };
+    });
+  };
+
+  const removeMechanicContact = (groupIndex, contactIndex) => {
+    setHomeContentForm((prev) => {
+      const groups = [...(prev.mechanicGroups || [])];
+      const targetGroup = { ...(groups[groupIndex] || {}), contacts: [...(groups[groupIndex]?.contacts || [])] };
+      targetGroup.contacts = targetGroup.contacts.filter((_, index) => index !== contactIndex);
+      groups[groupIndex] = targetGroup;
+      return { ...prev, mechanicGroups: groups };
+    });
+  };
+
+  const updateHomeWhyItem = (index, field, value) => {
+    setHomeContentForm((prev) => {
+      const next = [...(prev.whyItems || [])];
+      next[index] = { ...(next[index] || {}), [field]: value };
+      return { ...prev, whyItems: next };
+    });
+  };
+
+  const updateHomeSeo = (field, value) => {
+    setHomeContentForm((prev) => ({
+      ...prev,
+      seo: {
+        ...(prev.seo || {}),
+        [field]: value,
+      },
+    }));
+  };
+
+  const parseSeoLinksText = (textValue) => String(textValue || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [label, href = ''] = line.split('|');
+      return { label: String(label || '').trim(), href: String(href || '').trim() };
+    });
+
+  const seoLinksToText = (links) => (Array.isArray(links) ? links : [])
+    .map((item) => (item.href ? `${item.label}|${item.href}` : item.label))
+    .join('\n');
+
+  const updateHomeSeoCard = (cardIndex, field, value) => {
+    setHomeContentForm((prev) => {
+      const nextCards = [...(prev.seo?.cards || [])];
+      const nextCard = { ...(nextCards[cardIndex] || {}) };
+      if (field === 'links') {
+        nextCard.links = parseSeoLinksText(value);
+      } else {
+        nextCard[field] = value;
+      }
+      nextCards[cardIndex] = nextCard;
+      return {
+        ...prev,
+        seo: {
+          ...(prev.seo || {}),
+          cards: nextCards,
+        },
+      };
+    });
+  };
+
   if (!hasSupabaseConfig) {
     return (
       <div className="dashboard-view">
@@ -681,6 +864,13 @@ export default function Dashboard({
           >
             Produits (Marques/Modeles/Annees)
           </button>
+          <button
+            type="button"
+            className={`year-filter-btn ${activeTab === 'home_content' ? 'active' : ''}`}
+            onClick={() => setActiveTab('home_content')}
+          >
+            Accueil dynamique
+          </button>
         </div>
 
         {error ? <p className="inline-hint-error">{error}</p> : null}
@@ -754,7 +944,9 @@ export default function Dashboard({
               </div>
             ) : null}
           </>
-        ) : (
+        ) : null}
+
+        {activeTab === 'catalog' ? (
           <div className="dashboard-catalog-layout">
             <article className="dashboard-catalog-col">
               <h3>Marques</h3>
@@ -1058,7 +1250,372 @@ export default function Dashboard({
               ))}
             </article>
           </div>
-        )}
+        ) : null}
+
+        {activeTab === 'home_content' ? (
+          <article className="dashboard-catalog-col dashboard-home-content-col">
+            <h3>Contenu page accueil</h3>
+            <p className="config-help">Editez les sections directement. Sauvegarde en base sur `app_settings.home_content`.</p>
+            {homeContentLoading ? <p className="empty-state">Chargement...</p> : null}
+            {homeContentMessage ? <p className="empty-state">{homeContentMessage}</p> : null}
+
+            <section className="dashboard-home-form-block">
+              <h4>Hero</h4>
+              <div className="dashboard-home-grid dashboard-home-grid-4">
+                {(homeContentForm.heroOverlayLines || []).map((line, index) => (
+                  <label key={`hero-${index}`} className="dashboard-home-label">
+                    Ligne {index + 1}
+                    <input
+                      type="text"
+                      className="dashboard-search-input"
+                      value={line}
+                      onChange={(event) => updateHomeListValue('heroOverlayLines', index, event.target.value)}
+                    />
+                  </label>
+                ))}
+              </div>
+              <div className="dashboard-home-grid dashboard-home-grid-3">
+                {(homeContentForm.trustStrip || []).map((line, index) => (
+                  <label key={`trust-${index}`} className="dashboard-home-label">
+                    Badge {index + 1}
+                    <input
+                      type="text"
+                      className="dashboard-search-input"
+                      value={line}
+                      onChange={(event) => updateHomeListValue('trustStrip', index, event.target.value)}
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
+
+            <section className="dashboard-home-form-block">
+              <h4>Contacts mecaniciens</h4>
+              <div className="dashboard-home-grid dashboard-home-grid-2">
+                <label className="dashboard-home-label">
+                  Titre section
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    value={homeContentForm.mechanicSectionTitle || ''}
+                    onChange={(event) => setHomeContentForm((prev) => ({ ...prev, mechanicSectionTitle: event.target.value }))}
+                  />
+                </label>
+                <label className="dashboard-home-label">
+                  Intro section
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    value={homeContentForm.mechanicSectionIntro || ''}
+                    onChange={(event) => setHomeContentForm((prev) => ({ ...prev, mechanicSectionIntro: event.target.value }))}
+                  />
+                </label>
+              </div>
+              <div className="dashboard-home-stack">
+                {(homeContentForm.mechanicGroups || []).map((group, groupIndex) => (
+                  <div className="dashboard-home-subcard" key={`mechanic-group-${groupIndex}`}>
+                    <div className="dashboard-home-subcard-head">
+                      <p className="dashboard-check-title">Groupe {groupIndex + 1}</p>
+                      <button
+                        type="button"
+                        className="dashboard-delete-action-btn"
+                        onClick={() => removeMechanicGroup(groupIndex)}
+                      >
+                        Suppr. groupe
+                      </button>
+                    </div>
+                    <label className="dashboard-home-label">
+                      Nom du groupe
+                      <input
+                        type="text"
+                        className="dashboard-search-input"
+                        value={group.group || ''}
+                        onChange={(event) => updateMechanicGroupField(groupIndex, 'group', event.target.value)}
+                      />
+                    </label>
+
+                    <div className="dashboard-home-stack">
+                      {(group.contacts || []).map((contact, contactIndex) => (
+                        <div className="dashboard-home-subcard dashboard-home-subcard-nested" key={`mechanic-contact-${groupIndex}-${contactIndex}`}>
+                          <div className="dashboard-home-subcard-head">
+                            <p className="dashboard-check-title">Contact {contactIndex + 1}</p>
+                            <button
+                              type="button"
+                              className="dashboard-delete-action-btn"
+                              onClick={() => removeMechanicContact(groupIndex, contactIndex)}
+                            >
+                              Suppr. contact
+                            </button>
+                          </div>
+                          <div className="dashboard-home-grid dashboard-home-grid-2">
+                            <label className="dashboard-home-label">
+                              Nom
+                              <input
+                                type="text"
+                                className="dashboard-search-input"
+                                value={contact.name || ''}
+                                onChange={(event) => updateMechanicContactField(groupIndex, contactIndex, 'name', event.target.value)}
+                              />
+                            </label>
+                            <label className="dashboard-home-label">
+                              Telephone
+                              <input
+                                type="text"
+                                className="dashboard-search-input"
+                                value={contact.phone || ''}
+                                onChange={(event) => updateMechanicContactField(groupIndex, contactIndex, 'phone', event.target.value)}
+                              />
+                            </label>
+                            <label className="dashboard-home-label">
+                              Adresse
+                              <input
+                                type="text"
+                                className="dashboard-search-input"
+                                value={contact.address || ''}
+                                onChange={(event) => updateMechanicContactField(groupIndex, contactIndex, 'address', event.target.value)}
+                              />
+                            </label>
+                            <label className="dashboard-home-label">
+                              Image URL
+                              <input
+                                type="text"
+                                className="dashboard-search-input"
+                                value={contact.image || ''}
+                                onChange={(event) => updateMechanicContactField(groupIndex, contactIndex, 'image', event.target.value)}
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="secondary-button dashboard-home-add-btn"
+                      onClick={() => addMechanicContact(groupIndex)}
+                    >
+                      + Ajouter contact
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="secondary-button dashboard-home-add-btn"
+                onClick={addMechanicGroup}
+              >
+                + Ajouter groupe
+              </button>
+            </section>
+
+            <section className="dashboard-home-form-block">
+              <h4>Produits en vedette</h4>
+              <label className="dashboard-home-label">
+                Titre section
+                <input
+                  type="text"
+                  className="dashboard-search-input"
+                  value={homeContentForm.featuredSectionTitle || ''}
+                  onChange={(event) => setHomeContentForm((prev) => ({ ...prev, featuredSectionTitle: event.target.value }))}
+                />
+              </label>
+              <div className="dashboard-home-stack">
+                {(homeContentForm.featuredItems || []).map((item, index) => (
+                  <div className="dashboard-home-subcard" key={`featured-${index}`}>
+                    <p className="dashboard-check-title">Carte {index + 1}</p>
+                    <label className="dashboard-home-label">
+                      Titre
+                      <input
+                        type="text"
+                        className="dashboard-search-input"
+                        value={item.title || ''}
+                        onChange={(event) => updateHomeFeatured(index, 'title', event.target.value)}
+                      />
+                    </label>
+                    <label className="dashboard-home-label">
+                      Description
+                      <input
+                        type="text"
+                        className="dashboard-search-input"
+                        value={item.description || ''}
+                        onChange={(event) => updateHomeFeatured(index, 'description', event.target.value)}
+                      />
+                    </label>
+                    <label className="dashboard-home-label">
+                      Image URL
+                      <input
+                        type="text"
+                        className="dashboard-search-input"
+                        value={item.image || ''}
+                        onChange={(event) => updateHomeFeatured(index, 'image', event.target.value)}
+                      />
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="dashboard-home-form-block">
+              <h4>Pourquoi nous choisir</h4>
+              <label className="dashboard-home-label">
+                Titre section
+                <input
+                  type="text"
+                  className="dashboard-search-input"
+                  value={homeContentForm.whySectionTitle || ''}
+                  onChange={(event) => setHomeContentForm((prev) => ({ ...prev, whySectionTitle: event.target.value }))}
+                />
+              </label>
+              <div className="dashboard-home-stack">
+                {(homeContentForm.whyItems || []).map((item, index) => (
+                  <div className="dashboard-home-subcard" key={`why-${index}`}>
+                    <p className="dashboard-check-title">Bloc {index + 1}</p>
+                    <div className="dashboard-home-grid dashboard-home-grid-3">
+                      <label className="dashboard-home-label">
+                        Icone
+                        <select
+                          className="dashboard-search-input"
+                          value={item.icon || 'support'}
+                          onChange={(event) => updateHomeWhyItem(index, 'icon', event.target.value)}
+                        >
+                          {HOME_WHY_ICON_CHOICES.map((iconType) => (
+                            <option key={iconType} value={iconType}>{iconType}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="dashboard-home-label">
+                        Titre
+                        <input
+                          type="text"
+                          className="dashboard-search-input"
+                          value={item.title || ''}
+                          onChange={(event) => updateHomeWhyItem(index, 'title', event.target.value)}
+                        />
+                      </label>
+                      <label className="dashboard-home-label">
+                        Description
+                        <input
+                          type="text"
+                          className="dashboard-search-input"
+                          value={item.description || ''}
+                          onChange={(event) => updateHomeWhyItem(index, 'description', event.target.value)}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="dashboard-home-form-block">
+              <h4>CTA final</h4>
+              <div className="dashboard-home-grid dashboard-home-grid-3">
+                <label className="dashboard-home-label">
+                  Titre
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    value={homeContentForm.finalCta?.title || ''}
+                    onChange={(event) => setHomeContentForm((prev) => ({
+                      ...prev,
+                      finalCta: { ...(prev.finalCta || {}), title: event.target.value },
+                    }))}
+                  />
+                </label>
+                <label className="dashboard-home-label">
+                  Description
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    value={homeContentForm.finalCta?.description || ''}
+                    onChange={(event) => setHomeContentForm((prev) => ({
+                      ...prev,
+                      finalCta: { ...(prev.finalCta || {}), description: event.target.value },
+                    }))}
+                  />
+                </label>
+                <label className="dashboard-home-label">
+                  Label bouton
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    value={homeContentForm.finalCta?.buttonLabel || ''}
+                    onChange={(event) => setHomeContentForm((prev) => ({
+                      ...prev,
+                      finalCta: { ...(prev.finalCta || {}), buttonLabel: event.target.value },
+                    }))}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section className="dashboard-home-form-block">
+              <h4>SEO cards</h4>
+              <div className="dashboard-home-grid dashboard-home-grid-2">
+                <label className="dashboard-home-label">
+                  Titre section SEO
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    value={homeContentForm.seo?.title || ''}
+                    onChange={(event) => updateHomeSeo('title', event.target.value)}
+                  />
+                </label>
+                <label className="dashboard-home-label">
+                  Intro SEO
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    value={homeContentForm.seo?.intro || ''}
+                    onChange={(event) => updateHomeSeo('intro', event.target.value)}
+                  />
+                </label>
+              </div>
+              <div className="dashboard-home-stack">
+                {(homeContentForm.seo?.cards || []).map((card, cardIndex) => (
+                  <div className="dashboard-home-subcard" key={`seo-card-${cardIndex}`}>
+                    <label className="dashboard-home-label">
+                      Titre carte {cardIndex + 1}
+                      <input
+                        type="text"
+                        className="dashboard-search-input"
+                        value={card.title || ''}
+                        onChange={(event) => updateHomeSeoCard(cardIndex, 'title', event.target.value)}
+                      />
+                    </label>
+                    <label className="dashboard-home-label">
+                      Liens (1 ligne = `label|href`, href optionnel)
+                      <textarea
+                        className="dashboard-home-links-textarea"
+                        value={seoLinksToText(card.links)}
+                        onChange={(event) => updateHomeSeoCard(cardIndex, 'links', event.target.value)}
+                        rows={Math.max(3, (card.links || []).length + 1)}
+                      />
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <div className="dashboard-add-row">
+              <button
+                type="button"
+                className="year-filter-btn active"
+                onClick={handleSaveHomeContent}
+                disabled={homeContentSaving}
+              >
+                {homeContentSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+              </button>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={handleResetHomeContent}
+                disabled={homeContentSaving}
+              >
+                Reinitialiser au modele
+              </button>
+            </div>
+          </article>
+        ) : null}
       </section>
     </div>
   );

@@ -107,10 +107,18 @@ export default function Product({
 
   const requiredMissing = useMemo(() => {
     const missing = [];
+    const normalizedAdjustment = (productConfig.adjustmentType || '').toLowerCase();
+    const hasReglage = normalizedAdjustment.includes('reglage ');
+    const hasRabattement = normalizedAdjustment.includes('rabattement ');
+    const selectedPositions = Array.isArray(productConfig.position)
+      ? productConfig.position
+      : (productConfig.position ? [productConfig.position] : []);
     if (!productConfig.orderScope) missing.push('type de commande');
-    if (!productConfig.position) missing.push('position');
+    if (!selectedPositions.length) missing.push('position');
     if (!productConfig.productType) missing.push('type de produit');
-    if (productConfig.orderScope === 'complete' && !productConfig.adjustmentType) missing.push('type de reglage');
+    if (productConfig.orderScope === 'complete' && (!hasReglage || !hasRabattement)) {
+      missing.push('reglage et rabattement');
+    }
     return missing;
   }, [productConfig.orderScope, productConfig.position, productConfig.productType, productConfig.adjustmentType]);
 
@@ -229,7 +237,21 @@ export default function Product({
         </div>
       </div>
 
-      <div className={`product-layout ${hasCatalogSelection ? '' : 'catalog-only'}`}>
+      <div className={`product-layout ${hasCatalogSelection ? 'with-floating-actions' : 'catalog-only'}`}>
+        {hasCatalogSelection ? (
+          <aside className="product-actions-shell">
+            <ProductActions
+              hasCatalogSelection={hasCatalogSelection}
+              t={t}
+              onContinue={handleContinue}
+              onContinueShopping={handleContinueShoppingClick}
+              quoteItemsCount={quoteItemsCount}
+              showValidationHint={showValidationHint}
+              canContinue={canContinue}
+            />
+          </aside>
+        ) : null}
+
         {hasCatalogSelection ? (
         <aside className="catalog-preview-overlay">
           {selectedCatalogCard ? (
@@ -291,16 +313,6 @@ export default function Product({
           />
         </div>
       </div>
-
-      <ProductActions
-        hasCatalogSelection={hasCatalogSelection}
-        t={t}
-        onContinue={handleContinue}
-        onContinueShopping={handleContinueShoppingClick}
-        quoteItemsCount={quoteItemsCount}
-        showValidationHint={showValidationHint}
-        canContinue={canContinue}
-      />
 
       {isLightboxOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">

@@ -30,12 +30,18 @@ export const PIECE_OPTION_DEFS = {
     { key: 'Memory', label: 'Memory', icon: 'memory' },
   ],
   COVER: [
-    { key: 'COLORS', label: 'COLORS', icon: 'shape' },
-    { key: 'CARBON', label: 'CARBON', icon: 'shape' },
-    { key: 'BATMAN', label: 'BATMAN', icon: 'shape' },
+    { key: 'Noir', label: 'Noir', icon: 'shape' },
+    { key: 'Blanc', label: 'Blanc', icon: 'shape' },
+    { key: 'Gris', label: 'Gris', icon: 'shape' },
+    { key: 'Bleu', label: 'Bleu', icon: 'shape' },
+    { key: 'Rouge', label: 'Rouge', icon: 'shape' },
+    { key: 'Carbon', label: 'Carbon', icon: 'shape' },
+    { key: 'Batman', label: 'Batman', icon: 'shape' },
   ],
   SINGLE: [
     { key: 'DINAMIC', label: 'DINAMIC', icon: 'lamp' },
+    { key: 'Blanc', label: 'Blanc', icon: 'shape' },
+    { key: 'Noir', label: 'Noir', icon: 'shape' },
   ],
 };
 

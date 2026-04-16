@@ -1,30 +1,7 @@
 import React from 'react';
 import { useI18n } from '../i18n';
 import heroMirrorImage from '../images/hero-image.jpeg';
-
-const featuredOneImage = 'https://images.pexels.com/photos/17168615/pexels-photo-17168615.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
-const featuredTwoImage = 'https://images.pexels.com/photos/15360851/pexels-photo-15360851.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
-const featuredThreeImage = 'https://images.pexels.com/photos/12152813/pexels-photo-12152813.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1500&h=1000';
-const mechanicContacts = [
-  {
-    name: 'Garage Atlas Auto',
-    address: '12 Rue Al Massira, Casablanca',
-    phone: '+212612345678',
-    image: 'https://images.pexels.com/photos/13065690/pexels-photo-13065690.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=700&h=500',
-  },
-  {
-    name: 'Meca Express',
-    address: '45 Avenue Hassan II, Rabat',
-    phone: '+212623456789',
-    image: 'https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=700&h=500',
-  },
-  {
-    name: 'Service Auto Nord',
-    address: '8 Boulevard Mohammed V, Tanger',
-    phone: '+212634567890',
-    image: 'https://images.pexels.com/photos/3806249/pexels-photo-3806249.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=700&h=500',
-  },
-];
+import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from '../config/homeContentDefaults';
 
 function WhyLineIcon({ type }) {
   if (type === 'shield') {
@@ -58,8 +35,17 @@ function WhyLineIcon({ type }) {
   );
 }
 
-export default function Home({ onStartSelection, showBrandHint }) {
+export default function Home({ onStartSelection, showBrandHint, homeContent = DEFAULT_HOME_CONTENT }) {
   const { t } = useI18n();
+  const normalizedContent = normalizeHomeContent(homeContent);
+  const renderSeoLink = (link, index) => {
+    const href = String(link?.href || '').trim();
+    if (href) {
+      return <a href={href}>{link.label}</a>;
+    }
+    return link.label || `Lien ${index + 1}`;
+  };
+
   return (
     <div className="home-view">
       <div className="home-content">
@@ -68,10 +54,14 @@ export default function Home({ onStartSelection, showBrandHint }) {
           <div className="hero-image">
             <img src={heroMirrorImage} alt="Retroviseur principal" className="hero-photo" />
             <div className="hero-image-overlay-text" aria-hidden="true">
-              <span className="hero-overlay-line hero-overlay-white">VOTRE</span>
-              <span className="hero-overlay-line hero-overlay-gold">RETROVISEUR,</span>
-              <span className="hero-overlay-line hero-overlay-white">NOTRE</span>
-              <span className="hero-overlay-line hero-overlay-gold">EXPERTISE.</span>
+              {normalizedContent.heroOverlayLines.map((line, index) => (
+                <span
+                  key={`${line}-${index}`}
+                  className={`hero-overlay-line ${index % 2 === 0 ? 'hero-overlay-white' : 'hero-overlay-gold'}`}
+                >
+                  {line}
+                </span>
+              ))}
             </div>
           </div>
           <div className="hero-text">
@@ -85,167 +75,91 @@ export default function Home({ onStartSelection, showBrandHint }) {
               <p className="brand-hint">{t('home_hint', 'Commencez par choisir une marque dans la barre laterale droite.')}</p>
             ) : null}
             <div className="trust-strip">
-              <span>Livraison rapide</span>
-              <span>Paiement securise</span>
-              <span>Support 24/7</span>
+              {normalizedContent.trustStrip.map((item, index) => (
+                <span key={`${item}-${index}`}>{item}</span>
+              ))}
             </div>
           </div>
         </div>
 
         <section className="mechanic-contacts-section" aria-label="Contacts mecaniciens">
-          <h2 className="section-title">Contacts mecaniciens</h2>
-          <p className="mechanic-contacts-intro">Besoin d'aide pour le montage ? Contactez un mecanicien partenaire.</p>
-          <div className="mechanic-contacts-grid">
-            {mechanicContacts.map((contact) => {
-              const waPhone = contact.phone.replace(/\D/g, '');
-              return (
-                <article key={contact.phone} className="mechanic-contact-card">
-                  <img src={contact.image} alt={contact.name} className="mechanic-contact-image" />
-                  <h3>{contact.name}</h3>
-                  <p>{contact.address}</p>
-                  <p className="mechanic-contact-phone">{contact.phone}</p>
-                  <div className="mechanic-contact-actions">
-                    <a href={`tel:${contact.phone}`}>Appeler</a>
-                    <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer">WhatsApp</a>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <h2 className="section-title">{normalizedContent.mechanicSectionTitle}</h2>
+          <p className="mechanic-contacts-intro">{normalizedContent.mechanicSectionIntro}</p>
+          {normalizedContent.mechanicGroups.map((entry) => (
+            <div key={entry.group} className="mechanic-contact-group">
+              <h3 className="mechanic-group-title">{entry.group}</h3>
+              <div className="mechanic-contacts-grid">
+                {entry.contacts.map((contact) => {
+                  return (
+                    <article key={contact.phone} className="mechanic-contact-card">
+                      <img src={contact.image} alt={contact.name} className="mechanic-contact-image" />
+                      <h3>{contact.name}</h3>
+                      <p>{contact.address}</p>
+                      <p className="mechanic-contact-phone">{contact.phone}</p>
+                      <div className="mechanic-contact-actions">
+                        <a href={`tel:${contact.phone}`}>Appeler</a>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </section>
 
         {/* Featured Products */}
         <div className="featured-section">
-          <h2 className="section-title">Produits en vedette</h2>
+          <h2 className="section-title">{normalizedContent.featuredSectionTitle}</h2>
           <div className="featured-grid">
-            <div className="featured-item">
-              <div className="featured-image">
-                <img src={featuredOneImage} alt="Produit en vedette 1" className="featured-photo" />
+            {normalizedContent.featuredItems.map((item, index) => (
+              <div key={`${item.title}-${index}`} className="featured-item">
+                <div className="featured-image">
+                  <img src={item.image} alt={item.title || `Produit en vedette ${index + 1}`} className="featured-photo" />
+                </div>
+                <h3>{item.title || `Produit ${index + 1}`}</h3>
+                <p>{item.description || ''}</p>
               </div>
-              <h3>Retroviseur Universel</h3>
-              <p>Compatible avec la plupart des vehicules avec finition premium</p>
-            </div>
-
-            <div className="featured-item">
-              <div className="featured-image">
-                <img src={featuredTwoImage} alt="Produit en vedette 2" className="featured-photo" />
-              </div>
-              <h3>Retroviseur Anti-Eblouissement</h3>
-              <p>Reduit l'eblouissement de nuit grace a une technologie avancee</p>
-            </div>
-
-            <div className="featured-item">
-              <div className="featured-image">
-                <img src={featuredThreeImage} alt="Produit en vedette 3" className="featured-photo" />
-              </div>
-              <h3>Reglage Electrique</h3>
-              <p>Commandes electriques pratiques pour un ajustement facile</p>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Why Choose Us */}
         <div className="why-section">
-          <h2 className="section-title">Pourquoi nous choisir ?</h2>
+          <h2 className="section-title">{normalizedContent.whySectionTitle}</h2>
           <div className="why-grid">
-            <div className="why-item">
-              <div className="why-image">
-                <span className="why-icon"><WhyLineIcon type="shield" /></span>
+            {normalizedContent.whyItems.map((item, index) => (
+              <div className="why-item" key={`${item.title}-${index}`}>
+                <div className="why-image">
+                  <span className="why-icon"><WhyLineIcon type={item.icon} /></span>
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
               </div>
-              <h3>Qualite Premium</h3>
-              <p>Tous nos retroviseurs passent un controle strict avant expedition</p>
-            </div>
-
-            <div className="why-item">
-              <div className="why-image">
-                <span className="why-icon"><WhyLineIcon type="bolt" /></span>
-              </div>
-              <h3>Livraison Rapide</h3>
-              <p>Livraison rapide a votre adresse avec suivi de colis</p>
-            </div>
-
-            <div className="why-item">
-              <div className="why-image">
-                <span className="why-icon"><WhyLineIcon type="price" /></span>
-              </div>
-              <h3>Meilleurs Prix</h3>
-              <p>Prix competitifs sans frais caches</p>
-            </div>
-
-            <div className="why-item">
-              <div className="why-image">
-                <span className="why-icon"><WhyLineIcon type="support" /></span>
-              </div>
-              <h3>Support 24/7</h3>
-              <p>Une equipe disponible pour repondre a toutes vos questions</p>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Call to Action */}
         <div className="final-cta">
-          <h2>Pret a ameliorer votre vehicule ?</h2>
-          <p>Parcourez notre collection et trouvez le retroviseur parfait</p>
-          <button className="cta-button">Explorer</button>
+          <h2>{normalizedContent.finalCta.title}</h2>
+          <p>{normalizedContent.finalCta.description}</p>
+          <button className="cta-button">{normalizedContent.finalCta.buttonLabel}</button>
         </div>
 
         <section className="seo-categories" aria-label="Categories SEO retroviseurs exterieurs">
-          <h2 className="section-title">Retroviseurs exterieurs : recherches populaires</h2>
-          <p className="seo-intro">
-            Trouvez rapidement le bon produit selon le cote, la fonctionnalite et l'usage de votre vehicule.
-          </p>
+          <h2 className="section-title">{normalizedContent.seo.title}</h2>
+          <p className="seo-intro">{normalizedContent.seo.intro}</p>
           <div className="seo-grid">
-            <article className="seo-card">
-              <h3>Par cote</h3>
-              <ul>
-                <li><a href="/retroviseur-exterieur-gauche">Retroviseur exterieur gauche (cote conducteur)</a></li>
-                <li><a href="/retroviseur-exterieur-droit">Retroviseur exterieur droit (cote passager)</a></li>
-              </ul>
-            </article>
-            <article className="seo-card">
-              <h3>Par fonctionnalite</h3>
-              <ul>
-                <li><a href="/retroviseur-exterieur-electrique">Retroviseur exterieur electrique</a></li>
-                <li><a href="/retroviseur-exterieur-chauffant">Retroviseur exterieur chauffant / degivrant</a></li>
-                <li><a href="/retroviseur-exterieur-rabattable-electriquement">Retroviseur exterieur rabattable electriquement</a></li>
-                <li>Retroviseur avec clignotant integre</li>
-                <li>Retroviseur exterieur photochromatique</li>
-              </ul>
-            </article>
-            <article className="seo-card">
-              <h3>Par type de vehicule</h3>
-              <ul>
-                <li>Retroviseur exterieur pour utilitaire</li>
-                <li>Retroviseur exterieur pour camping-car / fourgon</li>
-                <li>Retroviseur exterieur surbaisse (sport / tuning)</li>
-                <li>Retroviseur exterieur tout-terrain / off-road</li>
-              </ul>
-            </article>
-            <article className="seo-card">
-              <h3>Par type de verre</h3>
-              <ul>
-                <li>Retroviseur grand angle / aspherique</li>
-                <li>Verre de retroviseur convexe</li>
-                <li>Retroviseur exterieur a memoire</li>
-              </ul>
-            </article>
-            <article className="seo-card">
-              <h3>Guides & besoins</h3>
-              <ul>
-                <li>Remplacer retroviseur exterieur</li>
-                <li>Comment demonter retroviseur exterieur</li>
-                <li>Reparation retroviseur exterieur</li>
-                <li>Retroviseur exterieur universel</li>
-              </ul>
-            </article>
-            <article className="seo-card">
-              <h3>Longue traine</h3>
-              <ul>
-                <li>Retroviseur exterieur chauffant gauche pour [Marque Modele]</li>
-                <li>Coque de retroviseur exterieur carbone [Marque Modele]</li>
-                <li>Kit eclairage d'aile pour retroviseur exterieur</li>
-              </ul>
-            </article>
+            {normalizedContent.seo.cards.map((card, cardIndex) => (
+              <article className="seo-card" key={`${card.title}-${cardIndex}`}>
+                <h3>{card.title}</h3>
+                <ul>
+                  {card.links.map((link, linkIndex) => (
+                    <li key={`${link.label}-${linkIndex}`}>{renderSeoLink(link, linkIndex)}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </section>
       </div>

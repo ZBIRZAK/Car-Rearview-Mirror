@@ -4,6 +4,9 @@ import { useI18n } from '../i18n';
 export default function Success({ submission, onNewRequest, onWhatsApp }) {
   if (!submission) return null;
   const { t } = useI18n();
+  const positionText = Array.isArray(submission.productConfig?.position)
+    ? (submission.productConfig.position.length ? submission.productConfig.position.join(' + ') : 'Aucune')
+    : (submission.productConfig?.position || 'Aucune');
 
   return (
     <div className="success-view form-shell">
@@ -14,7 +17,7 @@ export default function Success({ submission, onNewRequest, onWhatsApp }) {
         <div className="product-summary">
           <p><strong>Vehicule :</strong> {submission.brand} {submission.model} ({submission.year})</p>
           <p><strong>Commande :</strong> {submission.productConfig?.orderScope === 'complete' ? 'Complete' : submission.productConfig?.orderScope === 'piece' ? 'Piece' : 'Non definie'}</p>
-          <p><strong>Position :</strong> {submission.productConfig?.position}</p>
+          <p><strong>Position :</strong> {positionText}</p>
           <p><strong>Type :</strong> {submission.productConfig?.productType}</p>
           <p><strong>Piece cible :</strong> {submission.productConfig?.selectedFeature || 'Non definie'}</p>
           <p><strong>Reglage :</strong> {submission.productConfig?.adjustmentType}</p>

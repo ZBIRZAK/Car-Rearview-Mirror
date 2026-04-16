@@ -178,7 +178,7 @@ drop policy if exists "allow_all_select_settings" on public.app_settings;
 create policy "allow_all_select_settings"
 on public.app_settings
 for select
-to authenticated
+to anon, authenticated
 using (true);
 
 drop policy if exists "allow_all_insert_settings" on public.app_settings;

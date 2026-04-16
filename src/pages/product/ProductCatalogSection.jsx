@@ -42,8 +42,10 @@ export default function ProductCatalogSection({
                     focus={item.previewFocus}
                     imageSrc={previewImage}
                   />
-                  <span className="order-scope-title">{pieceCardLabel(item).label}</span>
-                  <span className="order-scope-sub">{pieceCardLabel(item).subtitle}</span>
+                  <span className="catalog-product-meta">
+                    <span className="order-scope-title">{pieceCardLabel(item).label}</span>
+                    {/* <span className="order-scope-sub">{pieceCardLabel(item).subtitle}</span> */}
+                  </span>
                 </button>
               );
             })}

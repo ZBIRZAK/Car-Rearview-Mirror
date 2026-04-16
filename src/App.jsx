@@ -21,6 +21,8 @@ import { createRequest } from './lib/requestsApi';
 import { fetchCatalogSnapshot } from './lib/catalogApi';
 import { fetchProductAdminConfig } from './lib/productConfigApi';
 import { DEFAULT_PRODUCT_ADMIN_CONFIG } from './config/productAdminConfig';
+import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from './config/homeContentDefaults';
+import { fetchAppSetting } from './lib/appSettingsApi';
 import {
   getSupabaseSession,
   hasSupabaseConfig,
@@ -33,14 +35,31 @@ const FLOW_STORAGE_KEY = 'crm_flow_state_v1';
 const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '1234567890').replace(/\D/g, '');
 const WECHAT_URL = import.meta.env.VITE_WECHAT_URL || 'https://www.wechat.com/';
 const INSTAGRAM_URL = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/';
+const POSITION_ORDER = ['Cote conducteur', 'Cote passager'];
 const createEmptyProductConfig = () => ({
   orderScope: '',
   selectedFeature: '',
-  position: '',
+  position: [],
   productType: '',
   adjustmentType: '',
   options: []
 });
+
+const normalizePositions = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item || '').trim())
+      .filter((item) => POSITION_ORDER.includes(item));
+  }
+  const single = String(value || '').trim();
+  if (!single) return [];
+  return POSITION_ORDER.includes(single) ? [single] : [];
+};
+
+const positionsToText = (value) => {
+  const positions = normalizePositions(value);
+  return positions.length ? positions.join(' + ') : '-';
+};
 
 function createFallbackCatalog() {
   const yearsByBrandModel = {};
@@ -118,7 +137,7 @@ const isSameQuoteItem = (a, b) => (
   && a.orderScope === b.orderScope
   && a.productType === b.productType
   && a.selectedFeature === b.selectedFeature
-  && a.position === b.position
+  && positionsToText(a.position) === positionsToText(b.position)
   && a.adjustmentType === b.adjustmentType
   && a.optionsText === b.optionsText
   && a.selectedCatalogKey === b.selectedCatalogKey
@@ -180,6 +199,7 @@ function App() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [catalogResolved, setCatalogResolved] = useState(false);
   const [catalogLoading, setCatalogLoading] = useState(hasSupabaseConfig);
+  const [homeContent, setHomeContent] = useState(DEFAULT_HOME_CONTENT);
   const [productAdminConfig, setProductAdminConfig] = useState(null);
   const [productAdminConfigLoading, setProductAdminConfigLoading] = useState(false);
   const [adminSession, setAdminSession] = useState(null);
@@ -224,7 +244,7 @@ function App() {
       orderScope: orderScopeLabel,
       productType: config.productType || '-',
       selectedFeature: config.selectedFeature || '-',
-      position: config.position || '-',
+      position: positionsToText(config.position),
       adjustmentType: config.adjustmentType || '-',
       optionsText,
       selectedCatalogKey: resolveSelectedCatalogKey(config),
@@ -573,6 +593,44 @@ function App() {
 
   useEffect(() => {
     let cancelled = false;
+    const loadHomeContent = async () => {
+      if (!hasSupabaseConfig) {
+        setHomeContent(DEFAULT_HOME_CONTENT);
+        return;
+      }
+      try {
+        const stored = await fetchAppSetting('home_content');
+        if (cancelled) return;
+        setHomeContent(normalizeHomeContent(stored));
+      } catch {
+        if (!cancelled) setHomeContent(DEFAULT_HOME_CONTENT);
+      }
+    };
+    loadHomeContent();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentView !== 'home' || !hasSupabaseConfig) return;
+    let cancelled = false;
+    const refreshHomeContent = async () => {
+      try {
+        const stored = await fetchAppSetting('home_content');
+        if (!cancelled) setHomeContent(normalizeHomeContent(stored));
+      } catch {
+        // Keep current state if refresh fails.
+      }
+    };
+    refreshHomeContent();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentView]);
+
+  useEffect(() => {
+    let cancelled = false;
     const loadCatalog = async () => {
       if (hasSupabaseConfig) setCatalogLoading(true);
       try {
@@ -591,9 +649,7 @@ function App() {
       }
     };
     loadCatalog();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [fallbackCatalog]);
 
   useEffect(() => {
@@ -696,7 +752,13 @@ function App() {
           <div className="loading-card">Chargement du catalogue...</div>
         ) : null}
 
-        {currentView === 'home' && <Home onStartSelection={handleStartSelection} showBrandHint={showBrandHint} />}
+        {currentView === 'home' && (
+          <Home
+            onStartSelection={handleStartSelection}
+            showBrandHint={showBrandHint}
+            homeContent={homeContent}
+          />
+        )}
 
         {currentView === 'about' && <About />}
 

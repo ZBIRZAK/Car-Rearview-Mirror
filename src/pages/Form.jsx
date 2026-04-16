@@ -4,6 +4,9 @@ import { useI18n } from '../i18n';
 export default function Form({ brand, model, year, productConfig, formData, onChange, onSubmit, onBack }) {
   if (!year) return null;
   const { t } = useI18n();
+  const positionText = Array.isArray(productConfig?.position)
+    ? (productConfig.position.length ? productConfig.position.join(' + ') : 'Aucune')
+    : (productConfig?.position || 'Aucune');
 
   const [errors, setErrors] = useState({});
 
@@ -76,7 +79,7 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
 
         <div className="product-summary">
           <p><strong>Commande :</strong> {productConfig?.orderScope === 'complete' ? 'Complete' : productConfig?.orderScope === 'piece' ? 'Piece' : 'Non definie'}</p>
-          <p><strong>Position :</strong> {productConfig?.position || 'Aucune'}</p>
+          <p><strong>Position :</strong> {positionText}</p>
           <p><strong>Type :</strong> {productConfig?.productType}</p>
           <p><strong>Piece cible :</strong> {productConfig?.selectedFeature || 'Non definie'}</p>
           <p><strong>Réglage:</strong> {productConfig?.adjustmentType}</p>

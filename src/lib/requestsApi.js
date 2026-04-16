@@ -10,13 +10,16 @@ function ensureSupabase() {
 
 export async function createRequest(payload) {
   ensureSupabase();
+  const normalizedPositions = Array.isArray(payload.productConfig?.position)
+    ? payload.productConfig.position.filter(Boolean)
+    : (payload.productConfig?.position ? [payload.productConfig.position] : []);
   const insertPayload = {
     brand: payload.brand || null,
     model: payload.model || null,
     year: payload.year || null,
     order_scope: payload.productConfig?.orderScope || null,
     selected_feature: payload.productConfig?.selectedFeature || null,
-    position: payload.productConfig?.position || null,
+    position: normalizedPositions.length ? normalizedPositions.join(' + ') : null,
     product_type: payload.productConfig?.productType || null,
     adjustment_type: payload.productConfig?.adjustmentType || null,
     options: payload.productConfig?.options || [],

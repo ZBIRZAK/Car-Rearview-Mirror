@@ -46,6 +46,6 @@ export const productCatalogCards = [
 export const pieceSuggestedOptionsByCategory = {
   GLASS: ['Heating', 'Anti-light', 'Blind spot'],
   MIRROR: ['ELECTRIC / MANUAL', 'FOLDING', 'Underlight', 'LAMP', 'CAMERA', 'Memory'],
-  COVER: ['COLORS', 'CARBON', 'BATMAN'],
-  SINGLE: ['DINAMIC'],
+  COVER: ['Noir', 'Blanc', 'Gris', 'Bleu', 'Rouge', 'Carbon', 'Batman'],
+  SINGLE: ['DINAMIC', 'Blanc', 'Noir'],
 };
