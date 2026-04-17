@@ -3623,7 +3623,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
     left: auto;
     right: 8px;
     top: auto;
-    bottom: 72px;
+    bottom: 10px;
     transform: none;
     width: auto;
     max-width: none;
@@ -3761,7 +3761,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
     right: 8px;
     left: auto;
     transform: none;
-    bottom: 185px;
+    bottom: 115px;
     width: auto;
     max-width: none;
     padding: 8px 6px;
