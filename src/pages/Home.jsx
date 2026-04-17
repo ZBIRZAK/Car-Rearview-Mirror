@@ -84,7 +84,7 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
 
         <section className="mechanic-contacts-section" aria-label="Contacts mecaniciens">
           <h2 className="section-title">{normalizedContent.mechanicSectionTitle}</h2>
-          <p className="mechanic-contacts-intro">{normalizedContent.mechanicSectionIntro}</p>
+          {/* <p className="mechanic-contacts-intro">{normalizedContent.mechanicSectionIntro}</p> */}
           {normalizedContent.mechanicGroups.map((entry) => (
             <div key={entry.group} className="mechanic-contact-group">
               <h3 className="mechanic-group-title">{entry.group}</h3>
@@ -94,8 +94,8 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
                     <article key={contact.phone} className="mechanic-contact-card">
                       <img src={contact.image} alt={contact.name} className="mechanic-contact-image" />
                       <h3>{contact.name}</h3>
-                      <p>{contact.address}</p>
-                      <p className="mechanic-contact-phone">{contact.phone}</p>
+                      {/* <p>{contact.address}</p> */}
+                      {/* <p className="mechanic-contact-phone">{contact.phone}</p> */}
                       <div className="mechanic-contact-actions">
                         <a href={`tel:${contact.phone}`}>Appeler</a>
                       </div>

@@ -23,6 +23,7 @@ import { fetchProductAdminConfig } from './lib/productConfigApi';
 import { DEFAULT_PRODUCT_ADMIN_CONFIG } from './config/productAdminConfig';
 import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from './config/homeContentDefaults';
 import { fetchAppSetting } from './lib/appSettingsApi';
+import { completeTypeLabel, productCatalogCards } from './pages/product/constants';
 import {
   getSupabaseSession,
   hasSupabaseConfig,
@@ -157,16 +158,34 @@ const VIEW_TO_PATH = {
   dashboard: '/dashboard',
 };
 
-function resolveRoute(pathname) {
+function resolveRoute(pathname, search = '') {
   const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
   const categorySlug = normalized.replace(/^\//, '');
   if (categoryContentMap[categorySlug]) {
-    return { view: 'category', categorySlug };
+    return { view: 'category', categorySlug, productParams: null, queryString: '' };
   }
 
   const match = Object.entries(VIEW_TO_PATH).find(([, path]) => path === normalized);
-  if (match) return { view: match[0], categorySlug: null };
-  return { view: 'home', categorySlug: null };
+  if (match) {
+    const view = match[0];
+    if (view === 'product') {
+      const params = new URLSearchParams(search || '');
+      const year = Number(params.get('year'));
+      return {
+        view,
+        categorySlug: null,
+        queryString: params.toString(),
+        productParams: {
+          brandId: params.get('brand') || null,
+          model: params.get('model') || null,
+          year: Number.isFinite(year) ? year : null,
+          productKey: params.get('product') || null,
+        },
+      };
+    }
+    return { view, categorySlug: null, productParams: null, queryString: '' };
+  }
+  return { view: 'home', categorySlug: null, productParams: null, queryString: '' };
 }
 
 function App() {
@@ -204,6 +223,7 @@ function App() {
   const [productAdminConfigLoading, setProductAdminConfigLoading] = useState(false);
   const [adminSession, setAdminSession] = useState(null);
   const [adminAuthLoading, setAdminAuthLoading] = useState(hasSupabaseConfig);
+  const [pendingProductRouteParams, setPendingProductRouteParams] = useState(null);
   const productConfigCacheRef = useRef({});
 
   const selectedBrand = useMemo(
@@ -229,6 +249,20 @@ function App() {
     if (config.orderScope === 'complete') return 'COMPLETE';
     if (config.orderScope === 'piece' && config.selectedFeature) return config.selectedFeature;
     return '';
+  };
+
+  const buildProductQueryString = (overrides = {}) => {
+    const brandId = overrides.brandId ?? selectedBrandId;
+    const model = overrides.model ?? selectedModel;
+    const year = overrides.year ?? selectedYear;
+    const config = overrides.productConfig ?? productConfig;
+    const params = new URLSearchParams();
+    if (brandId) params.set('brand', String(brandId));
+    if (model) params.set('model', model);
+    if (year) params.set('year', String(year));
+    const selectedKey = resolveSelectedCatalogKey(config || createEmptyProductConfig());
+    if (selectedKey) params.set('product', selectedKey);
+    return params.toString();
   };
 
   const buildQuotePayload = (config = productConfig) => {
@@ -286,13 +320,14 @@ function App() {
   };
 
   const navigateToView = (view, options = {}) => {
-    const { categorySlug = null, replace = false } = options;
-    const targetPath = view === 'category' ? `/${categorySlug}` : (VIEW_TO_PATH[view] || '/');
+    const { categorySlug = null, replace = false, queryString = '' } = options;
+    const basePath = view === 'category' ? `/${categorySlug}` : (VIEW_TO_PATH[view] || '/');
+    const targetPath = queryString ? `${basePath}?${queryString}` : basePath;
 
     setCurrentView(view);
     setCurrentCategorySlug(categorySlug);
 
-    if (window.location.pathname !== targetPath) {
+    if (`${window.location.pathname}${window.location.search}` !== targetPath) {
       window.history[replace ? 'replaceState' : 'pushState']({}, '', targetPath);
     }
   };
@@ -336,7 +371,9 @@ function App() {
   // Handle year selection
   const handleYearSelect = (year) => {
     setSelectedYear(year);
-    navigateToView('product');
+    navigateToView('product', {
+      queryString: buildProductQueryString({ year, productConfig: createEmptyProductConfig() }),
+    });
   };
 
   const handleProductConfigChange = (field, value) => {
@@ -359,8 +396,11 @@ function App() {
       }
       return [...prev, currentPayload];
     });
-    setProductConfig(createEmptyProductConfig());
-    navigateToView('product');
+    const nextConfig = createEmptyProductConfig();
+    setProductConfig(nextConfig);
+    navigateToView('product', {
+      queryString: buildProductQueryString({ productConfig: nextConfig }),
+    });
   };
 
   // Handle form input changes
@@ -471,12 +511,18 @@ function App() {
   };
 
   const handleHeaderProductBack = () => {
+    if (currentView === 'product' && !productConfig.orderScope) {
+      navigateToView('models');
+      return;
+    }
     setProductConfig(createEmptyProductConfig());
   };
 
-  const showBrandRail = ['home', 'models', 'years', 'form'].includes(currentView)
-    || (currentView === 'product' && !productConfig.orderScope);
-  const showHeaderProductBack = currentView === 'product' && Boolean(productConfig.orderScope);
+  const showBrandRail = ['home', 'models', 'years', 'form'].includes(currentView);
+  const showHeaderProductBack = currentView === 'product';
+  const productHeaderTitle = currentView === 'product'
+    ? [selectedBrand?.name, selectedModel, selectedYear].filter(Boolean).join('-')
+    : '';
   const isSingleProductSelection = currentView === 'product' && Boolean(productConfig.orderScope);
 
   useEffect(() => {
@@ -506,17 +552,82 @@ function App() {
       // ignore storage errors
     }
 
-    const route = resolveRoute(window.location.pathname);
-    navigateToView(route.view, { categorySlug: route.categorySlug, replace: true });
+    const route = resolveRoute(window.location.pathname, window.location.search);
+    if (route.view === 'product' && route.productParams) {
+      setPendingProductRouteParams(route.productParams);
+    }
+    navigateToView(route.view, {
+      categorySlug: route.categorySlug,
+      queryString: route.queryString,
+      replace: true,
+    });
     setIsHydrated(true);
 
     const onPopState = () => {
-      const nextRoute = resolveRoute(window.location.pathname);
-      navigateToView(nextRoute.view, { categorySlug: nextRoute.categorySlug, replace: true });
+      const nextRoute = resolveRoute(window.location.pathname, window.location.search);
+      if (nextRoute.view === 'product' && nextRoute.productParams) {
+        setPendingProductRouteParams(nextRoute.productParams);
+      }
+      navigateToView(nextRoute.view, {
+        categorySlug: nextRoute.categorySlug,
+        queryString: nextRoute.queryString,
+        replace: true,
+      });
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  useEffect(() => {
+    if (!catalogResolved || !pendingProductRouteParams) return;
+
+    const { brandId, model, year, productKey } = pendingProductRouteParams;
+    if (brandId) setSelectedBrandId(String(brandId));
+    if (model) setSelectedModel(model);
+    if (year) setSelectedYear(Number(year));
+
+    if (productKey === 'COMPLETE') {
+      setProductConfig({
+        ...createEmptyProductConfig(),
+        orderScope: 'complete',
+        productType: completeTypeLabel,
+      });
+    } else if (productKey) {
+      const selectedCatalog = productCatalogCards.find((item) => item.key === productKey);
+      if (selectedCatalog) {
+        setProductConfig({
+          ...createEmptyProductConfig(),
+          orderScope: 'piece',
+          selectedFeature: productKey,
+          productType: selectedCatalog.pieceType || selectedCatalog.label || productKey,
+        });
+      } else {
+        setProductConfig(createEmptyProductConfig());
+      }
+    } else {
+      setProductConfig(createEmptyProductConfig());
+    }
+
+    setPendingProductRouteParams(null);
+  }, [catalogResolved, pendingProductRouteParams]);
+
+  useEffect(() => {
+    if (!isHydrated || currentView !== 'product' || !selectedYear) return;
+    const queryString = buildProductQueryString();
+    const targetPath = queryString ? `${VIEW_TO_PATH.product}?${queryString}` : VIEW_TO_PATH.product;
+    const currentPath = `${window.location.pathname}${window.location.search}`;
+    if (currentPath !== targetPath) {
+      window.history.replaceState({}, '', targetPath);
+    }
+  }, [
+    isHydrated,
+    currentView,
+    selectedBrandId,
+    selectedModel,
+    selectedYear,
+    productConfig.orderScope,
+    productConfig.selectedFeature,
+  ]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -737,6 +848,7 @@ function App() {
         onMenuClick={handleMenuClick}
         showProductBack={showHeaderProductBack}
         onProductBack={handleHeaderProductBack}
+        productHeaderTitle={productHeaderTitle}
       />
       {showBrandRail ? (
         <BrandSelector

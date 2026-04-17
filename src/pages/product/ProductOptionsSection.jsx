@@ -1,7 +1,7 @@
 import React from 'react';
 import FeatureIcon from './FeatureIcon';
-import conducteurIcon from '../../images/new-icones/Conducteur.png';
-import passagerIcon from '../../images/new-icones/Passager.png';
+import conducteurIcon from '../../images/new-icones/Conducteur-v2.png';
+import passagerIcon from '../../images/new-icones/Passager-v2.png';
 import glaceOptionIcon from '../../images/new-icones/Glace.png';
 import sousEclairageOptionIcon from '../../images/new-icones/Sous-eclairage.png';
 import formeOptionIcon from '../../images/new-icones/Forme.png';
@@ -71,27 +71,13 @@ export default function ProductOptionsSection({
     : currentAdjustment.includes('reglage manuel')
       ? 'manuel'
       : '';
-  const selectedRabattement = currentAdjustment.includes('rabattement automatique')
-    ? 'automatique'
-    : (currentAdjustment.includes('rabattement electrique') || currentAdjustment.includes('rabattable electrique'))
-      ? 'electrique'
-      : (currentAdjustment.includes('rabattement manuel') || currentAdjustment.includes('rabattable manuel'))
-        ? 'manuel'
-        : '';
-
-  const composeAdjustmentType = (reglageValue, rabattementValue) => {
+  const composeAdjustmentType = (reglageValue) => {
     const reglageLabel = reglageValue ? `Reglage ${reglageValue}` : '';
-    const rabattementLabel = rabattementValue ? `Rabattement ${rabattementValue}` : '';
-    if (reglageLabel && rabattementLabel) return `${reglageLabel} + ${rabattementLabel}`;
-    return reglageLabel || rabattementLabel || '';
+    return reglageLabel || '';
   };
 
   const selectReglage = (value) => {
-    onChange('adjustmentType', composeAdjustmentType(value, selectedRabattement));
-  };
-
-  const selectRabattement = (value) => {
-    onChange('adjustmentType', composeAdjustmentType(selectedReglage, value));
+    onChange('adjustmentType', composeAdjustmentType(value));
   };
   const isGlassPiece = isPieceOrder && selectedFeatureKey === 'GLASS';
   const isCoverPiece = isPieceOrder && selectedFeatureKey === 'COVER';
@@ -123,75 +109,66 @@ export default function ProductOptionsSection({
   return (
     <>
       {hasCatalogSelection ? (
-        <section className="config-group">
+        <section className="config-group position-config-group">
           <h3>{t('product_step2', '1. Cote du retroviseur')}</h3>
           {/* <p className="config-help">{t('product_step2_help', 'Selectionnez le cote du vehicule concerne.')}</p> */}
-          <div className="choice-list position-choice-list">
-            {positions.map((item) => (
-              <div key={item} className="position-choice-item">
-                <span className="position-choice-icon-wrap" aria-hidden="true">
-                  <img src={positionIconByValue[item]} alt="" className="position-choice-icon" loading="lazy" decoding="async" />
-                </span>
+          <div className="position-choice-layout">
+            <span className="position-side-icon left" aria-hidden="true">
+              <img src={positionIconByValue['Cote conducteur']} alt="" className="position-side-icon-img" loading="lazy" decoding="async" />
+            </span>
+            <div className="choice-list position-choice-list">
+              {positions.map((item) => (
                 <button
+                  key={item}
                   type="button"
                   className={`choice-btn position-choice-btn ${selectedPositions.includes(item) ? 'active' : ''}`}
                   onClick={() => togglePosition(item)}
                 >
                   <span className="position-choice-label">{positionLabel(item)}</span>
                 </button>
-              </div>
-            ))}
+              ))}
+            </div>
+            <span className="position-side-icon right" aria-hidden="true">
+              <img src={positionIconByValue['Cote passager']} alt="" className="position-side-icon-img" loading="lazy" decoding="async" />
+            </span>
           </div>
         </section>
       ) : null}
 
       {hasCatalogSelection && isPieceOrder && (pieceSuggestedOptions.length || isCoverPiece || isSinglePiece) ? (
         isGlassPiece ? (
-          <>
-            {pieceSuggestedOptions.map((optionLabel, index) => {
-              const isSelected = selectedOptions.includes(optionLabel);
-              return (
-                <section key={optionLabel} className="config-group">
-                  <h3>{`${index + 2}. ${optionLabel}`}</h3>
-                  <div className="adjustment-group-row">
-                    {optionImageByLabel[optionLabel] ? (
-                      <span className="adjustment-group-icon-wrap" aria-hidden="true">
-                        <img
-                          src={optionImageByLabel[optionLabel]}
-                          alt=""
-                          className="adjustment-group-icon"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </span>
-                    ) : (
-                      <span className="adjustment-group-icon-wrap" aria-hidden="true" />
-                    )}
-                    <div className="adjustment-choice-row adjustment-choice-row-two">
-                      <button
-                        type="button"
-                        className={`choice-btn ${isSelected ? 'active' : ''}`}
-                        onClick={() => {
-                          if (!isSelected) toggleOption(optionLabel);
-                        }}
-                      >
-                        Oui
-                      </button>
-                      <button
-                        type="button"
-                        className={`choice-btn ${!isSelected ? 'active' : ''}`}
-                        onClick={() => {
-                          if (isSelected) toggleOption(optionLabel);
-                        }}
-                      >
-                        Non
-                      </button>
-                    </div>
-                  </div>
-                </section>
-              );
-            })}
-          </>
+          <section className="config-group">
+            <h3>{`${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'GLASS'})`}</h3>
+            <div className="feature-grid">
+              {pieceSuggestedOptions.map((optionLabel) => (
+                <button
+                  key={optionLabel}
+                  type="button"
+                  className={`feature-card ${selectedOptions.includes(optionLabel) ? 'active' : ''}`}
+                  onClick={() => toggleOption(optionLabel)}
+                >
+                  {optionImageByLabel[optionLabel] ? (
+                    <span className="feature-card-icon" aria-hidden="true">
+                      <img
+                        src={optionImageByLabel[optionLabel]}
+                        alt=""
+                        className="feature-card-icon-img"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </span>
+                  ) : pieceOptionIconByLabel[optionLabel] ? (
+                    <span className="feature-card-icon" aria-hidden="true">
+                      <FeatureIcon type={pieceOptionIconByLabel[optionLabel]} />
+                    </span>
+                  ) : null}
+                  <span className="feature-card-texts">
+                    <span className="feature-card-title">{optionLabel}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
         ) : isCoverPiece ? (
           <>
             <section className="config-group">
@@ -397,45 +374,29 @@ export default function ProductOptionsSection({
 
       {hasCatalogSelection && isCompleteOrder ? (
         <section className="config-group">
-          <h3>3. Rabattement</h3>
-          <div className="adjustment-group">
-            <div className="adjustment-group-row">
-              <span className="adjustment-group-icon-wrap" aria-hidden="true">
-                <img src={rabattementIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
-              </span>
-              <div className="adjustment-choice-row adjustment-choice-row-three">
-                <button
-                  type="button"
-                  className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'manuel' ? 'active' : ''}`}
-                  onClick={() => selectRabattement('manuel')}
-                >
-                  Manuel
-                </button>
-                <button
-                  type="button"
-                  className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'electrique' ? 'active' : ''}`}
-                  onClick={() => selectRabattement('electrique')}
-                >
-                  Electrique
-                </button>
-                <button
-                  type="button"
-                  className={`choice-btn adjustment-choice-btn ${selectedRabattement === 'automatique' ? 'active' : ''}`}
-                  onClick={() => selectRabattement('automatique')}
-                >
-                  Automatique
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {hasCatalogSelection && isCompleteOrder ? (
-        <section className="config-group">
-          <h3>4. Options du retroviseur (optionnel)</h3>
+          <h3>3. Options du retroviseur (optionnel)</h3>
           {/* <p className="config-help">Choisissez les options visibles pour votre retroviseur complet.</p> */}
           <div className="feature-grid">
+            <button
+              type="button"
+              className={`feature-card ${selectedOptions.includes('Rabattement') ? 'active' : ''}`}
+              onClick={() => toggleOption('Rabattement')}
+            >
+              <span className="feature-card-icon">
+                <img
+                  src={rabattementIcon}
+                  alt=""
+                  className="feature-card-icon-img"
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span className="feature-card-texts">
+                <span className="feature-card-title">Rabattement</span>
+                <span className="feature-card-sub">Retroviseur rabattable</span>
+              </span>
+            </button>
             {visibleFeatureCards.map((card) => (
               <button
                 key={card.key}

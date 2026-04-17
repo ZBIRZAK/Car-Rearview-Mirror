@@ -109,15 +109,14 @@ export default function Product({
     const missing = [];
     const normalizedAdjustment = (productConfig.adjustmentType || '').toLowerCase();
     const hasReglage = normalizedAdjustment.includes('reglage ');
-    const hasRabattement = normalizedAdjustment.includes('rabattement ');
     const selectedPositions = Array.isArray(productConfig.position)
       ? productConfig.position
       : (productConfig.position ? [productConfig.position] : []);
     if (!productConfig.orderScope) missing.push('type de commande');
     if (!selectedPositions.length) missing.push('position');
     if (!productConfig.productType) missing.push('type de produit');
-    if (productConfig.orderScope === 'complete' && (!hasReglage || !hasRabattement)) {
-      missing.push('reglage et rabattement');
+    if (productConfig.orderScope === 'complete' && !hasReglage) {
+      missing.push('reglage');
     }
     return missing;
   }, [productConfig.orderScope, productConfig.position, productConfig.productType, productConfig.adjustmentType]);
@@ -220,22 +219,17 @@ export default function Product({
     onContinueShopping();
   };
 
+  useEffect(() => {
+    if (!showValidationHint) return undefined;
+    const timer = window.setTimeout(() => {
+      setShowValidationHint(false);
+    }, 3000);
+    return () => window.clearTimeout(timer);
+  }, [showValidationHint]);
+
   return (
     <div className="product-view">
-      <div className="view-header product-view-header">
-        <img
-          src={productHeaderCarIcon}
-          alt=""
-          className="product-header-icon"
-          aria-hidden="true"
-          loading="lazy"
-          decoding="async"
-        />
-        <div className="product-header-text">
-          <h2>{[brand?.name, model, year].filter(Boolean).join('-')}</h2>
-          {/* <p>{t('product_title', 'Configurez votre demande')}</p> */}
-        </div>
-      </div>
+      
 
       <div className={`product-layout ${hasCatalogSelection ? 'with-floating-actions' : 'catalog-only'}`}>
         {hasCatalogSelection ? (

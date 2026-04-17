@@ -2,9 +2,16 @@ import React, { useState } from 'react';
 import logo from '../logo/Test.svg';
 import { useI18n } from '../i18n';
 
-export default function Header({ onMenuClick, showProductBack = false, onProductBack }) {
+export default function Header({
+  onMenuClick,
+  showProductBack = false,
+  onProductBack,
+  productHeaderTitle = ''
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const { language, setLanguage, t } = useI18n();
+  const isProductHeader = showProductBack;
+  const headerTitle = productHeaderTitle || t('product_catalog_title', 'Liste des produits');
 
   const handleClick = (page) => {
     onMenuClick(page);
@@ -17,11 +24,11 @@ export default function Header({ onMenuClick, showProductBack = false, onProduct
   };
 
   return (
-    <header className="header">
+    <header className={`header ${isProductHeader ? 'header-product' : ''}`}>
       <div className="header-inner">
         {/* Mobile Hamburger */}
         <button
-          className={`hamburger-toggle ${isOpen ? 'open' : ''}`}
+          className={`hamburger-toggle ${isProductHeader ? 'product-menu-toggle' : ''} ${isOpen ? 'open' : ''}`}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Menu"
         >
@@ -33,15 +40,18 @@ export default function Header({ onMenuClick, showProductBack = false, onProduct
         {/* Logo / Product Back */}
         <div className="header-logo">
           {showProductBack ? (
-            <button
-              type="button"
-              className="product-back-icon-btn"
-              onClick={onProductBack}
-              aria-label={t('product_back_to_list', 'Retour a la liste des produits')}
-              title={t('product_back_to_list', 'Retour a la liste des produits')}
-            >
-              <span aria-hidden="true">←</span>
-            </button>
+            <>
+              <button
+                type="button"
+                className="product-back-icon-btn"
+                onClick={onProductBack}
+                aria-label={t('product_back_to_list', 'Retour a la liste des produits')}
+                title={t('product_back_to_list', 'Retour a la liste des produits')}
+              >
+                <span aria-hidden="true">←</span>
+              </button>
+              <h1 className="header-product-title">{headerTitle}</h1>
+            </>
           ) : (
             <img src={logo} alt="Logo" className="logo-img" />
           )}
