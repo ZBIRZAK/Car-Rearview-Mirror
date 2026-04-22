@@ -1,4 +1,5 @@
 import React from 'react';
+import { useI18n } from '../i18n';
 
 function AboutLineIcon({ type }) {
   if (type === 'quality') {
@@ -36,114 +37,104 @@ function AboutLineIcon({ type }) {
 }
 
 export default function About() {
+  const { t } = useI18n();
   return (
     <div className="about-view about-v2">
       <div className="about-hero">
-        <p className="about-kicker">A propos de nous</p>
-        <h1>A propos de nous</h1>
+        <p className="about-kicker">{t('about_kicker', 'A propos de nous')}</p>
+        <h1>{t('about_title', 'A propos de nous')}</h1>
         <p>
-          Nous aidons les conducteurs a trouver rapidement le bon retroviseur,
-          avec un parcours simple et un support humain.
+          {t('about_intro', 'Nous aidons les conducteurs a trouver rapidement le bon retroviseur, avec un parcours simple et un support humain.')}
         </p>
       </div>
 
       <div className="about-stats">
         <div className="about-stat-card">
           <strong>14+</strong>
-          <span>Annees d'experience</span>
+          <span>{t('about_stat_exp', "Annees d'experience")}</span>
         </div>
         <div className="about-stat-card">
           <strong>50k+</strong>
-          <span>Clients accompagnes</span>
+          <span>{t('about_stat_clients', 'Clients accompagnes')}</span>
         </div>
         <div className="about-stat-card">
           <strong>98%</strong>
-          <span>Taux de satisfaction</span>
+          <span>{t('about_stat_satisfaction', 'Taux de satisfaction')}</span>
         </div>
       </div>
 
       <div className="about-v2-layout">
         <section className="about-panel">
-          <h3>Notre histoire</h3>
+          <h3>{t('about_story_title', 'Notre histoire')}</h3>
           <p>
-            Fondee en 2010, Car Rearview Mirror Shop est specialisee dans les
-            retroviseurs et accessoires auto de haute qualite. Ce qui a commence
-            comme une petite entreprise familiale est devenu une reference du
-            secteur.
+            {t('about_story_text', "Fondee en 2010, Car Rearview Mirror Shop est specialisee dans les retroviseurs et accessoires auto de haute qualite. Ce qui a commence comme une petite entreprise familiale est devenu une reference du secteur.")}
           </p>
           <div className="about-timeline">
             <div className="about-timeline-item">
               <span className="year">2010</span>
-              <p>Lancement de notre activite specialisee retroviseurs.</p>
+              <p>{t('about_timeline_2010', 'Lancement de notre activite specialisee retroviseurs.')}</p>
             </div>
             <div className="about-timeline-item">
               <span className="year">2018</span>
-              <p>Extension du catalogue multi-marques et multi-modeles.</p>
+              <p>{t('about_timeline_2018', 'Extension du catalogue multi-marques et multi-modeles.')}</p>
             </div>
             <div className="about-timeline-item">
               <span className="year">2024</span>
-              <p>Refonte du parcours digital pour simplifier la selection.</p>
+              <p>{t('about_timeline_2024', 'Refonte du parcours digital pour simplifier la selection.')}</p>
             </div>
           </div>
         </section>
 
         <section className="about-panel">
-          <h3>Notre mission</h3>
+          <h3>{t('about_mission_title', 'Notre mission')}</h3>
           <p>
-            Nous pensons que chaque conducteur merite une visibilite claire et
-            une conduite en securite. Notre mission est de proposer des
-            retroviseurs premium avec un haut niveau de qualite et de service
-            client.
+            {t('about_mission_text', 'Nous pensons que chaque conducteur merite une visibilite claire et une conduite en securite. Notre mission est de proposer des retroviseurs premium avec un haut niveau de qualite et de service client.')}
           </p>
-          <h3>Notre vision</h3>
+          <h3>{t('about_vision_title', 'Notre vision')}</h3>
           <p>
-            Devenir la reference francophone pour le choix de retroviseurs en
-            ligne, avec une experience claire, rapide et fiable.
+            {t('about_vision_text', 'Devenir la reference francophone pour le choix de retroviseurs en ligne, avec une experience claire, rapide et fiable.')}
           </p>
         </section>
       </div>
 
       <section className="about-panel">
-        <h3>Pourquoi nous choisir</h3>
+        <h3>{t('about_why_title', 'Pourquoi nous choisir')}</h3>
         <div className="about-feature-grid">
           <div className="about-feature-item">
             <span className="about-feature-icon"><AboutLineIcon type="quality" /></span>
             <div>
-              <h4>Qualite premium</h4>
-              <p>Tous nos retroviseurs sont testes pour garantir durabilite et clarte.</p>
+              <h4>{t('about_feature_quality_title', 'Qualite premium')}</h4>
+              <p>{t('about_feature_quality_text', 'Tous nos retroviseurs sont testes pour garantir durabilite et clarte.')}</p>
             </div>
           </div>
           <div className="about-feature-item">
             <span className="about-feature-icon"><AboutLineIcon type="delivery" /></span>
             <div>
-              <h4>Livraison rapide</h4>
-              <p>Expedition rapide avec suivi jusqu'a votre adresse.</p>
+              <h4>{t('about_feature_delivery_title', 'Livraison rapide')}</h4>
+              <p>{t('about_feature_delivery_text', "Expedition rapide avec suivi jusqu'a votre adresse.")}</p>
             </div>
           </div>
           <div className="about-feature-item">
             <span className="about-feature-icon"><AboutLineIcon type="price" /></span>
             <div>
-              <h4>Prix competitifs</h4>
-              <p>Les meilleurs prix sans compromis sur la qualite.</p>
+              <h4>{t('about_feature_price_title', 'Prix competitifs')}</h4>
+              <p>{t('about_feature_price_text', 'Les meilleurs prix sans compromis sur la qualite.')}</p>
             </div>
           </div>
           <div className="about-feature-item">
             <span className="about-feature-icon"><AboutLineIcon type="support" /></span>
             <div>
-              <h4>Support 24/7</h4>
-              <p>Notre service client est disponible pour vous aider.</p>
+              <h4>{t('about_feature_support_title', 'Support 24/7')}</h4>
+              <p>{t('about_feature_support_text', 'Notre service client est disponible pour vous aider.')}</p>
             </div>
           </div>
         </div>
       </section>
 
       <section className="about-panel">
-        <h3>Expertise technique</h3>
+        <h3>{t('about_expertise_title', 'Expertise technique')}</h3>
         <p>
-          Avec plus de 14 ans d'experience dans l'automobile, notre equipe
-          comprend l'importance d'un retroviseur adapte. Nous collaborons
-          directement avec les fabricants pour proposer les dernieres
-          innovations.
+          {t('about_expertise_text', "Avec plus de 14 ans d'experience dans l'automobile, notre equipe comprend l'importance d'un retroviseur adapte. Nous collaborons directement avec les fabricants pour proposer les dernieres innovations.")}
         </p>
       </section>
     </div>

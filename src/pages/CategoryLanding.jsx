@@ -1,4 +1,5 @@
 import React from 'react';
+import { useI18n } from '../i18n';
 
 export const categoryContentMap = {
   'retroviseur-exterieur-gauche': {
@@ -69,9 +70,67 @@ export const categoryContentMap = {
 };
 
 export default function CategoryLanding({ slug, onStartSelection }) {
-  const data = categoryContentMap[slug];
+  const { t } = useI18n();
+  const translatedMap = {
+    'retroviseur-exterieur-gauche': {
+      h1: t('cat_left_h1', categoryContentMap['retroviseur-exterieur-gauche'].h1),
+      intro: t('cat_left_intro', categoryContentMap['retroviseur-exterieur-gauche'].intro),
+      benefits: [
+        t('cat_left_b1', categoryContentMap['retroviseur-exterieur-gauche'].benefits[0]),
+        t('cat_left_b2', categoryContentMap['retroviseur-exterieur-gauche'].benefits[1]),
+        t('cat_left_b3', categoryContentMap['retroviseur-exterieur-gauche'].benefits[2]),
+      ],
+      faqTitle: t('cat_left_faq_title', categoryContentMap['retroviseur-exterieur-gauche'].faqTitle),
+      faqText: t('cat_left_faq_text', categoryContentMap['retroviseur-exterieur-gauche'].faqText),
+    },
+    'retroviseur-exterieur-droit': {
+      h1: t('cat_right_h1', categoryContentMap['retroviseur-exterieur-droit'].h1),
+      intro: t('cat_right_intro', categoryContentMap['retroviseur-exterieur-droit'].intro),
+      benefits: [
+        t('cat_right_b1', categoryContentMap['retroviseur-exterieur-droit'].benefits[0]),
+        t('cat_right_b2', categoryContentMap['retroviseur-exterieur-droit'].benefits[1]),
+        t('cat_right_b3', categoryContentMap['retroviseur-exterieur-droit'].benefits[2]),
+      ],
+      faqTitle: t('cat_right_faq_title', categoryContentMap['retroviseur-exterieur-droit'].faqTitle),
+      faqText: t('cat_right_faq_text', categoryContentMap['retroviseur-exterieur-droit'].faqText),
+    },
+    'retroviseur-exterieur-chauffant': {
+      h1: t('cat_heat_h1', categoryContentMap['retroviseur-exterieur-chauffant'].h1),
+      intro: t('cat_heat_intro', categoryContentMap['retroviseur-exterieur-chauffant'].intro),
+      benefits: [
+        t('cat_heat_b1', categoryContentMap['retroviseur-exterieur-chauffant'].benefits[0]),
+        t('cat_heat_b2', categoryContentMap['retroviseur-exterieur-chauffant'].benefits[1]),
+        t('cat_heat_b3', categoryContentMap['retroviseur-exterieur-chauffant'].benefits[2]),
+      ],
+      faqTitle: t('cat_heat_faq_title', categoryContentMap['retroviseur-exterieur-chauffant'].faqTitle),
+      faqText: t('cat_heat_faq_text', categoryContentMap['retroviseur-exterieur-chauffant'].faqText),
+    },
+    'retroviseur-exterieur-electrique': {
+      h1: t('cat_elec_h1', categoryContentMap['retroviseur-exterieur-electrique'].h1),
+      intro: t('cat_elec_intro', categoryContentMap['retroviseur-exterieur-electrique'].intro),
+      benefits: [
+        t('cat_elec_b1', categoryContentMap['retroviseur-exterieur-electrique'].benefits[0]),
+        t('cat_elec_b2', categoryContentMap['retroviseur-exterieur-electrique'].benefits[1]),
+        t('cat_elec_b3', categoryContentMap['retroviseur-exterieur-electrique'].benefits[2]),
+      ],
+      faqTitle: t('cat_elec_faq_title', categoryContentMap['retroviseur-exterieur-electrique'].faqTitle),
+      faqText: t('cat_elec_faq_text', categoryContentMap['retroviseur-exterieur-electrique'].faqText),
+    },
+    'retroviseur-exterieur-rabattable-electriquement': {
+      h1: t('cat_fold_h1', categoryContentMap['retroviseur-exterieur-rabattable-electriquement'].h1),
+      intro: t('cat_fold_intro', categoryContentMap['retroviseur-exterieur-rabattable-electriquement'].intro),
+      benefits: [
+        t('cat_fold_b1', categoryContentMap['retroviseur-exterieur-rabattable-electriquement'].benefits[0]),
+        t('cat_fold_b2', categoryContentMap['retroviseur-exterieur-rabattable-electriquement'].benefits[1]),
+        t('cat_fold_b3', categoryContentMap['retroviseur-exterieur-rabattable-electriquement'].benefits[2]),
+      ],
+      faqTitle: t('cat_fold_faq_title', categoryContentMap['retroviseur-exterieur-rabattable-electriquement'].faqTitle),
+      faqText: t('cat_fold_faq_text', categoryContentMap['retroviseur-exterieur-rabattable-electriquement'].faqText),
+    },
+  };
+  const data = translatedMap[slug];
   if (!data) return null;
-  const relatedSlugs = Object.keys(categoryContentMap).filter((item) => item !== slug);
+  const relatedSlugs = Object.keys(translatedMap).filter((item) => item !== slug);
 
   return (
     <div className="category-view">
@@ -80,7 +139,7 @@ export default function CategoryLanding({ slug, onStartSelection }) {
         <p className="category-intro">{data.intro}</p>
 
         <div className="category-block">
-          <h2>Points cles</h2>
+          <h2>{t('category_points', 'Points cles')}</h2>
           <ul>
             {data.benefits.map((item) => (
               <li key={item}>{item}</li>
@@ -94,11 +153,11 @@ export default function CategoryLanding({ slug, onStartSelection }) {
         </div>
 
         <div className="category-block">
-          <h2>Categories associees</h2>
+          <h2>{t('category_related', 'Categories associees')}</h2>
           <ul>
             {relatedSlugs.map((relatedSlug) => (
               <li key={relatedSlug}>
-                <a href={`/${relatedSlug}`}>{categoryContentMap[relatedSlug].h1}</a>
+                <a href={`/${relatedSlug}`}>{translatedMap[relatedSlug].h1}</a>
               </li>
             ))}
           </ul>
@@ -106,7 +165,7 @@ export default function CategoryLanding({ slug, onStartSelection }) {
 
         <div className="category-actions">
           <button type="button" className="cta-button" onClick={onStartSelection}>
-            Choisir ma marque
+            {t('home_cta', 'Choisir ma marque')}
           </button>
         </div>
       </div>

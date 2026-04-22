@@ -21,25 +21,25 @@ export default function BottomNav({ active, onHome, onWhatsApp, onWeChat, onInst
       <button
         className={`nav-item ${active === 'whatsapp' ? 'active' : ''}`}
         onClick={onWhatsApp}
-        aria-label="WhatsApp"
+        aria-label={t('nav_whatsapp', 'WhatsApp')}
       >
-        <img src={whatsappIcon} alt="WhatsApp" className="nav-icon" />
+        <img src={whatsappIcon} alt={t('nav_whatsapp', 'WhatsApp')} className="nav-icon" />
       </button>
 
       <button
         className={`nav-item ${active === 'wechat' ? 'active' : ''}`}
         onClick={onWeChat}
-        aria-label="WeChat"
+        aria-label={t('nav_wechat', 'WeChat')}
       >
-        <img src={wechatIcon} alt="WeChat" className="nav-icon" />
+        <img src={wechatIcon} alt={t('nav_wechat', 'WeChat')} className="nav-icon" />
       </button>
 
       <button
         className={`nav-item ${active === 'instagram' ? 'active' : ''}`}
         onClick={onInstagram}
-        aria-label="Instagram"
+        aria-label={t('nav_instagram', 'Instagram')}
       >
-        <img src={instagramIcon} alt="Instagram" className="nav-icon" />
+        <img src={instagramIcon} alt={t('nav_instagram', 'Instagram')} className="nav-icon" />
       </button>
 
       <button

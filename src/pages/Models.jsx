@@ -1,12 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { speakFr, stopSpeech, supportsSpeech } from '../utils/speech';
 import { useI18n } from '../i18n';
 
 export default function Models({ brand, models, selectedModel, years, onModelSelect, onYearSelect, onBack }) {
   if (!brand) return null;
   const [query, setQuery] = useState('');
-  const canSpeak = supportsSpeech();
-  const { t, language } = useI18n();
+  const { t } = useI18n();
 
   const filteredModels = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -79,7 +77,7 @@ export default function Models({ brand, models, selectedModel, years, onModelSel
               </button>
             ))}
           </div>
-          {!filteredModels.length ? <p className="empty-state">Aucun modele trouve pour cette recherche.</p> : null}
+          {!filteredModels.length ? <p className="empty-state">{t('models_empty_search', 'Aucun modele trouve pour cette recherche.')}</p> : null}
         </section>
       </div>
     </div>

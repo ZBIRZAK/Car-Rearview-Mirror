@@ -5,12 +5,10 @@ import CatalogPreview from './product/CatalogPreview';
 import ProductCatalogSection from './product/ProductCatalogSection';
 import ProductOptionsSection from './product/ProductOptionsSection';
 import ProductActions from './product/ProductActions';
-import productHeaderCarIcon from '../images/new-icones/car-icone-header.png';
 import {
   completeTypeLabel,
   defaultProductImagesByKey,
   featureCards,
-  pieceSelectorCards,
   pieceSuggestedOptionsByCategory,
   positions,
   productCatalogCards,
@@ -38,6 +36,9 @@ export default function Product({
   const [completePreviewIndex, setCompletePreviewIndex] = useState(0);
   const [catalogCompleteImageIndex, setCatalogCompleteImageIndex] = useState(0);
   const effectiveAdminConfig = useMemo(() => ({
+    catalogProducts: Array.isArray(productAdminConfig?.catalogProducts)
+      ? productAdminConfig.catalogProducts
+      : DEFAULT_PRODUCT_ADMIN_CONFIG.catalogProducts,
     enabledProducts: Array.isArray(productAdminConfig?.enabledProducts)
       ? productAdminConfig.enabledProducts
       : DEFAULT_PRODUCT_ADMIN_CONFIG.enabledProducts,
@@ -50,19 +51,39 @@ export default function Product({
     pieceOptionsByKey: productAdminConfig?.pieceOptionsByKey && typeof productAdminConfig.pieceOptionsByKey === 'object'
       ? productAdminConfig.pieceOptionsByKey
       : DEFAULT_PRODUCT_ADMIN_CONFIG.pieceOptionsByKey,
+    productOptionDefsByProductKey: productAdminConfig?.productOptionDefsByProductKey && typeof productAdminConfig.productOptionDefsByProductKey === 'object'
+      ? productAdminConfig.productOptionDefsByProductKey
+      : DEFAULT_PRODUCT_ADMIN_CONFIG.productOptionDefsByProductKey,
   }), [productAdminConfig]);
 
   const selectedOptions = productConfig.options || [];
   const isCompleteOrder = productConfig.orderScope === 'complete';
   const isPieceOrder = productConfig.orderScope === 'piece';
   const selectedFeatureKey = productConfig.selectedFeature || '';
+  const fallbackCatalogCards = useMemo(() => {
+    const enabledSet = new Set(effectiveAdminConfig.enabledProducts || DEFAULT_PRODUCT_ADMIN_CONFIG.enabledProducts);
+    return productCatalogCards.filter((item) => enabledSet.has(item.key));
+  }, [effectiveAdminConfig.enabledProducts]);
+  const visibleCatalogCards = useMemo(() => {
+    if (Array.isArray(effectiveAdminConfig.catalogProducts) && effectiveAdminConfig.catalogProducts.length) {
+      return effectiveAdminConfig.catalogProducts.map((item) => ({
+        key: item.key,
+        label: item.label,
+        subtitle: item.subtitle,
+        pieceType: item.pieceType,
+        orderScope: item.orderScope,
+        optionGroup: item.optionGroup,
+        previewFocus: item.previewFocus || 'generic',
+        requiresPosition: item.requiresPosition !== false,
+        requiresAdjustment: item.requiresAdjustment === true,
+        imageSrc: '',
+      }));
+    }
+    return fallbackCatalogCards;
+  }, [effectiveAdminConfig.catalogProducts, fallbackCatalogCards]);
   const enabledProductSet = useMemo(
-    () => new Set(effectiveAdminConfig.enabledProducts || DEFAULT_PRODUCT_ADMIN_CONFIG.enabledProducts),
-    [effectiveAdminConfig.enabledProducts]
-  );
-  const visibleCatalogCards = useMemo(
-    () => productCatalogCards.filter((item) => enabledProductSet.has(item.key)),
-    [enabledProductSet]
+    () => new Set(visibleCatalogCards.map((item) => item.key)),
+    [visibleCatalogCards]
   );
   const enabledCompleteOptionSet = useMemo(
     () => new Set(effectiveAdminConfig.completeOptionKeys || DEFAULT_PRODUCT_ADMIN_CONFIG.completeOptionKeys),
@@ -74,17 +95,33 @@ export default function Product({
   );
   const productImagesByKey = useMemo(() => {
     const configMap = effectiveAdminConfig.productImagesByKey || {};
+    const keys = Array.from(new Set([
+      ...Object.keys(defaultProductImagesByKey),
+      ...Object.keys(configMap),
+      ...visibleCatalogCards.map((item) => item.key),
+    ]));
     return Object.fromEntries(
-      Object.keys(defaultProductImagesByKey).map((key) => {
+      keys.map((key) => {
         const configured = Array.isArray(configMap[key]) ? configMap[key].filter(Boolean) : [];
-        return [key, configured.length ? configured : defaultProductImagesByKey[key]];
+        const fallback = defaultProductImagesByKey[key] || [productPreviewImage];
+        return [key, configured.length ? configured : fallback];
       })
     );
-  }, [effectiveAdminConfig.productImagesByKey]);
-  const selectedCatalogCard = productCatalogCards.find((item) => {
-    if (item.key === 'COMPLETE') return isCompleteOrder;
-    return selectedFeatureKey === item.key;
-  }) || null;
+  }, [effectiveAdminConfig.productImagesByKey, visibleCatalogCards]);
+  const selectedCatalogCard = useMemo(() => {
+    if (!visibleCatalogCards.length) return null;
+    if (selectedFeatureKey) {
+      const byKey = visibleCatalogCards.find((item) => item.key === selectedFeatureKey);
+      if (byKey) return byKey;
+    }
+    if (isCompleteOrder) {
+      return visibleCatalogCards.find((item) => item.orderScope === 'complete' || item.key === 'COMPLETE') || null;
+    }
+    if (isPieceOrder) {
+      return visibleCatalogCards.find((item) => item.orderScope === 'piece' && item.key === selectedFeatureKey) || null;
+    }
+    return null;
+  }, [visibleCatalogCards, selectedFeatureKey, isCompleteOrder, isPieceOrder]);
   const hasCatalogSelection = Boolean(productConfig.orderScope);
   const selectedCatalogImages = useMemo(() => {
     if (!selectedCatalogCard) return [productPreviewImage];
@@ -107,19 +144,19 @@ export default function Product({
 
   const requiredMissing = useMemo(() => {
     const missing = [];
+    const requiresPosition = selectedCatalogCard?.requiresPosition !== false;
+    const requiresAdjustment = selectedCatalogCard?.requiresAdjustment === true;
     const normalizedAdjustment = (productConfig.adjustmentType || '').toLowerCase();
     const hasReglage = normalizedAdjustment.includes('reglage ');
     const selectedPositions = Array.isArray(productConfig.position)
       ? productConfig.position
       : (productConfig.position ? [productConfig.position] : []);
     if (!productConfig.orderScope) missing.push('type de commande');
-    if (!selectedPositions.length) missing.push('position');
+    if (requiresPosition && !selectedPositions.length) missing.push('position');
+    if (requiresAdjustment && !hasReglage) missing.push('reglage');
     if (!productConfig.productType) missing.push('type de produit');
-    if (productConfig.orderScope === 'complete' && !hasReglage) {
-      missing.push('reglage');
-    }
     return missing;
-  }, [productConfig.orderScope, productConfig.position, productConfig.productType, productConfig.adjustmentType]);
+  }, [productConfig.orderScope, productConfig.position, productConfig.productType, productConfig.adjustmentType, selectedCatalogCard?.requiresPosition, selectedCatalogCard?.requiresAdjustment]);
 
   const canContinue = requiredMissing.length === 0;
 
@@ -141,10 +178,10 @@ export default function Product({
   };
 
   const handleCatalogSelect = (item) => {
-    if (item.key === 'COMPLETE') {
+    if (item.orderScope === 'complete' || item.key === 'COMPLETE') {
       onChange('orderScope', 'complete');
-      onChange('productType', completeTypeLabel);
-      onChange('selectedFeature', '');
+      onChange('productType', item.pieceType || completeTypeLabel);
+      onChange('selectedFeature', item.key);
       onChange('adjustmentType', '');
       onChange('options', []);
       return;
@@ -152,7 +189,7 @@ export default function Product({
 
     onChange('orderScope', 'piece');
     onChange('selectedFeature', item.key);
-    onChange('productType', item.pieceType);
+    onChange('productType', item.pieceType || item.label || item.key);
     onChange('adjustmentType', '');
     onChange('options', []);
   };
@@ -169,7 +206,7 @@ export default function Product({
 
   useEffect(() => {
     if (!hasCatalogSelection) return;
-    if (isCompleteOrder && !enabledProductSet.has('COMPLETE')) {
+    if (isCompleteOrder && selectedFeatureKey && !enabledProductSet.has(selectedFeatureKey)) {
       resetCatalogSelection();
       return;
     }
@@ -178,15 +215,60 @@ export default function Product({
     }
   }, [hasCatalogSelection, isCompleteOrder, isPieceOrder, selectedFeatureKey, enabledProductSet, resetCatalogSelection]);
 
-  const pieceSuggestedOptions = useMemo(() => {
-    if (!isPieceOrder) return [];
-    const configured = effectiveAdminConfig.pieceOptionsByKey?.[selectedFeatureKey];
-    return Array.isArray(configured) ? configured : (pieceSuggestedOptionsByCategory[selectedFeatureKey] || []);
-  }, [isPieceOrder, selectedFeatureKey, effectiveAdminConfig.pieceOptionsByKey]);
-  const pieceOptionIconByLabel = useMemo(
-    () => Object.fromEntries((PIECE_OPTION_DEFS[selectedFeatureKey] || []).map((item) => [item.key, item.icon])),
-    [selectedFeatureKey]
-  );
+  const selectedPieceOptionGroup = selectedCatalogCard?.optionGroup || selectedFeatureKey;
+  const selectedOptionDefs = useMemo(() => {
+    const selectedProductKey = selectedCatalogCard?.key || selectedFeatureKey;
+    const dynamicDefs = selectedProductKey
+      ? effectiveAdminConfig.productOptionDefsByProductKey?.[selectedProductKey]
+      : null;
+    if (Array.isArray(dynamicDefs) && dynamicDefs.length) {
+      return dynamicDefs.map((item) => ({
+        key: String(item.key || item.label || '').trim(),
+        label: String(item.label || item.key || '').trim(),
+        icon: String(item.icon || '').trim(),
+        imageSrc: String(item.imageSrc || '').trim(),
+      })).filter((item) => item.key && item.label);
+    }
+
+    if (isCompleteOrder) {
+      const completeFallback = [
+        { key: 'Rabattement', label: t('product_fold_option_title', 'Rabattement'), icon: 'folding' },
+        ...visibleFeatureCards.map((card) => ({
+          key: card.key,
+          label: card.label,
+          icon: card.icon || '',
+          imageSrc: '',
+        })),
+      ];
+      return completeFallback;
+    }
+
+    if (isPieceOrder) {
+      const configured = effectiveAdminConfig.pieceOptionsByKey?.[selectedPieceOptionGroup];
+      const labels = (Array.isArray(configured) && configured.length)
+        ? configured
+        : (pieceSuggestedOptionsByCategory[selectedPieceOptionGroup] || []);
+      const iconByLabel = Object.fromEntries((PIECE_OPTION_DEFS[selectedPieceOptionGroup] || []).map((item) => [item.key, item.icon]));
+      return labels.map((label) => ({
+        key: label,
+        label,
+        icon: iconByLabel[label] || '',
+        imageSrc: '',
+      }));
+    }
+
+    return [];
+  }, [
+    selectedCatalogCard?.key,
+    selectedFeatureKey,
+    isCompleteOrder,
+    isPieceOrder,
+    effectiveAdminConfig.productOptionDefsByProductKey,
+    effectiveAdminConfig.pieceOptionsByKey,
+    selectedPieceOptionGroup,
+    visibleFeatureCards,
+    t,
+  ]);
 
   const positionLabel = (item) => {
     if (item === 'Cote conducteur') return t('side_driver', 'Conducteur');
@@ -249,12 +331,12 @@ export default function Product({
         {hasCatalogSelection ? (
         <aside className="catalog-preview-overlay">
           {selectedCatalogCard ? (
-            <div className="piece-slider-block product-image-preview-block" role="region" aria-label="Apercu produit selectionne">
+            <div className="piece-slider-block product-image-preview-block" role="region" aria-label={t('product_preview_selected', 'Apercu produit selectionne')}>
               <button type="button" className="product-image-trigger" onClick={openLightbox}>
                 <CatalogPreview focus={selectedCatalogCard.previewFocus} imageSrc={selectedPreviewImage} />
               </button>
               {selectedCatalogImages.length > 1 ? (
-                <div className="preview-thumbnails" role="listbox" aria-label="Images du retroviseur complet">
+                <div className="preview-thumbnails" role="listbox" aria-label={t('product_preview_images', 'Images du retroviseur complet')}>
                   {selectedCatalogImages.map((imgSrc, idx) => (
                     <button
                       key={imgSrc}
@@ -287,6 +369,10 @@ export default function Product({
             productPreviewImage={productPreviewImage}
             onCatalogSelect={handleCatalogSelect}
             pieceCardLabel={pieceCardLabel}
+            t={t}
+            brand={brand}
+            model={model}
+            year={year}
           />
 
           <ProductOptionsSection
@@ -297,26 +383,26 @@ export default function Product({
             onChange={onChange}
             positionLabel={positionLabel}
             isPieceOrder={isPieceOrder}
-            pieceSuggestedOptions={pieceSuggestedOptions}
             selectedFeatureKey={selectedFeatureKey}
             selectedOptions={selectedOptions}
             toggleOption={toggleOption}
-            pieceOptionIconByLabel={pieceOptionIconByLabel}
             isCompleteOrder={isCompleteOrder}
-            visibleFeatureCards={visibleFeatureCards}
+            selectedOptionDefs={selectedOptionDefs}
+            showAdjustmentSection={selectedCatalogCard?.requiresAdjustment === true}
+            showPositionSection={selectedCatalogCard?.requiresPosition !== false}
           />
         </div>
       </div>
 
       {isLightboxOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
-          <button type="button" className="lightbox-close" onClick={closeLightbox} aria-label="Fermer la visionneuse">
+          <button type="button" className="lightbox-close" onClick={closeLightbox} aria-label={t('product_lightbox_close', 'Fermer la visionneuse')}>
             ×
           </button>
           <div className="lightbox-image-wrap">
             <img
               src={selectedPreviewImage}
-              alt="Retroviseur exterieur de voiture en grand format"
+              alt={t('product_lightbox_alt', 'Retroviseur exterieur de voiture en grand format')}
               className="lightbox-image"
               style={{ transform: `scale(${zoom})` }}
             />

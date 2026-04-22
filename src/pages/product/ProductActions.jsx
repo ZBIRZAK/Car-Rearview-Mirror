@@ -55,7 +55,7 @@ export default function ProductActions({
 
       {showValidationHint && !canContinue ? (
         <p className="product-validation-toast" role="status" aria-live="polite">
-          Merci de completer les champs requis avant de continuer.
+          {t('product_validation_required', 'Merci de completer les champs requis avant de continuer.')}
         </p>
       ) : null}
     </>

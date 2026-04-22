@@ -131,6 +131,22 @@ const sanitizeMessageCell = (value) => String(value ?? '-')
   .replace(/\s*\n+\s*/g, ' ')
   .trim() || '-';
 
+const parseOrderScopeForRequest = (value) => {
+  const normalized = String(value || '').toLowerCase();
+  return normalized.includes('complet') ? 'complete' : 'piece';
+};
+
+const parsePositionsForRequest = (value) => String(value || '')
+  .split('+')
+  .map((item) => item.trim())
+  .filter((item) => POSITION_ORDER.includes(item));
+
+const parseOptionsForRequest = (value) => {
+  const normalized = String(value || '').trim();
+  if (!normalized || normalized === '-' || normalized.toLowerCase() === 'aucune') return [];
+  return normalized.split(',').map((item) => item.trim()).filter(Boolean);
+};
+
 const isSameQuoteItem = (a, b) => (
   a.brand === b.brand
   && a.model === b.model
@@ -189,7 +205,7 @@ function resolveRoute(pathname, search = '') {
 }
 
 function App() {
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const mainContentRef = useRef(null);
   const fallbackCatalog = useRef(createFallbackCatalog()).current;
   // State management
@@ -246,7 +262,7 @@ function App() {
   }, [catalogData.yearsByBrandModel, selectedBrandId, selectedModel]);
 
   const resolveSelectedCatalogKey = (config) => {
-    if (config.orderScope === 'complete') return 'COMPLETE';
+    if (config.orderScope === 'complete') return config.selectedFeature || 'COMPLETE';
     if (config.orderScope === 'piece' && config.selectedFeature) return config.selectedFeature;
     return '';
   };
@@ -285,27 +301,48 @@ function App() {
     };
   };
 
-  const openWhatsAppQuote = () => {
+  const toRequestPayloadFromQuoteItem = (item) => {
+    const parsedYear = Number(item.year);
+    return {
+      brand: item.brand === '-' ? null : item.brand,
+      model: item.model === '-' ? null : item.model,
+      year: Number.isFinite(parsedYear) ? parsedYear : null,
+      productConfig: {
+        orderScope: parseOrderScopeForRequest(item.orderScope),
+        selectedFeature: item.selectedFeature === '-' ? '' : item.selectedFeature,
+        position: parsePositionsForRequest(item.position),
+        productType: item.productType === '-' ? '' : item.productType,
+        adjustmentType: item.adjustmentType === '-' ? '' : item.adjustmentType,
+        options: parseOptionsForRequest(item.optionsText),
+      },
+      fullName: null,
+      email: null,
+      phone: null,
+      message: 'Demande envoyee via WhatsApp',
+    };
+  };
+
+  const openWhatsAppQuote = async () => {
     const currentPayload = buildQuotePayload();
     const allRequests = quoteItems.length && isSameQuoteItem(quoteItems[quoteItems.length - 1], currentPayload)
       ? [...quoteItems]
       : [...quoteItems, currentPayload];
-    const messageLines = ['Bonjour, je veux une demande de devis.'];
+    const messageLines = [t('whatsapp_quote_intro', 'Bonjour, je veux une demande de devis.')];
 
     allRequests.forEach((item, index) => {
       messageLines.push('');
       if (allRequests.length > 1) {
-        messageLines.push(`Produit ${index + 1}:`);
+        messageLines.push(t('whatsapp_product_n', 'Produit {n}:').replace('{n}', String(index + 1)));
       }
-      messageLines.push(`Marque: ${sanitizeMessageCell(item.brand)}`);
-      messageLines.push(`Modele: ${sanitizeMessageCell(item.model)}`);
-      messageLines.push(`Annee: ${sanitizeMessageCell(item.year)}`);
-      messageLines.push(`Type de commande: ${sanitizeMessageCell(item.orderScope)}`);
-      messageLines.push(`Produit: ${sanitizeMessageCell(item.productType)}`);
-      messageLines.push(`Piece: ${sanitizeMessageCell(item.selectedFeature)}`);
-      messageLines.push(`Cote: ${sanitizeMessageCell(item.position)}`);
-      messageLines.push(`Type de reglage: ${sanitizeMessageCell(item.adjustmentType)}`);
-      messageLines.push(`Options: ${sanitizeMessageCell(item.optionsText)}`);
+      messageLines.push(`${t('whatsapp_label_brand', 'Marque')}: ${sanitizeMessageCell(item.brand)}`);
+      messageLines.push(`${t('whatsapp_label_model', 'Modele')}: ${sanitizeMessageCell(item.model)}`);
+      messageLines.push(`${t('whatsapp_label_year', 'Annee')}: ${sanitizeMessageCell(item.year)}`);
+      messageLines.push(`${t('whatsapp_label_order_type', 'Type de commande')}: ${sanitizeMessageCell(item.orderScope)}`);
+      messageLines.push(`${t('whatsapp_label_product', 'Produit')}: ${sanitizeMessageCell(item.productType)}`);
+      messageLines.push(`${t('whatsapp_label_piece', 'Piece')}: ${sanitizeMessageCell(item.selectedFeature)}`);
+      messageLines.push(`${t('whatsapp_label_side', 'Cote')}: ${sanitizeMessageCell(item.position)}`);
+      messageLines.push(`${t('whatsapp_label_adjustment', 'Type de reglage')}: ${sanitizeMessageCell(item.adjustmentType)}`);
+      messageLines.push(`${t('whatsapp_label_options', 'Options')}: ${sanitizeMessageCell(item.optionsText)}`);
       if (allRequests.length > 1 && index < allRequests.length - 1) {
         messageLines.push('------------------------------');
       }
@@ -314,6 +351,17 @@ function App() {
     const message = encodeURIComponent(messageLines.join('\r\n'));
     setActiveNav('whatsapp');
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+
+    if (hasSupabaseConfig) {
+      try {
+        await Promise.allSettled(
+          allRequests.map((item) => createRequest(toRequestPayloadFromQuoteItem(item)))
+        );
+      } catch (error) {
+        console.error('Failed to mirror WhatsApp requests into Supabase:', error);
+      }
+    }
+
     // Start a fresh quote after sending so old items are not mixed into next request.
     setQuoteItems([]);
     setProductConfig(createEmptyProductConfig());
@@ -861,7 +909,7 @@ function App() {
 
       <main ref={mainContentRef} className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
         {catalogLoading && (currentView === 'home' || currentView === 'models' || currentView === 'years') ? (
-          <div className="loading-card">Chargement du catalogue...</div>
+          <div className="loading-card">{t('catalog_loading', 'Chargement du catalogue...')}</div>
         ) : null}
 
         {currentView === 'home' && (

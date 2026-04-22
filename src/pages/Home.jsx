@@ -97,7 +97,7 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
                       {/* <p>{contact.address}</p> */}
                       {/* <p className="mechanic-contact-phone">{contact.phone}</p> */}
                       <div className="mechanic-contact-actions">
-                        <a href={`tel:${contact.phone}`}>Appeler</a>
+                        <a href={`tel:${contact.phone}`}>{t('home_call', 'Appeler')}</a>
                       </div>
                     </article>
                   );

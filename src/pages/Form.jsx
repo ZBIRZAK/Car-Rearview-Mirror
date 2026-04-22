@@ -5,31 +5,31 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
   if (!year) return null;
   const { t } = useI18n();
   const positionText = Array.isArray(productConfig?.position)
-    ? (productConfig.position.length ? productConfig.position.join(' + ') : 'Aucune')
-    : (productConfig?.position || 'Aucune');
+    ? (productConfig.position.length ? productConfig.position.join(' + ') : t('form_none', 'Aucune'))
+    : (productConfig?.position || t('form_none', 'Aucune'));
 
   const [errors, setErrors] = useState({});
 
   const validateField = (name, value) => {
     if (name === 'fullName') {
-      if (!value.trim()) return 'Le nom complet est obligatoire.';
-      if (value.trim().length < 2) return 'Veuillez entrer un nom valide.';
+      if (!value.trim()) return t('form_error_full_name_required', 'Le nom complet est obligatoire.');
+      if (value.trim().length < 2) return t('form_error_full_name_invalid', 'Veuillez entrer un nom valide.');
     }
 
     if (name === 'email') {
-      if (!value.trim()) return 'L\'email est obligatoire.';
+      if (!value.trim()) return t('form_error_email_required', "L'email est obligatoire.");
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) return 'Veuillez entrer une adresse email valide.';
+      if (!emailRegex.test(value)) return t('form_error_email_invalid', 'Veuillez entrer une adresse email valide.');
     }
 
     if (name === 'phone') {
-      if (!value.trim()) return 'Le numero de telephone est obligatoire.';
+      if (!value.trim()) return t('form_error_phone_required', 'Le numero de telephone est obligatoire.');
       const phoneRegex = /^[0-9+\-\s()]+$/;
-      if (!phoneRegex.test(value)) return 'Veuillez entrer un numero de telephone valide.';
+      if (!phoneRegex.test(value)) return t('form_error_phone_invalid', 'Veuillez entrer un numero de telephone valide.');
     }
 
     if (name === 'consent') {
-      if (!value) return 'Veuillez accepter les CGV et la Politique de Confidentialite.';
+      if (!value) return t('form_error_consent_required', 'Veuillez accepter les CGV et la Politique de Confidentialite.');
     }
 
     return '';
@@ -78,12 +78,12 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
         </div>
 
         <div className="product-summary">
-          <p><strong>Commande :</strong> {productConfig?.orderScope === 'complete' ? 'Complete' : productConfig?.orderScope === 'piece' ? 'Piece' : 'Non definie'}</p>
-          <p><strong>Position :</strong> {positionText}</p>
-          <p><strong>Type :</strong> {productConfig?.productType}</p>
-          <p><strong>Piece cible :</strong> {productConfig?.selectedFeature || 'Non definie'}</p>
-          <p><strong>Réglage:</strong> {productConfig?.adjustmentType}</p>
-          <p><strong>Options:</strong> {productConfig?.options?.length ? productConfig.options.join(', ') : 'Aucune'}</p>
+          <p><strong>{t('form_summary_order', 'Commande')} :</strong> {productConfig?.orderScope === 'complete' ? t('form_order_complete', 'Complete') : productConfig?.orderScope === 'piece' ? t('form_order_piece', 'Piece') : t('form_undefined', 'Non definie')}</p>
+          <p><strong>{t('form_summary_position', 'Position')} :</strong> {positionText}</p>
+          <p><strong>{t('form_summary_type', 'Type')} :</strong> {productConfig?.productType || t('form_undefined', 'Non definie')}</p>
+          <p><strong>{t('form_summary_piece', 'Piece cible')} :</strong> {productConfig?.selectedFeature || t('form_undefined', 'Non definie')}</p>
+          <p><strong>{t('form_summary_adjustment', 'Reglage')} :</strong> {productConfig?.adjustmentType || t('form_undefined', 'Non definie')}</p>
+          <p><strong>{t('form_summary_options', 'Options')} :</strong> {productConfig?.options?.length ? productConfig.options.join(', ') : t('form_none', 'Aucune')}</p>
         </div>
 
         <div className="form-grid">
@@ -149,13 +149,13 @@ export default function Form({ brand, model, year, productConfig, formData, onCh
                 onChange={handleFieldChange}
               />
               <span>
-                J'accepte les{' '}
+                {t('form_consent_prefix', "J'accepte les")}{' '}
                 <a className="consent-legal-link" href="/conditions-generales-de-vente">
-                  Conditions Generales de Vente
+                  {t('form_consent_terms', 'Conditions Generales de Vente')}
                 </a>{' '}
-                et la{' '}
+                {t('form_consent_and', 'et la')}{' '}
                 <a className="consent-legal-link" href="/politique-de-confidentialite">
-                  Politique de Confidentialite
+                  {t('form_consent_privacy', 'Politique de Confidentialite')}
                 </a>
                 .
               </span>

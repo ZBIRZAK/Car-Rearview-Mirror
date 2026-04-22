@@ -12,7 +12,7 @@ import {
   fetchCatalogYears,
 } from '../lib/catalogApi';
 import { fetchProductAdminConfig, saveProductAdminConfig } from '../lib/productConfigApi';
-import { COMPLETE_OPTION_DEFS, DEFAULT_PRODUCT_ADMIN_CONFIG, PIECE_OPTION_DEFS, PRODUCT_KEYS } from '../config/productAdminConfig';
+import { COMPLETE_OPTION_DEFS, DEFAULT_CATALOG_PRODUCTS, DEFAULT_PRODUCT_ADMIN_CONFIG, PIECE_OPTION_DEFS } from '../config/productAdminConfig';
 import { hasSupabaseConfig } from '../lib/supabaseClient';
 import { mockData } from '../data/mockData';
 import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from '../config/homeContentDefaults';
@@ -74,6 +74,18 @@ const OPTION_IMAGE_BY_KEY = {
 
 const HOME_WHY_ICON_CHOICES = ['shield', 'bolt', 'price', 'support'];
 const EMPTY_MECHANIC_CONTACT = { name: '', address: '', phone: '', image: '' };
+const PRODUCT_SCOPE_CHOICES = [
+  { value: 'complete', label: 'Produit complet' },
+  { value: 'piece', label: 'Piece' },
+];
+const PIECE_GROUP_CHOICES = ['GLASS', 'MIRROR', 'COVER', 'SINGLE'];
+const PRODUCT_OPTION_ICON_CHOICES = ['none', ...Object.keys(OPTION_ICON_MARK)];
+
+const toProductKey = (value) => String(value || '')
+  .trim()
+  .toUpperCase()
+  .replace(/[^A-Z0-9]+/g, '_')
+  .replace(/^_+|_+$/g, '');
 
 export default function Dashboard({
   isAdminAuthenticated = false,
@@ -104,6 +116,18 @@ export default function Dashboard({
   const [savingProductConfig, setSavingProductConfig] = useState(false);
   const [selectedConfigYear, setSelectedConfigYear] = useState(null);
   const [draggingImageRef, setDraggingImageRef] = useState(null);
+  const [newCatalogProduct, setNewCatalogProduct] = useState({
+    label: '',
+    subtitle: '',
+    orderScope: 'piece',
+    pieceType: '',
+    optionGroup: 'GLASS',
+    previewFocus: 'generic',
+    requiresPosition: true,
+    requiresAdjustment: false,
+  });
+  const [newOptionDraftByProductKey, setNewOptionDraftByProductKey] = useState({});
+  const [expandedOptionProductKey, setExpandedOptionProductKey] = useState('');
   const [homeContentForm, setHomeContentForm] = useState(() => normalizeHomeContent(DEFAULT_HOME_CONTENT));
   const [homeContentLoading, setHomeContentLoading] = useState(false);
   const [homeContentSaving, setHomeContentSaving] = useState(false);
@@ -113,6 +137,28 @@ export default function Dashboard({
   const [authBusy, setAuthBusy] = useState(false);
   const [authError, setAuthError] = useState('');
   const getOptionIconImage = (option) => OPTION_IMAGE_BY_KEY[option?.key] || OPTION_IMAGE_BY_KEY[option?.label] || '';
+  const catalogProducts = useMemo(() => {
+    if (Array.isArray(productAdminConfig.catalogProducts) && productAdminConfig.catalogProducts.length) {
+      return productAdminConfig.catalogProducts;
+    }
+    return DEFAULT_CATALOG_PRODUCTS.filter((item) => (productAdminConfig.enabledProducts || []).includes(item.key));
+  }, [productAdminConfig.catalogProducts, productAdminConfig.enabledProducts]);
+  const productOptionDefsByProductKey = useMemo(
+    () => (productAdminConfig.productOptionDefsByProductKey && typeof productAdminConfig.productOptionDefsByProductKey === 'object'
+      ? productAdminConfig.productOptionDefsByProductKey
+      : {}),
+    [productAdminConfig.productOptionDefsByProductKey]
+  );
+
+  useEffect(() => {
+    if (!catalogProducts.length) {
+      setExpandedOptionProductKey('');
+      return;
+    }
+    if (!expandedOptionProductKey || !catalogProducts.some((item) => item.key === expandedOptionProductKey)) {
+      setExpandedOptionProductKey(catalogProducts[0].key);
+    }
+  }, [catalogProducts, expandedOptionProductKey]);
 
   const handleAdminSignIn = async (event) => {
     event.preventDefault();
@@ -530,11 +576,18 @@ export default function Dashboard({
     }
     setSavingProductConfig(true);
     try {
+      const normalizedCatalog = Array.isArray(nextConfig.catalogProducts) ? nextConfig.catalogProducts : [];
+      const normalizedPayload = {
+        ...nextConfig,
+        enabledProducts: normalizedCatalog.length
+          ? normalizedCatalog.map((item) => item.key)
+          : (Array.isArray(nextConfig.enabledProducts) ? nextConfig.enabledProducts : []),
+      };
       const saved = await saveProductAdminConfig({
         brandId: selectedBrandId,
         model: selectedModel.name,
         year: Number(selectedConfigYear),
-      }, nextConfig);
+      }, normalizedPayload);
       setProductAdminConfig(saved);
     } catch (err) {
       setError(err?.message || 'Failed to save product config.');
@@ -543,32 +596,185 @@ export default function Dashboard({
     }
   };
 
-  const toggleEnabledProduct = (productKey) => {
-    const current = Array.isArray(productAdminConfig.enabledProducts) ? productAdminConfig.enabledProducts : [];
-    const exists = current.includes(productKey);
-    const next = exists ? current.filter((key) => key !== productKey) : [...current, productKey];
-    persistProductConfig({ ...productAdminConfig, enabledProducts: next });
-  };
-
-  const toggleCompleteOption = (optionKey) => {
-    const current = Array.isArray(productAdminConfig.completeOptionKeys) ? productAdminConfig.completeOptionKeys : [];
-    const exists = current.includes(optionKey);
-    const next = exists ? current.filter((key) => key !== optionKey) : [...current, optionKey];
-    persistProductConfig({ ...productAdminConfig, completeOptionKeys: next });
-  };
-
-  const togglePieceOption = (pieceKey, optionKey) => {
-    const currentMap = productAdminConfig.pieceOptionsByKey || {};
-    const current = Array.isArray(currentMap[pieceKey]) ? currentMap[pieceKey] : [];
-    const exists = current.includes(optionKey);
-    const next = exists ? current.filter((key) => key !== optionKey) : [...current, optionKey];
+  const addCatalogProduct = () => {
+    const label = String(newCatalogProduct.label || '').trim();
+    if (!label) {
+      setError('Ajoutez un nom de produit.');
+      return;
+    }
+    const baseKey = toProductKey(label) || 'PRODUCT';
+    const existingKeys = new Set(catalogProducts.map((item) => item.key));
+    let uniqueKey = baseKey;
+    let cursor = 2;
+    while (existingKeys.has(uniqueKey)) {
+      uniqueKey = `${baseKey}_${cursor}`;
+      cursor += 1;
+    }
+    const orderScope = newCatalogProduct.orderScope === 'complete' ? 'complete' : 'piece';
+    const nextProduct = {
+      key: uniqueKey,
+      label,
+      subtitle: String(newCatalogProduct.subtitle || '').trim(),
+      orderScope,
+      pieceType: String(newCatalogProduct.pieceType || '').trim() || label,
+      optionGroup: orderScope === 'complete'
+        ? 'COMPLETE'
+        : (String(newCatalogProduct.optionGroup || 'GLASS').toUpperCase()),
+      previewFocus: String(newCatalogProduct.previewFocus || 'generic').trim() || 'generic',
+      requiresPosition: newCatalogProduct.requiresPosition !== false,
+      requiresAdjustment: newCatalogProduct.requiresAdjustment === true,
+    };
+    const defaultOptionDefs = orderScope === 'complete'
+      ? COMPLETE_OPTION_DEFS.map((item) => ({ key: item.key, label: item.label, icon: item.icon || '', imageSrc: '' }))
+      : (PIECE_OPTION_DEFS[nextProduct.optionGroup] || []).map((item) => ({
+        key: item.key,
+        label: item.label,
+        icon: item.icon || '',
+        imageSrc: '',
+      }));
     persistProductConfig({
       ...productAdminConfig,
-      pieceOptionsByKey: {
-        ...currentMap,
-        [pieceKey]: next,
+      catalogProducts: [...catalogProducts, nextProduct],
+      productOptionDefsByProductKey: {
+        ...productOptionDefsByProductKey,
+        [uniqueKey]: defaultOptionDefs,
       },
     });
+    setNewCatalogProduct({
+      label: '',
+      subtitle: '',
+      orderScope: 'piece',
+      pieceType: '',
+      optionGroup: 'GLASS',
+      previewFocus: 'generic',
+      requiresPosition: true,
+      requiresAdjustment: false,
+    });
+  };
+
+  const updateCatalogProduct = (productKey, field, value) => {
+    const next = catalogProducts.map((item) => {
+      if (item.key !== productKey) return item;
+      if (field === 'orderScope') {
+        const scope = value === 'complete' ? 'complete' : 'piece';
+        return {
+          ...item,
+          orderScope: scope,
+          optionGroup: scope === 'complete' ? 'COMPLETE' : (item.optionGroup || 'GLASS'),
+        };
+      }
+      if (field === 'optionGroup') {
+        return { ...item, optionGroup: String(value || 'GLASS').toUpperCase() };
+      }
+      return { ...item, [field]: value };
+    });
+    persistProductConfig({ ...productAdminConfig, catalogProducts: next });
+  };
+
+  const removeCatalogProduct = (productKey) => {
+    const nextProducts = catalogProducts.filter((item) => item.key !== productKey);
+    const nextImageMap = { ...(productAdminConfig.productImagesByKey || {}) };
+    const nextOptionDefsMap = { ...productOptionDefsByProductKey };
+    delete nextImageMap[productKey];
+    delete nextOptionDefsMap[productKey];
+    persistProductConfig({
+      ...productAdminConfig,
+      catalogProducts: nextProducts,
+      productImagesByKey: nextImageMap,
+      productOptionDefsByProductKey: nextOptionDefsMap,
+    });
+    setNewOptionDraftByProductKey((prev) => {
+      const next = { ...prev };
+      delete next[productKey];
+      return next;
+    });
+  };
+
+  const updateOptionDraft = (productKey, field, value) => {
+    setNewOptionDraftByProductKey((prev) => ({
+      ...prev,
+      [productKey]: {
+        key: prev[productKey]?.key || '',
+        label: prev[productKey]?.label || '',
+        icon: prev[productKey]?.icon || 'none',
+        imageSrc: prev[productKey]?.imageSrc || '',
+        [field]: value,
+      },
+    }));
+  };
+
+  const addProductOption = (productKey) => {
+    const draft = newOptionDraftByProductKey[productKey] || { key: '', label: '', icon: 'none', imageSrc: '' };
+    const optionLabel = String(draft.label || '').trim();
+    if (!optionLabel) {
+      setError('Ajoutez un libelle d option.');
+      return;
+    }
+    const optionKey = String(draft.key || '').trim() || optionLabel;
+    const optionIcon = String(draft.icon || '').trim();
+    const current = Array.isArray(productOptionDefsByProductKey[productKey]) ? productOptionDefsByProductKey[productKey] : [];
+    const exists = current.some((item) => String(item.key || '').toLowerCase() === optionKey.toLowerCase());
+    if (exists) {
+      setError('Cette option existe deja pour ce produit.');
+      return;
+    }
+    persistProductConfig({
+      ...productAdminConfig,
+      productOptionDefsByProductKey: {
+        ...productOptionDefsByProductKey,
+        [productKey]: [
+          ...current,
+          {
+            key: optionKey,
+            label: optionLabel,
+            icon: optionIcon === 'none' ? '' : optionIcon,
+            imageSrc: String(draft.imageSrc || ''),
+          },
+        ],
+      },
+    });
+    setNewOptionDraftByProductKey((prev) => ({
+      ...prev,
+      [productKey]: { key: '', label: '', icon: 'none', imageSrc: '' },
+    }));
+  };
+
+  const updateProductOption = (productKey, optionKey, field, value) => {
+    const current = Array.isArray(productOptionDefsByProductKey[productKey]) ? productOptionDefsByProductKey[productKey] : [];
+    const next = current.map((item) => {
+      if (item.key !== optionKey) return item;
+      if (field === 'icon') return { ...item, icon: value === 'none' ? '' : value };
+      return { ...item, [field]: value };
+    });
+    persistProductConfig({
+      ...productAdminConfig,
+      productOptionDefsByProductKey: {
+        ...productOptionDefsByProductKey,
+        [productKey]: next,
+      },
+    });
+  };
+
+  const removeProductOption = (productKey, optionKey) => {
+    const current = Array.isArray(productOptionDefsByProductKey[productKey]) ? productOptionDefsByProductKey[productKey] : [];
+    const next = current.filter((item) => item.key !== optionKey);
+    persistProductConfig({
+      ...productAdminConfig,
+      productOptionDefsByProductKey: {
+        ...productOptionDefsByProductKey,
+        [productKey]: next,
+      },
+    });
+  };
+
+  const updateProductOptionImage = async (productKey, optionKey, file) => {
+    if (!file) return;
+    try {
+      const dataUrl = await toDataUrl(file);
+      updateProductOption(productKey, optionKey, 'imageSrc', dataUrl);
+    } catch (err) {
+      setError(err?.message || 'Failed to add option image.');
+    }
   };
 
   const addProductImage = async (productKey, file) => {
@@ -1100,36 +1306,192 @@ export default function Dashboard({
             <article className="dashboard-catalog-col dashboard-product-config-col">
               <h3>Produits et options (app)</h3>
               <p className="config-help">
-                Activez les produits et options visibles pour l annee:
+                Configurez les produits et leurs options pour l annee:
                 {' '}
                 <strong>{selectedConfigYear || '-'}</strong>
               </p>
               {savingProductConfig ? <p className="empty-state">Sauvegarde...</p> : null}
 
               <div className="dashboard-check-group">
-                <p className="dashboard-check-title">Produits actifs</p>
-                {PRODUCT_KEYS.map((productKey) => (
-                  <label key={productKey} className="dashboard-check-item">
+                <p className="dashboard-check-title">Produits actifs (dynamiques)</p>
+                <div className="dashboard-add-row">
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    placeholder="Nom produit (ex: Retroviseur complet)"
+                    value={newCatalogProduct.label}
+                    onChange={(event) => setNewCatalogProduct((prev) => ({ ...prev, label: event.target.value }))}
+                  />
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    placeholder="Sous-titre (optionnel)"
+                    value={newCatalogProduct.subtitle}
+                    onChange={(event) => setNewCatalogProduct((prev) => ({ ...prev, subtitle: event.target.value }))}
+                  />
+                </div>
+                <div className="dashboard-add-row">
+                  <select
+                    className="dashboard-search-input"
+                    value={newCatalogProduct.orderScope}
+                    onChange={(event) => setNewCatalogProduct((prev) => ({
+                      ...prev,
+                      orderScope: event.target.value,
+                      optionGroup: event.target.value === 'complete' ? 'COMPLETE' : prev.optionGroup || 'GLASS',
+                      requiresAdjustment: event.target.value === 'complete' ? true : prev.requiresAdjustment,
+                    }))}
+                  >
+                    {PRODUCT_SCOPE_CHOICES.map((item) => (
+                      <option key={item.value} value={item.value}>{item.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    className="dashboard-search-input"
+                    value={newCatalogProduct.optionGroup}
+                    onChange={(event) => setNewCatalogProduct((prev) => ({ ...prev, optionGroup: event.target.value }))}
+                    disabled={newCatalogProduct.orderScope === 'complete'}
+                  >
+                    {PIECE_GROUP_CHOICES.map((groupKey) => (
+                      <option key={groupKey} value={groupKey}>{groupKey}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    className="dashboard-search-input"
+                    placeholder="Texte produit (commande)"
+                    value={newCatalogProduct.pieceType}
+                    onChange={(event) => setNewCatalogProduct((prev) => ({ ...prev, pieceType: event.target.value }))}
+                  />
+                  <label className="dashboard-check-item">
                     <input
                       type="checkbox"
-                      checked={(productAdminConfig.enabledProducts || []).includes(productKey)}
-                      onChange={() => toggleEnabledProduct(productKey)}
+                      checked={newCatalogProduct.requiresPosition !== false}
+                      onChange={(event) => setNewCatalogProduct((prev) => ({ ...prev, requiresPosition: event.target.checked }))}
                     />
-                    <span>{productKey}</span>
+                    <span>Cote obligatoire</span>
                   </label>
-                ))}
+                  <label className="dashboard-check-item">
+                    <input
+                      type="checkbox"
+                      checked={newCatalogProduct.requiresAdjustment === true}
+                      onChange={(event) => setNewCatalogProduct((prev) => ({ ...prev, requiresAdjustment: event.target.checked }))}
+                    />
+                    <span>Reglage obligatoire</span>
+                  </label>
+                  <button type="button" className="year-filter-btn active" onClick={addCatalogProduct}>
+                    Ajouter
+                  </button>
+                </div>
+
+                <div className="dashboard-catalog-list">
+                  {catalogProducts.map((item) => (
+                    <div key={item.key} className="dashboard-home-subcard">
+                      <div className="dashboard-home-subcard-head">
+                        <strong>{item.key}</strong>
+                        <button
+                          type="button"
+                          className="dashboard-delete-action-btn"
+                          onClick={() => removeCatalogProduct(item.key)}
+                        >
+                          Suppr.
+                        </button>
+                      </div>
+                      <div className="dashboard-home-grid dashboard-home-grid-2">
+                        <label className="dashboard-home-label">
+                          Nom
+                          <input
+                            type="text"
+                            className="dashboard-search-input"
+                            value={item.label || ''}
+                            onChange={(event) => updateCatalogProduct(item.key, 'label', event.target.value)}
+                          />
+                        </label>
+                        <label className="dashboard-home-label">
+                          Sous-titre
+                          <input
+                            type="text"
+                            className="dashboard-search-input"
+                            value={item.subtitle || ''}
+                            onChange={(event) => updateCatalogProduct(item.key, 'subtitle', event.target.value)}
+                          />
+                        </label>
+                        <label className="dashboard-home-label">
+                          Type commande
+                          <select
+                            className="dashboard-search-input"
+                            value={item.orderScope === 'complete' ? 'complete' : 'piece'}
+                            onChange={(event) => updateCatalogProduct(item.key, 'orderScope', event.target.value)}
+                          >
+                            {PRODUCT_SCOPE_CHOICES.map((choice) => (
+                              <option key={choice.value} value={choice.value}>{choice.label}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="dashboard-home-label">
+                          Groupe options
+                          <select
+                            className="dashboard-search-input"
+                            value={item.orderScope === 'complete' ? 'COMPLETE' : (item.optionGroup || 'GLASS')}
+                            onChange={(event) => updateCatalogProduct(item.key, 'optionGroup', event.target.value)}
+                            disabled={item.orderScope === 'complete'}
+                          >
+                            {PIECE_GROUP_CHOICES.map((groupKey) => (
+                              <option key={groupKey} value={groupKey}>{groupKey}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="dashboard-home-label">
+                          Texte produit (commande)
+                          <input
+                            type="text"
+                            className="dashboard-search-input"
+                            value={item.pieceType || ''}
+                            onChange={(event) => updateCatalogProduct(item.key, 'pieceType', event.target.value)}
+                          />
+                        </label>
+                        <label className="dashboard-home-label">
+                          Focus preview
+                          <input
+                            type="text"
+                            className="dashboard-search-input"
+                            value={item.previewFocus || ''}
+                            onChange={(event) => updateCatalogProduct(item.key, 'previewFocus', event.target.value)}
+                          />
+                        </label>
+                        <label className="dashboard-check-item">
+                          <input
+                            type="checkbox"
+                            checked={item.requiresPosition !== false}
+                            onChange={(event) => updateCatalogProduct(item.key, 'requiresPosition', event.target.checked)}
+                          />
+                          <span>Cote obligatoire</span>
+                        </label>
+                        <label className="dashboard-check-item">
+                          <input
+                            type="checkbox"
+                            checked={item.requiresAdjustment === true}
+                            onChange={(event) => updateCatalogProduct(item.key, 'requiresAdjustment', event.target.checked)}
+                          />
+                          <span>Reglage obligatoire</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {!catalogProducts.length ? <p className="empty-state">Aucun produit actif.</p> : null}
               </div>
 
               <div className="dashboard-check-group">
                 <p className="dashboard-check-title">Images par produit (1 ou plus)</p>
                 <p className="config-help">Ajoutez plusieurs images par produit. Glissez pour reordonner.</p>
                 <div className="dashboard-product-images-grid">
-                  {PRODUCT_KEYS.filter((productKey) => (productAdminConfig.enabledProducts || []).includes(productKey)).map((productKey) => {
+                  {catalogProducts.map((productItem) => {
+                    const productKey = productItem.key;
                     const images = productAdminConfig.productImagesByKey?.[productKey] || [];
                     return (
                       <div key={productKey} className="dashboard-product-images-block">
                         <div className="dashboard-product-images-head">
-                          <strong>{productKey}</strong>
+                          <strong>{productItem.label || productKey}</strong>
                           <span className="dashboard-image-count-badge">{images.length} image(s)</span>
                         </div>
                         <label className="dashboard-file-label dashboard-file-label-inline dashboard-image-add-btn">
@@ -1162,7 +1524,7 @@ export default function Dashboard({
                               onDragEnd={() => setDraggingImageRef(null)}
                             >
                               <img src={src} alt={`${productKey} ${index + 1}`} />
-                              <p className="dashboard-image-index">Image {index + 1}</p>
+                              {/* <p className="dashboard-image-index">Image {index + 1}</p> */}
                               <div className="dashboard-image-actions">
                                 <button
                                   type="button"
@@ -1200,54 +1562,153 @@ export default function Dashboard({
                     );
                   })}
                 </div>
-                {!PRODUCT_KEYS.some((productKey) => (productAdminConfig.enabledProducts || []).includes(productKey)) ? (
+                {!catalogProducts.length ? (
                   <p className="empty-state">Aucun produit actif.</p>
                 ) : null}
               </div>
 
-              <div className="dashboard-check-group">
-                <p className="dashboard-check-title">Options Retroviseur complet</p>
-                {COMPLETE_OPTION_DEFS.map((option) => (
-                  <label key={option.key} className="dashboard-check-item">
-                    <input
-                      type="checkbox"
-                      checked={(productAdminConfig.completeOptionKeys || []).includes(option.key)}
-                      onChange={() => toggleCompleteOption(option.key)}
-                    />
-                    <span className="dashboard-option-label">
-                      {getOptionIconImage(option) ? (
-                        <img src={getOptionIconImage(option)} alt="" className="dashboard-option-icon" loading="lazy" decoding="async" />
-                      ) : (
-                        <span className="dashboard-option-emoji">{OPTION_ICON_MARK[option.icon] || '▫️'}</span>
-                      )}
-                      <span>{option.label}</span>
-                    </span>
-                  </label>
-                ))}
-              </div>
+              <div className="dashboard-check-group dashboard-options-editor-group">
+                <p className="dashboard-check-title">Options par produit (dynamiques)</p>
+                <p className="config-help">Chaque produit peut avoir ses propres options (ex: Capteur, Couleur, Chauffage, etc.).</p>
+                <div className="dashboard-options-editor-list">
+                  {catalogProducts.map((productItem) => {
+                    const productKey = productItem.key;
+                    const optionDefs = Array.isArray(productOptionDefsByProductKey[productKey])
+                      ? productOptionDefsByProductKey[productKey]
+                      : [];
+                    const draft = newOptionDraftByProductKey[productKey] || { key: '', label: '', icon: 'none', imageSrc: '' };
+                    const isExpanded = expandedOptionProductKey === productKey;
+                    return (
+                      <div key={productKey} className={`dashboard-product-images-block dashboard-options-editor-block ${isExpanded ? 'expanded' : ''}`}>
+                        <button
+                          type="button"
+                          className="dashboard-options-editor-toggle"
+                          onClick={() => setExpandedOptionProductKey((prev) => (prev === productKey ? '' : productKey))}
+                        >
+                          <strong>{productItem.label || productKey}</strong>
+                          <span className="dashboard-image-count-badge">{optionDefs.length} option(s)</span>
+                        </button>
 
-              {Object.entries(PIECE_OPTION_DEFS).map(([pieceKey, options]) => (
-                <div key={pieceKey} className="dashboard-check-group">
-                  <p className="dashboard-check-title">Options piece {pieceKey}</p>
-                  {options.map((option) => (
-                    <label key={option.key} className="dashboard-check-item">
-                      <input
-                        type="checkbox"
-                        checked={(productAdminConfig.pieceOptionsByKey?.[pieceKey] || []).includes(option.key)}
-                        onChange={() => togglePieceOption(pieceKey, option.key)}
-                      />
-                      <span className="dashboard-option-label">
-                        {getOptionIconImage(option) ? (
-                          <img src={getOptionIconImage(option)} alt="" className="dashboard-option-icon" loading="lazy" decoding="async" />
-                        ) : (
-                          <span className="dashboard-option-emoji">{OPTION_ICON_MARK[option.icon] || '▫️'}</span>
-                        )}
-                        <span>{option.label}</span>
-                      </span>
-                    </label>
-                  ))}
+                        {isExpanded ? (
+                          <>
+                            <div className="dashboard-home-stack">
+                              {optionDefs.map((option) => (
+                                <div key={`${productKey}-${option.key}`} className="dashboard-home-subcard dashboard-home-subcard-nested">
+                                  <div className="dashboard-home-grid dashboard-home-grid-3">
+                                    <label className="dashboard-home-label">
+                                      Libelle
+                                      <input
+                                        type="text"
+                                        className="dashboard-search-input"
+                                        value={option.label || ''}
+                                        onChange={(event) => updateProductOption(productKey, option.key, 'label', event.target.value)}
+                                      />
+                                    </label>
+                                    <label className="dashboard-home-label">
+                                      Cle
+                                      <input
+                                        type="text"
+                                        className="dashboard-search-input"
+                                        value={option.key || ''}
+                                        disabled
+                                      />
+                                    </label>
+                                    <label className="dashboard-home-label">
+                                      Icone
+                                      <select
+                                        className="dashboard-search-input"
+                                        value={option.icon || 'none'}
+                                        onChange={(event) => updateProductOption(productKey, option.key, 'icon', event.target.value)}
+                                      >
+                                        {PRODUCT_OPTION_ICON_CHOICES.map((iconKey) => (
+                                          <option key={iconKey} value={iconKey}>{iconKey}</option>
+                                        ))}
+                                      </select>
+                                    </label>
+                                    <div className="dashboard-home-label">
+                                      <span>Image option</span>
+                                      <label className="dashboard-file-label dashboard-file-label-inline">
+                                        <input
+                                          type="file"
+                                          accept="image/*"
+                                          onChange={(event) => {
+                                            const file = event.target.files?.[0];
+                                            if (file) updateProductOptionImage(productKey, option.key, file);
+                                            event.target.value = '';
+                                          }}
+                                        />
+                                        <span>{option.imageSrc ? 'Changer image' : 'Ajouter image'}</span>
+                                      </label>
+                                    </div>
+                                  </div>
+                                  <div className="dashboard-home-subcard-head">
+                                    <span className="dashboard-option-label">
+                                      {option.imageSrc ? (
+                                        <img src={option.imageSrc} alt="" className="dashboard-option-icon" loading="lazy" decoding="async" />
+                                      ) : getOptionIconImage(option) ? (
+                                        <img src={getOptionIconImage(option)} alt="" className="dashboard-option-icon" loading="lazy" decoding="async" />
+                                      ) : option.icon ? (
+                                        <span className="dashboard-option-emoji">{OPTION_ICON_MARK[option.icon] || '▫️'}</span>
+                                      ) : (
+                                        <span className="dashboard-option-emoji">▫️</span>
+                                      )}
+                                      <span>{option.label || option.key}</span>
+                                    </span>
+                                    <button
+                                      type="button"
+                                      className="dashboard-delete-action-btn"
+                                      onClick={() => removeProductOption(productKey, option.key)}
+                                    >
+                                      Suppr.
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                              {!optionDefs.length ? <p className="dashboard-images-empty">Aucune option pour ce produit.</p> : null}
+                            </div>
+                            <div className="dashboard-home-grid dashboard-home-grid-3">
+                              <label className="dashboard-home-label">
+                                Nouveau libelle
+                                <input
+                                  type="text"
+                                  className="dashboard-search-input"
+                                  value={draft.label}
+                                  onChange={(event) => updateOptionDraft(productKey, 'label', event.target.value)}
+                                />
+                              </label>
+                              <label className="dashboard-home-label">
+                                Cle (optionnel)
+                                <input
+                                  type="text"
+                                  className="dashboard-search-input"
+                                  value={draft.key}
+                                  onChange={(event) => updateOptionDraft(productKey, 'key', event.target.value)}
+                                />
+                              </label>
+                              <label className="dashboard-home-label">
+                                Icone
+                                <select
+                                  className="dashboard-search-input"
+                                  value={draft.icon}
+                                  onChange={(event) => updateOptionDraft(productKey, 'icon', event.target.value)}
+                                >
+                                  {PRODUCT_OPTION_ICON_CHOICES.map((iconKey) => (
+                                    <option key={iconKey} value={iconKey}>{iconKey}</option>
+                                  ))}
+                                </select>
+                              </label>
+                            </div>
+                            <button type="button" className="year-filter-btn active" onClick={() => addProductOption(productKey)}>
+                              + Ajouter option
+                            </button>
+                          </>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+                {!catalogProducts.length ? <p className="empty-state">Aucun produit actif.</p> : null}
+              </div>
             </article>
           </div>
         ) : null}
