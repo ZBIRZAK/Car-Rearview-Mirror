@@ -115,6 +115,9 @@ export default function Dashboard({
   const [productAdminConfig, setProductAdminConfig] = useState(DEFAULT_PRODUCT_ADMIN_CONFIG);
   const [savingProductConfig, setSavingProductConfig] = useState(false);
   const [selectedConfigYear, setSelectedConfigYear] = useState(null);
+  const [rangeStartYear, setRangeStartYear] = useState('');
+  const [rangeEndYear, setRangeEndYear] = useState('');
+  const [productConfigMessage, setProductConfigMessage] = useState('');
   const [draggingImageRef, setDraggingImageRef] = useState(null);
   const [newCatalogProduct, setNewCatalogProduct] = useState({
     label: '',
@@ -297,12 +300,16 @@ export default function Dashboard({
   useEffect(() => {
     if (!years.length) {
       setSelectedConfigYear(null);
+      setRangeStartYear('');
+      setRangeEndYear('');
       return;
     }
     if (!selectedConfigYear || !years.some((item) => Number(item.year) === Number(selectedConfigYear))) {
       setSelectedConfigYear(Number(years[0].year));
     }
-  }, [years, selectedConfigYear]);
+    if (!rangeStartYear) setRangeStartYear(String(years[0].year));
+    if (!rangeEndYear) setRangeEndYear(String(years[0].year));
+  }, [years, selectedConfigYear, rangeStartYear, rangeEndYear]);
 
   useEffect(() => {
     const loadScopedProductConfig = async () => {
@@ -326,6 +333,10 @@ export default function Dashboard({
     };
     loadScopedProductConfig();
   }, [selectedBrandId, selectedModelId, selectedConfigYear, models, isAdminAuthenticated]);
+
+  useEffect(() => {
+    setProductConfigMessage('');
+  }, [selectedBrandId, selectedModelId, selectedConfigYear]);
 
   const statusOptions = useMemo(() => {
     const unique = Array.from(new Set(requests.map((item) => item.status).filter(Boolean)));
@@ -589,8 +600,69 @@ export default function Dashboard({
         year: Number(selectedConfigYear),
       }, normalizedPayload);
       setProductAdminConfig(saved);
+      setProductConfigMessage(`Configuration enregistree pour ${selectedConfigYear}.`);
     } catch (err) {
       setError(err?.message || 'Failed to save product config.');
+    } finally {
+      setSavingProductConfig(false);
+    }
+  };
+
+  const applyConfigToYearRange = async () => {
+    if (!selectedBrandId || !selectedModelId) {
+      setError('Choisissez une marque et un modele.');
+      return;
+    }
+    const selectedModel = models.find((item) => item.id === selectedModelId);
+    if (!selectedModel) {
+      setError('Modele introuvable.');
+      return;
+    }
+
+    const start = Number(rangeStartYear);
+    const end = Number(rangeEndYear);
+    if (!Number.isFinite(start) || !Number.isFinite(end)) {
+      setError('Choisissez une plage d annees valide.');
+      return;
+    }
+    if (start > end) {
+      setError('Annee debut doit etre inferieure ou egale a annee fin.');
+      return;
+    }
+
+    const targetYears = Array.from(
+      new Set((years || []).map((item) => Number(item.year)).filter((year) => Number.isFinite(year)))
+    )
+      .filter((year) => year >= start && year <= end)
+      .sort((a, b) => a - b);
+
+    if (!targetYears.length) {
+      setError('Aucune annee trouvee dans cette plage pour ce modele.');
+      return;
+    }
+
+    setSavingProductConfig(true);
+    setProductConfigMessage('');
+    setError('');
+    try {
+      const normalizedCatalog = Array.isArray(productAdminConfig.catalogProducts) ? productAdminConfig.catalogProducts : [];
+      const normalizedPayload = {
+        ...productAdminConfig,
+        enabledProducts: normalizedCatalog.length
+          ? normalizedCatalog.map((item) => item.key)
+          : (Array.isArray(productAdminConfig.enabledProducts) ? productAdminConfig.enabledProducts : []),
+      };
+
+      for (const targetYear of targetYears) {
+        await saveProductAdminConfig({
+          brandId: selectedBrandId,
+          model: selectedModel.name,
+          year: targetYear,
+        }, normalizedPayload);
+      }
+      setProductConfigMessage(`Configuration copiee sur ${targetYears.length} annee(s): ${start} -> ${end}.`);
+    } catch (err) {
+      setError(err?.message || 'Failed to copy config to year range.');
     } finally {
       setSavingProductConfig(false);
     }
@@ -1310,7 +1382,47 @@ export default function Dashboard({
                 {' '}
                 <strong>{selectedConfigYear || '-'}</strong>
               </p>
+              <div className="dashboard-check-group">
+                <p className="dashboard-check-title">Copier la meme configuration sur une plage d annees</p>
+                <div className="dashboard-add-row">
+                  <select
+                    className="dashboard-search-input"
+                    value={rangeStartYear}
+                    onChange={(event) => setRangeStartYear(event.target.value)}
+                    disabled={!years.length}
+                  >
+                    {!years.length ? <option value="">Aucune annee</option> : null}
+                    {years.map((item) => (
+                      <option key={`range-start-${item.id}`} value={item.year}>
+                        {item.year}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    className="dashboard-search-input"
+                    value={rangeEndYear}
+                    onChange={(event) => setRangeEndYear(event.target.value)}
+                    disabled={!years.length}
+                  >
+                    {!years.length ? <option value="">Aucune annee</option> : null}
+                    {years.map((item) => (
+                      <option key={`range-end-${item.id}`} value={item.year}>
+                        {item.year}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="year-filter-btn active"
+                    onClick={applyConfigToYearRange}
+                    disabled={savingProductConfig || !years.length}
+                  >
+                    Appliquer de {rangeStartYear || '-'} a {rangeEndYear || '-'}
+                  </button>
+                </div>
+              </div>
               {savingProductConfig ? <p className="empty-state">Sauvegarde...</p> : null}
+              {productConfigMessage ? <p className="empty-state">{productConfigMessage}</p> : null}
 
               <div className="dashboard-check-group">
                 <p className="dashboard-check-title">Produits actifs (dynamiques)</p>
