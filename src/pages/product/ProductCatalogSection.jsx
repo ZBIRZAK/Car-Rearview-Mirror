@@ -16,6 +16,7 @@ export default function ProductCatalogSection({
   year,
 }) {
   if (hasCatalogSelection) return null;
+  const shouldShowSkeleton = productConfigLoading && !visibleCatalogCards.length;
   const whatsappNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
 
   const handleMissingProductWhatsApp = () => {
@@ -32,7 +33,7 @@ export default function ProductCatalogSection({
 
   return (
     <section className="config-group product-catalog-section">
-      {productConfigLoading ? (
+      {shouldShowSkeleton ? (
         <div className="product-catalog-skeleton" aria-hidden="true">
           {[0, 1, 2, 3].map((item) => (
             <div key={item} className="product-catalog-skeleton-card">
