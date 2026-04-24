@@ -77,6 +77,38 @@ export default function ProductOptionsSection({
       imageSrc: String(item?.imageSrc || '').trim(),
     }))
     .filter((item) => item.key && item.label);
+  const isCoverPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'COVER';
+  const coverBatmanOption = isCoverPiece
+    ? normalizedOptionDefs.find((item) => String(item.key || item.label || '').toLowerCase() === 'batman')
+    : null;
+  const coverColorOptions = isCoverPiece
+    ? normalizedOptionDefs.filter((item) => item.key !== coverBatmanOption?.key)
+    : [];
+  const selectedCoverColorKey = coverColorOptions.find((item) => selectedOptions.includes(item.key))?.key || '';
+  const isBatmanSelected = coverBatmanOption ? selectedOptions.includes(coverBatmanOption.key) : false;
+  const colorClassToken = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const coverColorFallbackByToken = {
+    noir: '#0f1012',
+    black: '#0f1012',
+    blanc: '#f2f4f7',
+    white: '#f2f4f7',
+    gris: '#8f949b',
+    gray: '#8f949b',
+    grey: '#8f949b',
+    bleu: '#2f76dc',
+    blue: '#2f76dc',
+    rouge: '#d43a3a',
+    red: '#d43a3a',
+    carbon: 'linear-gradient(135deg, #2d3137 0%, #15181d 100%)',
+  };
+  const getCoverDotStyle = (label) => {
+    const token = colorClassToken(label);
+    const fallback = coverColorFallbackByToken[token];
+    if (!fallback) return undefined;
+    return String(fallback).startsWith('linear-gradient')
+      ? { backgroundImage: fallback, backgroundColor: 'transparent' }
+      : { backgroundColor: fallback };
+  };
   const selectedPositions = Array.isArray(productConfig.position)
     ? productConfig.position
     : (productConfig.position ? [productConfig.position] : []);
@@ -146,7 +178,69 @@ export default function ProductOptionsSection({
         </section>
       ) : null}
 
-      {hasCatalogSelection && normalizedOptionDefs.length ? (
+      {hasCatalogSelection && isCoverPiece && normalizedOptionDefs.length ? (
+        <>
+          <section className="config-group">
+            <h3>{`${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'COVER'})`}</h3>
+            <div className="cover-color-grid">
+              {coverColorOptions.map((option) => {
+                const token = colorClassToken(option.label || option.key);
+                const isActive = selectedCoverColorKey === option.key;
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    className={`choice-btn cover-color-btn ${isActive ? 'active' : ''}`}
+                    aria-label={option.label}
+                    title={option.label}
+                    onClick={() => {
+                      const remaining = selectedOptions.filter((item) => !coverColorOptions.some((colorOpt) => colorOpt.key === item));
+                      const next = isActive ? remaining : [...remaining, option.key];
+                      onChange('options', next);
+                    }}
+                  >
+                    <span
+                      className={`cover-color-dot cover-dot-${token}`}
+                      style={getCoverDotStyle(option.label || option.key)}
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {coverBatmanOption ? (
+            <section className="config-group">
+              <h3>{t('product_batman_title', '3. Batman')}</h3>
+              <div className="adjustment-choice-row adjustment-choice-row-two">
+                <button
+                  type="button"
+                  className={`choice-btn ${isBatmanSelected ? 'active' : ''}`}
+                  onClick={() => {
+                    if (isBatmanSelected) return;
+                    onChange('options', [...selectedOptions.filter((item) => item !== coverBatmanOption.key), coverBatmanOption.key]);
+                  }}
+                >
+                  {t('product_option_yes', 'Oui')}
+                </button>
+                <button
+                  type="button"
+                  className={`choice-btn ${!isBatmanSelected ? 'active' : ''}`}
+                  onClick={() => {
+                    if (!isBatmanSelected) return;
+                    onChange('options', selectedOptions.filter((item) => item !== coverBatmanOption.key));
+                  }}
+                >
+                  {t('product_option_no', 'Non')}
+                </button>
+              </div>
+            </section>
+          ) : null}
+        </>
+      ) : null}
+
+      {hasCatalogSelection && !isCoverPiece && normalizedOptionDefs.length ? (
         <section className="config-group">
           <h3>
             {isCompleteOrder && showAdjustmentSection

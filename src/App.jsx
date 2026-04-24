@@ -237,6 +237,7 @@ function App() {
   const [homeContent, setHomeContent] = useState(DEFAULT_HOME_CONTENT);
   const [productAdminConfig, setProductAdminConfig] = useState(null);
   const [productAdminConfigLoading, setProductAdminConfigLoading] = useState(false);
+  const [productAdminConfigScopeKey, setProductAdminConfigScopeKey] = useState('');
   const [adminSession, setAdminSession] = useState(null);
   const [adminAuthLoading, setAdminAuthLoading] = useState(hasSupabaseConfig);
   const [pendingProductRouteParams, setPendingProductRouteParams] = useState(null);
@@ -260,6 +261,23 @@ function App() {
       .filter((year) => Number.isFinite(year))
       .sort((a, b) => b - a);
   }, [catalogData.yearsByBrandModel, selectedBrandId, selectedModel]);
+
+  const currentProductScopeKey = useMemo(() => {
+    if (!selectedBrandId || !selectedModel || !selectedYear) return '';
+    return `${selectedBrandId}__${selectedModel}__${selectedYear}`;
+  }, [selectedBrandId, selectedModel, selectedYear]);
+
+  const hasScopedProductConfig = Boolean(
+    currentProductScopeKey && productAdminConfigScopeKey === currentProductScopeKey
+  );
+
+  const effectiveProductAdminConfig = hasScopedProductConfig
+    ? productAdminConfig
+    : DEFAULT_PRODUCT_ADMIN_CONFIG;
+
+  const effectiveProductAdminConfigLoading = hasScopedProductConfig
+    ? productAdminConfigLoading
+    : Boolean(currentProductScopeKey);
 
   const resolveSelectedCatalogKey = (config) => {
     if (config.orderScope === 'complete') return config.selectedFeature || 'COMPLETE';
@@ -405,6 +423,9 @@ function App() {
     setSelectedModel(null);
     setSelectedYear(null);
     setProductConfig(createEmptyProductConfig());
+    setProductAdminConfig(DEFAULT_PRODUCT_ADMIN_CONFIG);
+    setProductAdminConfigScopeKey('');
+    setProductAdminConfigLoading(false);
     navigateToView('models');
     setShowBrandHint(false);
   };
@@ -414,13 +435,21 @@ function App() {
     setSelectedModel(model);
     setSelectedYear(null);
     setProductConfig(createEmptyProductConfig());
+    setProductAdminConfig(DEFAULT_PRODUCT_ADMIN_CONFIG);
+    setProductAdminConfigScopeKey('');
+    setProductAdminConfigLoading(false);
   };
 
   // Handle year selection
   const handleYearSelect = (year) => {
+    const nextConfig = createEmptyProductConfig();
+    setProductConfig(nextConfig);
+    setProductAdminConfig(DEFAULT_PRODUCT_ADMIN_CONFIG);
+    setProductAdminConfigScopeKey('');
+    setProductAdminConfigLoading(true);
     setSelectedYear(year);
     navigateToView('product', {
-      queryString: buildProductQueryString({ year, productConfig: createEmptyProductConfig() }),
+      queryString: buildProductQueryString({ year, productConfig: nextConfig }),
     });
   };
 
@@ -816,6 +845,7 @@ function App() {
     const loadProductConfig = async () => {
       if (!selectedBrandId || !selectedModel || !selectedYear) {
         setProductAdminConfig(DEFAULT_PRODUCT_ADMIN_CONFIG);
+        setProductAdminConfigScopeKey('');
         setProductAdminConfigLoading(false);
         return;
       }
@@ -823,8 +853,13 @@ function App() {
       const cachedConfig = productConfigCacheRef.current[scopeKey];
       if (cachedConfig) {
         setProductAdminConfig(cachedConfig);
+        setProductAdminConfigScopeKey(scopeKey);
         setProductAdminConfigLoading(false);
       } else {
+        // Clear previous scope config immediately to avoid showing stale products
+        // while loading the new year/model/brand config.
+        setProductAdminConfig(DEFAULT_PRODUCT_ADMIN_CONFIG);
+        setProductAdminConfigScopeKey('');
         setProductAdminConfigLoading(true);
       }
       try {
@@ -835,12 +870,14 @@ function App() {
         });
         if (!cancelled && config) {
           setProductAdminConfig(config);
+          setProductAdminConfigScopeKey(scopeKey);
           productConfigCacheRef.current[scopeKey] = config;
         }
       } catch {
         if (!cancelled) {
           const fallback = cachedConfig || DEFAULT_PRODUCT_ADMIN_CONFIG;
           setProductAdminConfig(fallback);
+          setProductAdminConfigScopeKey(scopeKey);
           productConfigCacheRef.current[scopeKey] = fallback;
         }
       } finally {
@@ -965,12 +1002,13 @@ function App() {
 
         {currentView === 'product' && (
           <Product
+            key={`${selectedBrandId || ''}__${selectedModel || ''}__${selectedYear || ''}`}
             brand={selectedBrand}
             model={selectedModel}
             year={selectedYear}
             productConfig={productConfig}
-            productAdminConfig={productAdminConfig}
-            productConfigLoading={productAdminConfigLoading}
+            productAdminConfig={effectiveProductAdminConfig}
+            productConfigLoading={effectiveProductAdminConfigLoading}
             quoteItemsCount={quoteItems.length}
             onChange={handleProductConfigChange}
             onContinue={handleContinueToForm}
