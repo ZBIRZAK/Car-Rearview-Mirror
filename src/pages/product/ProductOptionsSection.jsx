@@ -53,6 +53,8 @@ export default function ProductOptionsSection({
     Forme: formeOptionIcon,
     'Reglage electrique': reglageIcon,
     'ELECTRIC / MANUAL': reglageIcon,
+    Rabattement: rabattementIcon,
+    'Rabattement electrique': rabattementIcon,
     FOLDING: rabattementIcon,
   };
   const currentAdjustment = (productConfig.adjustmentType || '').toLowerCase();

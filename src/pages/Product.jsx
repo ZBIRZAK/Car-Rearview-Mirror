@@ -19,6 +19,8 @@ const stripPhaseSuffix = (value) => String(value || '')
   .replace(/\s*[-–|:]?\s*phase\s*[12]\b/gi, '')
   .replace(/\s{2,}/g, ' ')
   .trim();
+const SHOW_CLIGNOTANT = String(import.meta.env.VITE_SHOW_CLIGNOTANT || 'false').toLowerCase() === 'true';
+const SHOW_COMMANDE = String(import.meta.env.VITE_SHOW_COMMANDE || 'false').toLowerCase() === 'true';
 
 export default function Product({
   brand,
@@ -274,6 +276,18 @@ export default function Product({
     visibleFeatureCards,
     t,
   ]);
+  const visibleOptionDefs = useMemo(() => selectedOptionDefs.filter((item) => {
+    const normalizedKey = String(item.key || '').trim().toLowerCase();
+    const normalizedLabel = String(item.label || '').trim().toLowerCase();
+    if (!SHOW_CLIGNOTANT && (normalizedKey === 'clignotant' || normalizedLabel === 'clignotant')) return false;
+    if (!SHOW_COMMANDE && (
+      normalizedKey === 'commande'
+      || normalizedLabel === 'commande'
+      || normalizedKey === 'commande directionnelle'
+      || normalizedLabel === 'commande directionnelle'
+    )) return false;
+    return true;
+  }), [selectedOptionDefs]);
 
   const positionLabel = (item) => {
     if (item === 'Cote conducteur') return t('side_driver', 'Conducteur');
@@ -380,7 +394,7 @@ export default function Product({
             year={year}
           />
 
-          <ProductOptionsSection
+            <ProductOptionsSection
             t={t}
             hasCatalogSelection={hasCatalogSelection}
             positions={positions}
@@ -392,7 +406,7 @@ export default function Product({
             selectedOptions={selectedOptions}
             toggleOption={toggleOption}
             isCompleteOrder={isCompleteOrder}
-            selectedOptionDefs={selectedOptionDefs}
+              selectedOptionDefs={visibleOptionDefs}
             showAdjustmentSection={selectedCatalogCard?.requiresAdjustment === true}
             showPositionSection={selectedCatalogCard?.requiresPosition !== false}
           />
