@@ -325,7 +325,9 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   position: fixed;
   right: 12px;
   top: 80px;
-  bottom: 96px;
+  bottom: auto;
+  height: auto;
+  max-height: min(78vh, calc(100vh - 190px));
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius: 16px;
   padding: 12px 8px;
@@ -350,7 +352,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   gap: 8px;
   width: 100%;
   align-items: center;
-  flex: 1;
+  flex: 1 1 auto;
   max-height: 100%;
   min-height: 0;
   overflow-y: auto;
@@ -3835,10 +3837,8 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
   .brand-selector {
     top: 80px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    height: auto;
+    max-height: min(78vh, calc(100vh - 190px));
   }
 
   .brand-selector::-webkit-scrollbar {
@@ -3847,9 +3847,9 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   }
 
   .brand-list {
-    overflow: visible;
-    max-height: none;
-    flex: 0 0 auto;
+    overflow-y: auto;
+    max-height: 100%;
+    flex: 1 1 auto;
   }
 }
 
@@ -3948,9 +3948,10 @@ html,body,#root { height: 100%; overflow-x: hidden; }
     top: 80px;
     right: 8px;
     left: auto;
-    bottom: 0;
+    bottom: auto;
     width: 62px;
     height: auto;
+    max-height: min(72vh, calc(100vh - 150px));
     border-radius: 12px;
     padding: 8px 6px;
     z-index: 240;
