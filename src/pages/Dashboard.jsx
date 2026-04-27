@@ -10,6 +10,7 @@ import {
   fetchCatalogBrands,
   fetchCatalogModels,
   fetchCatalogYears,
+  updateCatalogBrand,
 } from '../lib/catalogApi';
 import { fetchProductAdminConfig, saveProductAdminConfig } from '../lib/productConfigApi';
 import { COMPLETE_OPTION_DEFS, DEFAULT_CATALOG_PRODUCTS, DEFAULT_PRODUCT_ADMIN_CONFIG, PIECE_OPTION_DEFS } from '../config/productAdminConfig';
@@ -109,6 +110,9 @@ export default function Dashboard({
   const [newBrandName, setNewBrandName] = useState('');
   const [newBrandLogoData, setNewBrandLogoData] = useState('');
   const [newBrandLogoFileName, setNewBrandLogoFileName] = useState('');
+  const [editBrandLogoData, setEditBrandLogoData] = useState('');
+  const [editBrandLogoFileName, setEditBrandLogoFileName] = useState('');
+  const [editingBrandLogo, setEditingBrandLogo] = useState(false);
   const [importingMockBrands, setImportingMockBrands] = useState(false);
   const [newModelName, setNewModelName] = useState('');
   const [newYearValue, setNewYearValue] = useState('');
@@ -151,6 +155,10 @@ export default function Dashboard({
       ? productAdminConfig.productOptionDefsByProductKey
       : {}),
     [productAdminConfig.productOptionDefsByProductKey]
+  );
+  const selectedBrand = useMemo(
+    () => brands.find((item) => String(item.id) === String(selectedBrandId)) || null,
+    [brands, selectedBrandId]
   );
 
   useEffect(() => {
@@ -423,6 +431,52 @@ export default function Dashboard({
     }
   };
 
+  const handleEditBrandLogoFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      setEditBrandLogoData('');
+      setEditBrandLogoFileName('');
+      return;
+    }
+    try {
+      const dataUrl = await toDataUrl(file);
+      setEditBrandLogoData(dataUrl);
+      setEditBrandLogoFileName(file.name);
+    } catch (err) {
+      setError(err?.message || 'Failed to load logo file.');
+    }
+  };
+
+  const handleUpdateSelectedBrandLogo = async () => {
+    if (!selectedBrandId || !editBrandLogoData) return;
+    setEditingBrandLogo(true);
+    try {
+      await updateCatalogBrand(selectedBrandId, { logoUrl: editBrandLogoData });
+      setEditBrandLogoData('');
+      setEditBrandLogoFileName('');
+      await loadBrands();
+    } catch (err) {
+      setError(err?.message || 'Failed to update brand logo.');
+    } finally {
+      setEditingBrandLogo(false);
+    }
+  };
+
+  const handleRemoveSelectedBrandLogo = async () => {
+    if (!selectedBrandId) return;
+    setEditingBrandLogo(true);
+    try {
+      await updateCatalogBrand(selectedBrandId, { logoUrl: '' });
+      setEditBrandLogoData('');
+      setEditBrandLogoFileName('');
+      await loadBrands();
+    } catch (err) {
+      setError(err?.message || 'Failed to remove brand logo.');
+    } finally {
+      setEditingBrandLogo(false);
+    }
+  };
+
   const importMockBrandsWithLogos = async () => {
     setImportingMockBrands(true);
     setError('');
@@ -532,6 +586,11 @@ export default function Dashboard({
       setError(err?.message || 'Failed to delete brand.');
     }
   };
+
+  useEffect(() => {
+    setEditBrandLogoData('');
+    setEditBrandLogoFileName('');
+  }, [selectedBrandId]);
 
   const handleAddModel = async () => {
     const name = newModelName.trim();
@@ -1254,6 +1313,42 @@ export default function Dashboard({
                   {importingMockBrands ? 'Import...' : 'Importer mockData (marques + modeles + annees + logos)'}
                 </button>
               </div>
+              {selectedBrandId ? (
+                <div className="dashboard-brand-logo-editor">
+                  <p className="dashboard-brand-logo-title">
+                    Logo de: <strong>{selectedBrand?.name || '-'}</strong>
+                  </p>
+                  {selectedBrand?.logo_url ? (
+                    <img src={selectedBrand.logo_url} alt="" className="dashboard-brand-logo-preview" />
+                  ) : (
+                    <p className="dashboard-brand-logo-empty">Aucun logo actuellement.</p>
+                  )}
+                  <div className="dashboard-add-row">
+                    <label className="dashboard-file-label">
+                      <input type="file" accept="image/*" onChange={handleEditBrandLogoFileChange} />
+                      <span>{editBrandLogoFileName || 'Changer logo de la marque selectionnee'}</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="year-filter-btn active"
+                      onClick={handleUpdateSelectedBrandLogo}
+                      disabled={!editBrandLogoData || editingBrandLogo}
+                    >
+                      {editingBrandLogo ? 'Enregistrement...' : 'Mettre a jour logo'}
+                    </button>
+                  </div>
+                  <div className="dashboard-add-row">
+                    <button
+                      type="button"
+                      className="secondary-button"
+                      onClick={handleRemoveSelectedBrandLogo}
+                      disabled={!selectedBrand?.logo_url || editingBrandLogo}
+                    >
+                      Supprimer logo
+                    </button>
+                  </div>
+                </div>
+              ) : null}
               <div className="dashboard-catalog-list">
                 {brands.map((brand) => (
                   <div

@@ -1197,6 +1197,38 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   margin-top: 0;
 }
 
+.dashboard-brand-logo-editor {
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.dashboard-brand-logo-title {
+  margin: 0 0 8px;
+  font-size: 0.84rem;
+  color: #d8e0e8;
+}
+
+.dashboard-brand-logo-preview {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px;
+}
+
+.dashboard-brand-logo-empty {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: #a8b0b8;
+}
+
 .dashboard-catalog-list {
   display: grid;
   gap: 8px;

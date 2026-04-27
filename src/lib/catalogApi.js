@@ -31,6 +31,27 @@ export async function createCatalogBrand(name, logoUrl = '') {
   return data;
 }
 
+export async function updateCatalogBrand(id, updates = {}) {
+  ensureSupabase();
+  if (!id) throw new Error('Brand id is required.');
+  const payload = {};
+  if (Object.prototype.hasOwnProperty.call(updates, 'name')) {
+    payload.name = String(updates.name || '').trim();
+  }
+  if (Object.prototype.hasOwnProperty.call(updates, 'logoUrl')) {
+    payload.logo_url = String(updates.logoUrl || '').trim() || null;
+  }
+  if (!Object.keys(payload).length) return null;
+  const { data, error } = await supabase
+    .from('car_brands')
+    .update(payload)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 export async function deleteCatalogBrand(id) {
   ensureSupabase();
   const { error } = await supabase
