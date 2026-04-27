@@ -15,6 +15,11 @@ import {
   productPreviewImage,
 } from './product/constants';
 
+const stripPhaseSuffix = (value) => String(value || '')
+  .replace(/\s*[-–|:]?\s*phase\s*[12]\b/gi, '')
+  .replace(/\s{2,}/g, ' ')
+  .trim();
+
 export default function Product({
   brand,
   model,
@@ -277,7 +282,7 @@ export default function Product({
   };
 
   const pieceCardLabel = (card) => {
-    if (language !== 'ar') return { label: card.label, subtitle: card.subtitle };
+    if (language !== 'ar') return { label: stripPhaseSuffix(card.label), subtitle: card.subtitle };
     if (card.key === 'GLASS') return { label: 'زجاج', subtitle: 'زجاج المرآة' };
     if (card.key === 'MIRROR') return { label: 'مرآة', subtitle: 'الهيكل + الحركة' };
     if (card.key === 'COVER') return { label: 'غطاء', subtitle: 'الغطاء الخارجي' };

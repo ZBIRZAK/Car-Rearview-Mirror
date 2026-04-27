@@ -1030,6 +1030,26 @@ function App() {
             onWhatsApp={handleWhatsAppClick}
           />
         )}
+
+        {(currentView === 'home' || currentView === 'about') && (
+          <footer className="app-footer" aria-label={t('footer_label', 'Pied de page')}>
+            <div className="app-footer-links">
+              <button type="button" className="app-footer-link" onClick={() => handleMenuClick('home')}>
+                {t('nav_home', 'Accueil')}
+              </button>
+              <button type="button" className="app-footer-link" onClick={() => handleMenuClick('about')}>
+                {t('nav_about', 'A propos')}
+              </button>
+              <button type="button" className="app-footer-link" onClick={() => handleMenuClick('contact')}>
+                {t('nav_contact', 'Contact')}
+              </button>
+              <button type="button" className="app-footer-link" onClick={() => handleMenuClick('terms')}>
+                {t('nav_terms', 'CGV')}
+              </button>
+            </div>
+            <p className="app-footer-copy">{t('footer_copy', 'Tous droits reserves.')}</p>
+          </footer>
+        )}
       </main>
 
       <BottomNav

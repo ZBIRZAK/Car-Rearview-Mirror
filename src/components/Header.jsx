@@ -68,15 +68,6 @@ export default function Header({
           <a href="/contact" className="nav-link" onClick={(event) => handleLinkClick(event, 'contact')}>
             {t('nav_contact', 'Contact')}
           </a>
-          <a href="/dashboard" className="nav-link" onClick={(event) => handleLinkClick(event, 'dashboard')}>
-            {t('nav_dashboard', 'Dashboard')}
-          </a>
-          <a href="/conditions-generales-de-vente" className="nav-link" onClick={(event) => handleLinkClick(event, 'terms')}>
-            {t('nav_terms', 'CGV')}
-          </a>
-          <a href="/politique-de-confidentialite" className="nav-link" onClick={(event) => handleLinkClick(event, 'privacy')}>
-            {t('nav_privacy', 'Confidentialite')}
-          </a>
           <div className="lang-switch" aria-label={t('lang_switch', 'Langue')}>
             <button
               type="button"
@@ -132,18 +123,6 @@ export default function Header({
             <a href="/contact" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'contact')}>
               <span className="mobile-menu-item-label">{t('nav_contact', 'Contact')}</span>
               <span className="mobile-menu-item-hint">{t('nav_contact', 'Contact')}</span>
-            </a>
-            <a href="/dashboard" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'dashboard')}>
-              <span className="mobile-menu-item-label">{t('nav_dashboard', 'Dashboard')}</span>
-              <span className="mobile-menu-item-hint">{t('nav_dashboard', 'Dashboard')}</span>
-            </a>
-            <a href="/conditions-generales-de-vente" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'terms')}>
-              <span className="mobile-menu-item-label">{t('nav_terms', 'CGV')}</span>
-              <span className="mobile-menu-item-hint">{t('nav_terms', 'CGV')}</span>
-            </a>
-            <a href="/politique-de-confidentialite" className="mobile-menu-item" onClick={(event) => handleLinkClick(event, 'privacy')}>
-              <span className="mobile-menu-item-label">{t('nav_privacy', 'Confidentialite')}</span>
-              <span className="mobile-menu-item-hint">{t('nav_privacy', 'Confidentialite')}</span>
             </a>
           </div>
         </div>
