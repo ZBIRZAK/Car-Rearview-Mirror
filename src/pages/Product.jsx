@@ -225,24 +225,39 @@ export default function Product({
       ? effectiveAdminConfig.productOptionDefsByProductKey?.[selectedProductKey]
       : null;
     if (Array.isArray(dynamicDefs) && dynamicDefs.length) {
-      return dynamicDefs.map((item) => ({
+      const mappedDynamic = dynamicDefs.map((item) => ({
         key: String(item.key || item.label || '').trim(),
         label: String(item.label || item.key || '').trim(),
         icon: String(item.icon || '').trim(),
         imageSrc: String(item.imageSrc || '').trim(),
       })).filter((item) => item.key && item.label);
+
+      if (isCompleteOrder) {
+        const filtered = mappedDynamic.filter((item) => (
+          item.key !== 'Glace retroviseur'
+          && item.key !== 'Forme retroviseur'
+          && item.label !== 'Glace'
+          && item.label !== 'Forme'
+        ));
+        const hasReglage = filtered.some((item) => item.key === 'Reglage electrique' || item.label === t('product_electric', 'Electrique'));
+        return hasReglage
+          ? filtered
+          : [{ key: 'Reglage electrique', label: t('product_electric', 'Electrique'), icon: 'adjustment', imageSrc: '' }, ...filtered];
+      }
+
+      return mappedDynamic;
     }
 
     if (isCompleteOrder) {
       const completeFallback = [
-        { key: 'Reglage', label: t('product_adjustment_title', 'Reglage'), icon: 'adjustment' },
+        { key: 'Reglage electrique', label: t('product_electric', 'Electrique'), icon: 'adjustment' },
         { key: 'Rabattement', label: t('product_fold_option_title', 'Rabattement'), icon: 'folding' },
         ...visibleFeatureCards.map((card) => ({
           key: card.key,
           label: card.label,
           icon: card.icon || '',
           imageSrc: '',
-        })),
+        })).filter((card) => card.key !== 'Glace retroviseur' && card.key !== 'Forme retroviseur'),
       ];
       return completeFallback;
     }
