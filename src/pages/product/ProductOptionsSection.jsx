@@ -26,7 +26,6 @@ export default function ProductOptionsSection({
   toggleOption,
   isCompleteOrder,
   selectedOptionDefs,
-  showAdjustmentSection,
   showPositionSection,
 }) {
   const positionIconByValue = {
@@ -52,24 +51,11 @@ export default function ProductOptionsSection({
     'Forme retroviseur': formeOptionIcon,
     Forme: formeOptionIcon,
     'Reglage electrique': reglageIcon,
+    Reglage: reglageIcon,
     'ELECTRIC / MANUAL': reglageIcon,
     Rabattement: rabattementIcon,
     'Rabattement electrique': rabattementIcon,
     FOLDING: rabattementIcon,
-  };
-  const currentAdjustment = (productConfig.adjustmentType || '').toLowerCase();
-  const selectedReglage = currentAdjustment.includes('reglage electrique')
-    ? 'electrique'
-    : currentAdjustment.includes('reglage manuel')
-      ? 'manuel'
-      : '';
-  const composeAdjustmentType = (reglageValue) => {
-    const reglageLabel = reglageValue ? `Reglage ${reglageValue}` : '';
-    return reglageLabel || '';
-  };
-
-  const selectReglage = (value) => {
-    onChange('adjustmentType', composeAdjustmentType(value));
   };
   const normalizedOptionDefs = (selectedOptionDefs || [])
     .map((item) => ({
@@ -127,55 +113,29 @@ export default function ProductOptionsSection({
       {hasCatalogSelection && showPositionSection ? (
         <section className="config-group position-config-group">
           <h3>{t('product_step2', '1. Cote du retroviseur')}</h3>
-          {/* <p className="config-help">{t('product_step2_help', 'Selectionnez le cote du vehicule concerne.')}</p> */}
-          <div className="position-choice-layout">
-            <span className="position-side-icon left" aria-hidden="true">
-              <img src={positionIconByValue['Cote conducteur']} alt="" className="position-side-icon-img" loading="lazy" decoding="async" />
-            </span>
-            <div className="choice-list position-choice-list">
-              {positions.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  className={`choice-btn position-choice-btn ${selectedPositions.includes(item) ? 'active' : ''}`}
-                  onClick={() => togglePosition(item)}
-                >
-                  <span className="position-choice-label">{positionLabel(item)}</span>
-                </button>
-              ))}
-            </div>
-            <span className="position-side-icon right" aria-hidden="true">
-              <img src={positionIconByValue['Cote passager']} alt="" className="position-side-icon-img" loading="lazy" decoding="async" />
-            </span>
-          </div>
-        </section>
-      ) : null}
-
-      {hasCatalogSelection && showAdjustmentSection ? (
-        <section className="config-group">
-          <h3>{t('product_adjustment_title', '2. Reglage')}</h3>
-          <div className="adjustment-group">
-            <div className="adjustment-group-row">
-              <span className="adjustment-group-icon-wrap" aria-hidden="true">
-                <img src={reglageIcon} alt="" className="adjustment-group-icon" loading="lazy" decoding="async" />
-              </span>
-              <div className="adjustment-choice-row adjustment-choice-row-two">
-                <button
-                  type="button"
-                  className={`choice-btn adjustment-choice-btn ${selectedReglage === 'manuel' ? 'active' : ''}`}
-                  onClick={() => selectReglage('manuel')}
-                >
-                  {t('product_manual', 'Manuel')}
-                </button>
-                <button
-                  type="button"
-                  className={`choice-btn adjustment-choice-btn ${selectedReglage === 'electrique' ? 'active' : ''}`}
-                  onClick={() => selectReglage('electrique')}
-                >
-                  {t('product_electric', 'Electrique')}
-                </button>
-              </div>
-            </div>
+          <div className="feature-grid position-feature-grid">
+            {positions.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`feature-card position-feature-card ${selectedPositions.includes(item) ? 'active' : ''}`}
+                onClick={() => togglePosition(item)}
+              >
+                <span className="feature-card-icon">
+                  <img
+                    src={positionIconByValue[item]}
+                    alt=""
+                    className="feature-card-icon-img"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+                <span className="feature-card-texts">
+                  <span className="feature-card-title">{positionLabel(item)}</span>
+                </span>
+              </button>
+            ))}
           </div>
         </section>
       ) : null}
@@ -245,7 +205,7 @@ export default function ProductOptionsSection({
       {hasCatalogSelection && !isCoverPiece && normalizedOptionDefs.length ? (
         <section className="config-group">
           <h3>
-            {isCompleteOrder && showAdjustmentSection
+            {isCompleteOrder
               ? t('product_step3_options', '3. Options du produit (optionnel)')
               : `${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'PIECE'})`}
           </h3>

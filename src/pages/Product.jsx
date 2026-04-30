@@ -152,18 +152,14 @@ export default function Product({
   const requiredMissing = useMemo(() => {
     const missing = [];
     const requiresPosition = selectedCatalogCard?.requiresPosition !== false;
-    const requiresAdjustment = selectedCatalogCard?.requiresAdjustment === true;
-    const normalizedAdjustment = (productConfig.adjustmentType || '').toLowerCase();
-    const hasReglage = normalizedAdjustment.includes('reglage ');
     const selectedPositions = Array.isArray(productConfig.position)
       ? productConfig.position
       : (productConfig.position ? [productConfig.position] : []);
     if (!productConfig.orderScope) missing.push('type de commande');
     if (requiresPosition && !selectedPositions.length) missing.push('position');
-    if (requiresAdjustment && !hasReglage) missing.push('reglage');
     if (!productConfig.productType) missing.push('type de produit');
     return missing;
-  }, [productConfig.orderScope, productConfig.position, productConfig.productType, productConfig.adjustmentType, selectedCatalogCard?.requiresPosition, selectedCatalogCard?.requiresAdjustment]);
+  }, [productConfig.orderScope, productConfig.position, productConfig.productType, selectedCatalogCard?.requiresPosition]);
 
   const canContinue = requiredMissing.length === 0;
 
@@ -239,6 +235,7 @@ export default function Product({
 
     if (isCompleteOrder) {
       const completeFallback = [
+        { key: 'Reglage', label: t('product_adjustment_title', 'Reglage'), icon: 'adjustment' },
         { key: 'Rabattement', label: t('product_fold_option_title', 'Rabattement'), icon: 'folding' },
         ...visibleFeatureCards.map((card) => ({
           key: card.key,
@@ -334,20 +331,6 @@ export default function Product({
 
       <div className={`product-layout ${hasCatalogSelection ? 'with-floating-actions' : 'catalog-only'}`}>
         {hasCatalogSelection ? (
-          <aside className="product-actions-shell">
-            <ProductActions
-              hasCatalogSelection={hasCatalogSelection}
-              t={t}
-              onContinue={handleContinue}
-              onContinueShopping={handleContinueShoppingClick}
-              quoteItemsCount={quoteItemsCount}
-              showValidationHint={showValidationHint}
-              canContinue={canContinue}
-            />
-          </aside>
-        ) : null}
-
-        {hasCatalogSelection ? (
         <aside className="catalog-preview-overlay">
           {selectedCatalogCard ? (
             <div className="piece-slider-block product-image-preview-block" role="region" aria-label={t('product_preview_selected', 'Apercu produit selectionne')}>
@@ -394,7 +377,7 @@ export default function Product({
             year={year}
           />
 
-            <ProductOptionsSection
+          <ProductOptionsSection
             t={t}
             hasCatalogSelection={hasCatalogSelection}
             positions={positions}
@@ -406,10 +389,23 @@ export default function Product({
             selectedOptions={selectedOptions}
             toggleOption={toggleOption}
             isCompleteOrder={isCompleteOrder}
-              selectedOptionDefs={visibleOptionDefs}
-            showAdjustmentSection={selectedCatalogCard?.requiresAdjustment === true}
+            selectedOptionDefs={visibleOptionDefs}
             showPositionSection={selectedCatalogCard?.requiresPosition !== false}
           />
+
+          {hasCatalogSelection ? (
+            <div className="product-actions-shell product-actions-shell-bottom">
+              <ProductActions
+                hasCatalogSelection={hasCatalogSelection}
+                t={t}
+                onContinue={handleContinue}
+                onContinueShopping={handleContinueShoppingClick}
+                quoteItemsCount={quoteItemsCount}
+                showValidationHint={showValidationHint}
+                canContinue={canContinue}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
 

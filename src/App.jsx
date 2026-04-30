@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import { mockData } from './data/mockData';
-import BrandSelector from './components/BrandSelector';
-import BottomNav from './components/BottomNav';
 import Header from './components/Header';
+import RightSidebar from './components/RightSidebar';
 import Home from './pages/Home';
 import Models from './pages/Models';
 import Product from './pages/Product';
@@ -241,6 +240,8 @@ function App() {
   const [adminSession, setAdminSession] = useState(null);
   const [adminAuthLoading, setAdminAuthLoading] = useState(hasSupabaseConfig);
   const [pendingProductRouteParams, setPendingProductRouteParams] = useState(null);
+  const [menuToggleSignal, setMenuToggleSignal] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const productConfigCacheRef = useRef({});
 
   const selectedBrand = useMemo(
@@ -466,13 +467,7 @@ function App() {
 
   const handleContinueShopping = () => {
     const currentPayload = buildQuotePayload();
-    setQuoteItems((prev) => {
-      const lastItem = prev[prev.length - 1];
-      if (lastItem && isSameQuoteItem(lastItem, currentPayload)) {
-        return prev;
-      }
-      return [...prev, currentPayload];
-    });
+    setQuoteItems((prev) => [...prev, currentPayload]);
     const nextConfig = createEmptyProductConfig();
     setProductConfig(nextConfig);
     navigateToView('product', {
@@ -595,7 +590,24 @@ function App() {
     setProductConfig(createEmptyProductConfig());
   };
 
-  const showBrandRail = ['home', 'models', 'years', 'form'].includes(currentView);
+  const handleSidebarMenuOpen = () => {
+    setMenuToggleSignal((prev) => prev + 1);
+  };
+
+  const handleSidebarCartOpen = () => {
+    if (selectedBrandId && selectedModel && selectedYear) {
+      navigateToView('product', {
+        queryString: buildProductQueryString(),
+      });
+      return;
+    }
+    if (selectedBrandId) {
+      navigateToView('models');
+      return;
+    }
+    navigateToView('home');
+  };
+
   const showHeaderProductBack = currentView === 'product';
   const productHeaderTitle = currentView === 'product'
     ? [selectedBrand?.name, selectedModel, selectedYear].filter(Boolean).join('-')
@@ -934,17 +946,26 @@ function App() {
         showProductBack={showHeaderProductBack}
         onProductBack={handleHeaderProductBack}
         productHeaderTitle={productHeaderTitle}
+        menuToggleSignal={menuToggleSignal}
+        onMenuOpenChange={setIsMenuOpen}
       />
-      {showBrandRail ? (
-        <BrandSelector
-          brands={catalogData.brands}
-          selectedBrand={selectedBrand}
-          onSelect={handleBrandSelect}
-          disabled={catalogLoading}
-        />
-      ) : null}
+      <RightSidebar
+        brands={catalogData.brands}
+        selectedBrand={selectedBrand}
+        onBrandSelect={handleBrandSelect}
+        onMenu={handleSidebarMenuOpen}
+        menuOpen={isMenuOpen}
+        onCart={handleSidebarCartOpen}
+        onHome={resetToHome}
+        onWhatsApp={handleWhatsAppClick}
+        onWeChat={handleWeChatClick}
+        onInstagram={handleInstagramClick}
+        onContact={handleContactClick}
+        cartCount={quoteItems.length}
+        disabled={catalogLoading}
+      />
 
-      <main ref={mainContentRef} className={`main-content${showBrandRail ? '' : ' main-content-full'}`}>
+      <main ref={mainContentRef} className="main-content">
         {catalogLoading && (currentView === 'home' || currentView === 'models' || currentView === 'years') ? (
           <div className="loading-card">{t('catalog_loading', 'Chargement du catalogue...')}</div>
         ) : null}
@@ -1052,15 +1073,6 @@ function App() {
         )}
       </main>
 
-      <BottomNav
-        className={isSingleProductSelection ? 'bottom-nav-single-product' : ''}
-        active={activeNav}
-        onHome={resetToHome}
-        onWhatsApp={handleWhatsAppClick}
-        onWeChat={handleWeChatClick}
-        onInstagram={handleInstagramClick}
-        onContact={handleContactClick}
-      />
     </div>
   );
 }

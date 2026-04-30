@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../logo/Test.svg';
 import { useI18n } from '../i18n';
 
@@ -6,7 +6,9 @@ export default function Header({
   onMenuClick,
   showProductBack = false,
   onProductBack,
-  productHeaderTitle = ''
+  productHeaderTitle = '',
+  menuToggleSignal = 0,
+  onMenuOpenChange,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { language, setLanguage, t } = useI18n();
@@ -23,20 +25,20 @@ export default function Header({
     handleClick(page);
   };
 
+  useEffect(() => {
+    if (!menuToggleSignal) return;
+    setIsOpen((prev) => !prev);
+  }, [menuToggleSignal]);
+
+  useEffect(() => {
+    if (typeof onMenuOpenChange === 'function') {
+      onMenuOpenChange(isOpen);
+    }
+  }, [isOpen, onMenuOpenChange]);
+
   return (
     <header className={`header ${isProductHeader ? 'header-product' : ''}`}>
       <div className="header-inner">
-        {/* Mobile Hamburger */}
-        <button
-          className={`hamburger-toggle ${isProductHeader ? 'product-menu-toggle' : ''} ${isOpen ? 'open' : ''}`}
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Menu"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
         {/* Logo / Product Back */}
         <div className="header-logo">
           {showProductBack ? (

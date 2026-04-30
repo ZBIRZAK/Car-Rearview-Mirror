@@ -38,6 +38,7 @@ export default function ProductActions({
           title={t('product_price_btn', 'Prix')}
         >
           <PriceIcon />
+          <span className="product-action-label">{t('product_price_btn', 'Prix')}</span>
         </button>
         <button
           type="button"
@@ -47,6 +48,7 @@ export default function ProductActions({
           title={t('product_add_other_btn', "Ajouter d'autre produits")}
         >
           <AddIcon />
+          <span className="product-action-label">{t('product_add_other_btn', "Ajouter d'autre produits")}</span>
         </button>
         <p className="quote-items-counter">
           {t('quote_items_count', 'Produits ajoutes')}: <strong>{quoteItemsCount}</strong>
