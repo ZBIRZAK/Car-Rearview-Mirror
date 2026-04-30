@@ -2553,6 +2553,13 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   outline-offset: 2px;
 }
 
+.product-back-icon-img {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+  display: block;
+}
+
 .config-help {
   margin: -6px 0 10px;
   color: #9aa0a6;

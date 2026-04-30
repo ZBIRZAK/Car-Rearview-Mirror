@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../logo/Test.svg';
+import previousIcon from '../icons/previous.png';
 import { useI18n } from '../i18n';
 
 export default function Header({
@@ -50,7 +51,7 @@ export default function Header({
                 aria-label={t('product_back_to_list', 'Retour a la liste des produits')}
                 title={t('product_back_to_list', 'Retour a la liste des produits')}
               >
-                <span aria-hidden="true">←</span>
+                <img src={previousIcon} alt="" aria-hidden="true" className="product-back-icon-img" />
               </button>
               <h1 className="header-product-title">{headerTitle}</h1>
             </>
