@@ -2351,7 +2351,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   /* border: 1px solid rgba(255, 255, 255, 0.12); */
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-  padding: 12px;
+  padding: 0px;
 }
 
 .piece-slider-block.product-image-preview-block {
