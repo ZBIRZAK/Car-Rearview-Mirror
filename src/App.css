@@ -3138,25 +3138,20 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
 .feature-card {
   border: 2px solid rgba(195, 157, 73, 0.55);
-  background:
-    radial-gradient(120% 95% at 50% 10%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72) 45%, rgba(237, 226, 198, 0.95) 100%),
-    linear-gradient(180deg, #fffdfa 0%, #f8f1de 54%, #efe1bb 100%);
-  color: #151515;
-  border-radius: 16px;
-  padding: 4px 4px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -2px 0 rgba(157, 125, 54, 0.28),
-    0 8px 14px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
+    background: radial-gradient(120% 95% at 50% 10%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72) 45%, rgba(237, 226, 198, 0.95) 100%), linear-gradient(180deg, #fffdfa 0%, #f8f1de 54%, #efe1bb 100%);
+    color: #151515;
+    border-radius: 16px;
+    padding: 0px 2px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 0 rgba(157, 125, 54, 0.28), 0 8px 14px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
 }
 
 .feature-card:hover {
