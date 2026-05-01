@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../logo/Test.svg';
-import previousIcon from '../icons/previous.png';
+import checkoutIcon from '../icons/checkout.png';
 import { useI18n } from '../i18n';
 
 export default function Header({
   onMenuClick,
   showProductBack = false,
-  onProductBack,
+  onProductCart,
+  cartCount = 0,
   productHeaderTitle = '',
   menuToggleSignal = 0,
   onMenuOpenChange,
@@ -47,11 +48,12 @@ export default function Header({
               <button
                 type="button"
                 className="product-back-icon-btn"
-                onClick={onProductBack}
-                aria-label={t('product_back_to_list', 'Retour a la liste des produits')}
-                title={t('product_back_to_list', 'Retour a la liste des produits')}
+                onClick={onProductCart}
+                aria-label={t('product_add_other_btn', "Ajouter d'autre produits")}
+                title={t('product_add_other_btn', "Ajouter d'autre produits")}
               >
-                <img src={previousIcon} alt="" aria-hidden="true" className="product-back-icon-img" />
+                <img src={checkoutIcon} alt="" aria-hidden="true" className="product-back-icon-img" />
+                <span className="product-header-cart-badge">{cartCount}</span>
               </button>
               <h1 className="header-product-title">{headerTitle}</h1>
             </>

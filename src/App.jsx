@@ -608,6 +608,30 @@ function App() {
     navigateToView('home');
   };
 
+  const handleSidebarBack = () => {
+    if (currentView === 'product') {
+      handleHeaderProductBack();
+      return;
+    }
+    if (currentView === 'models' || currentView === 'years') {
+      navigateToView('home');
+      return;
+    }
+    if (currentView === 'form') {
+      navigateToView('product');
+      return;
+    }
+    if (currentView === 'success') {
+      resetToHome();
+      return;
+    }
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    resetToHome();
+  };
+
   const showHeaderProductBack = currentView === 'product';
   const productHeaderTitle = currentView === 'product'
     ? [selectedBrand?.name, selectedModel, selectedYear].filter(Boolean).join('-')
@@ -944,7 +968,8 @@ function App() {
       <Header
         onMenuClick={handleMenuClick}
         showProductBack={showHeaderProductBack}
-        onProductBack={handleHeaderProductBack}
+        onProductCart={handleSidebarCartOpen}
+        cartCount={quoteItems.length}
         productHeaderTitle={productHeaderTitle}
         menuToggleSignal={menuToggleSignal}
         onMenuOpenChange={setIsMenuOpen}
@@ -955,13 +980,11 @@ function App() {
         onBrandSelect={handleBrandSelect}
         onMenu={handleSidebarMenuOpen}
         menuOpen={isMenuOpen}
-        onCart={handleSidebarCartOpen}
-        onHome={resetToHome}
+        onBack={handleSidebarBack}
         onWhatsApp={handleWhatsAppClick}
         onWeChat={handleWeChatClick}
         onInstagram={handleInstagramClick}
         onContact={handleContactClick}
-        cartCount={quoteItems.length}
         disabled={catalogLoading}
       />
 

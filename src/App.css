@@ -24,7 +24,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   background: linear-gradient(180deg, #060606db, #060606db);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   padding: 0;
-  height: 70px;
+  height: 58px;
 }
 
 .header-inner {
@@ -32,7 +32,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
+  padding: 8px 16px;
 }
 
 .hamburger-toggle {
@@ -161,7 +161,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
 .mobile-menu {
   position: fixed;
-  top: 74px;
+  top: 58px;
   left: 12px;
   right: 75px;
   z-index: 520;
@@ -177,7 +177,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
 .mobile-menu-backdrop {
   position: fixed;
-  inset: 70px 0 0;
+  inset: 58px 0 0;
   z-index: 510;
   background: rgba(0, 0, 0, 0.62);
   border: none;
@@ -251,7 +251,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   background: linear-gradient(180deg, var(--bg) 0%, #050505 100%);
   color: #fff;
   position: relative;
-  padding-top: 70px;
+  padding-top: 58px;
   padding-bottom: 84px;
   font-family: var(--font-main);
 }
@@ -2495,7 +2495,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .config-group h3 {
-  margin-bottom: 12px;
+  margin-bottom: 5px;
   font-size: 1.05rem;
 }
 
@@ -2526,8 +2526,8 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .product-back-icon-btn {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 0;
   background: transparent;
@@ -2535,6 +2535,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: relative;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 1.35rem;
@@ -2555,10 +2556,29 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .product-back-icon-img {
-  width: 35px;
-  height: 35px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   display: block;
+  filter: invert(1);
+}
+
+.product-header-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  font-size: 0.64rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
 }
 
 .config-help {
@@ -3087,7 +3107,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   overflow-wrap: anywhere;
 }
 
-.order-scope-sub {
+.order-scopethe-sub {
   display: block;
   padding: 2px 0 0;
   font-size: 0.8rem;
@@ -3115,6 +3135,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   gap: 0px;
   cursor: pointer;
   transition: all 0.2s ease;
+  
 }
 
 .feature-card:hover {
@@ -3129,14 +3150,15 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .feature-card-icon {
-    width: 110px;
-    height: 70px;
+width: 130px;
+    height: 85px;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     /* background: #efefef; */
-    /* border: 1px solid #d8d8d8; */  
+    /* border: 1px solid #d8d8d8; */
+    padding: 5px 0;
 }
 
 .feature-icon-svg {
@@ -4223,9 +4245,9 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   }
 
   .header.header-product .product-back-icon-btn {
-    width: 50px;
-    height: 50px;
-    flex: 0 0 50px;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
     border-radius: 999px;
     box-shadow: none;
   }
@@ -4256,7 +4278,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   }
 
   .mobile-menu {
-    top: 74px;
+    top: 58px;
     left: 10px;
     right: 75px;
     border-radius: 14px;
@@ -4264,7 +4286,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   }
 
   .app {
-    padding-top: 70px;
+    padding-top: 58px;
     padding-bottom: 0px;
   }
 

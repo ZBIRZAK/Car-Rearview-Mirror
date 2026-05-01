@@ -1,6 +1,5 @@
 import React from 'react';
-import checkoutIcon from '../icons/checkout.png';
-import homeIcon from '../icons/new logo social/home.svg';
+import previousIcon from '../icons/previous.png';
 import whatsappIcon from '../icons/new logo social/whatsapp.svg';
 import instagramIcon from '../icons/new logo social/instagram.svg';
 import telephoneIcon from '../icons/new logo social/telephone.svg';
@@ -11,13 +10,11 @@ export default function RightSidebar({
   onBrandSelect,
   onMenu,
   menuOpen = false,
-  onCart,
-  onHome,
+  onBack,
   onWhatsApp,
   onWeChat,
   onInstagram,
   onContact,
-  cartCount = 0,
   disabled = false,
 }) {
   return (
@@ -34,10 +31,6 @@ export default function RightSidebar({
             <span className="menu-glyph-line line-2" />
             <span className="menu-glyph-line line-3" />
           </span>
-        </button>
-        <button type="button" className="sidebar-icon-btn sidebar-icon-cart" onClick={onCart} aria-label="Panier">
-          <img src={checkoutIcon} alt="" aria-hidden="true" className="sidebar-cart-icon-img" />
-          <span className="sidebar-cart-badge">{cartCount}</span>
         </button>
       </div>
 
@@ -66,8 +59,8 @@ export default function RightSidebar({
       <div className="sidebar-divider" aria-hidden="true" />
 
       <div className="right-sidebar-bottom">
-        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onHome} aria-label="Home">
-          <img src={homeIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onBack} aria-label="Retour">
+          <img src={previousIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
         </button>
         <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onWhatsApp} aria-label="WhatsApp">
           <img src={whatsappIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
