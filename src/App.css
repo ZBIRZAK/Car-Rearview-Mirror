@@ -3143,7 +3143,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
     linear-gradient(180deg, #fffdfa 0%, #f8f1de 54%, #efe1bb 100%);
   color: #151515;
   border-radius: 16px;
-  padding: 8px 8px;
+  padding: 4px 4px;
   text-align: center;
   display: flex;
   flex-direction: column;
