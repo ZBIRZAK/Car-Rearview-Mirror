@@ -66,6 +66,8 @@ export default function ProductOptionsSection({
     }))
     .filter((item) => item.key && item.label);
   const isCoverPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'COVER';
+  const isGlassPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'GLASS';
+  const shouldShowPositionCards = showPositionSection || isGlassPiece;
   const coverBatmanOption = isCoverPiece
     ? normalizedOptionDefs.find((item) => String(item.key || item.label || '').toLowerCase() === 'batman')
     : null;
@@ -123,7 +125,7 @@ export default function ProductOptionsSection({
                   <button
                     key={option.key}
                     type="button"
-                    className={`choice-btn cover-color-btn ${isActive ? 'active' : ''}`}
+                    className={`feature-card cover-color-btn ${isActive ? 'active' : ''}`}
                     aria-label={option.label}
                     title={option.label}
                     onClick={() => {
@@ -132,11 +134,27 @@ export default function ProductOptionsSection({
                       onChange('options', next);
                     }}
                   >
-                    <span
-                      className={`cover-color-dot cover-dot-${token}`}
-                      style={getCoverDotStyle(option.label || option.key)}
-                      aria-hidden="true"
-                    />
+                    <span className="feature-card-icon">
+                      {option.imageSrc ? (
+                        <img
+                          src={option.imageSrc}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span
+                          className={`cover-color-dot cover-dot-${token}`}
+                          style={getCoverDotStyle(option.label || option.key)}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                    <span className="feature-card-texts">
+                      <span className="feature-card-title">{option.label}</span>
+                    </span>
                   </button>
                 );
               })}
@@ -181,16 +199,88 @@ export default function ProductOptionsSection({
               : `${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'PIECE'})`}
           </h3>
           <div className="feature-grid">
-            {showPositionSection ? positions.map((item) => (
+            {shouldShowPositionCards ? (
+              <>
+                {positions.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className={`feature-card position-feature-card ${selectedPositions.includes(item) ? 'active' : ''}`}
+                    onClick={() => togglePosition(item)}
+                  >
+                    <span className="feature-card-icon">
+                      <img
+                        src={positionIconByValue[item]}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </span>
+                    <span className="feature-card-texts">
+                      <span className="feature-card-title">{positionLabel(item)}</span>
+                    </span>
+                  </button>
+                ))}
+                {isGlassPiece ? (
+                  <button
+                    type="button"
+                    className={`feature-card position-feature-card ${
+                      selectedPositions.includes('Cote conducteur') && selectedPositions.includes('Cote passager') ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      const hasBoth = selectedPositions.includes('Cote conducteur') && selectedPositions.includes('Cote passager');
+                      onChange('position', hasBoth ? [] : ['Cote conducteur', 'Cote passager']);
+                    }}
+                  >
+                    <span className="feature-card-icon position-double-icon">
+                      <img
+                        src={conducteurIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <img
+                        src={passagerIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </span>
+                    <span className="feature-card-texts">
+                      <span className="feature-card-title">{`${t('side_driver', 'Conducteur')} + ${t('side_passenger', 'Passager')}`}</span>
+                    </span>
+                  </button>
+                ) : null}
+              </>
+            ) : null}
+            {isPieceOrder && !isGlassPiece ? (
               <button
-                key={item}
                 type="button"
-                className={`feature-card position-feature-card ${selectedPositions.includes(item) ? 'active' : ''}`}
-                onClick={() => togglePosition(item)}
+                className={`feature-card position-feature-card ${
+                  selectedPositions.includes('Cote conducteur') && selectedPositions.includes('Cote passager') ? 'active' : ''
+                }`}
+                onClick={() => {
+                  const hasBoth = selectedPositions.includes('Cote conducteur') && selectedPositions.includes('Cote passager');
+                  onChange('position', hasBoth ? [] : ['Cote conducteur', 'Cote passager']);
+                }}
               >
-                <span className="feature-card-icon">
+                <span className="feature-card-icon position-double-icon">
                   <img
-                    src={positionIconByValue[item]}
+                    src={conducteurIcon}
+                    alt=""
+                    className="feature-card-icon-img"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <img
+                    src={passagerIcon}
                     alt=""
                     className="feature-card-icon-img"
                     aria-hidden="true"
@@ -199,22 +289,7 @@ export default function ProductOptionsSection({
                   />
                 </span>
                 <span className="feature-card-texts">
-                  <span className="feature-card-title">{positionLabel(item)}</span>
-                </span>
-              </button>
-            )) : null}
-            {isPieceOrder ? (
-              <button
-                type="button"
-                className={`feature-card ${normalizedOptionDefs.every((item) => !selectedOptions.includes(item.key)) ? 'active' : ''}`}
-                onClick={() => {
-                  const optionKeys = normalizedOptionDefs.map((item) => item.key);
-                  const nextOptions = selectedOptions.filter((item) => !optionKeys.includes(item));
-                  onChange('options', nextOptions);
-                }}
-              >
-                <span className="feature-card-texts">
-                  <span className="feature-card-title">{t('product_only_piece', 'Juste la piece (sans option)')}</span>
+                  <span className="feature-card-title">{`${t('side_driver', 'Conducteur')} + ${t('side_passenger', 'Passager')}`}</span>
                 </span>
               </button>
             ) : null}
