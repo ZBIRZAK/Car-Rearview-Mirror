@@ -382,9 +382,6 @@ export default function Product({
                   ))}
                 </div>
               ) : null}
-              <p className="product-preview-caption">
-                <strong>{pieceCardLabel(selectedCatalogCard).label}</strong> - {pieceCardLabel(selectedCatalogCard).subtitle}
-              </p>
             </div>
           ) : null}
 

@@ -110,35 +110,6 @@ export default function ProductOptionsSection({
 
   return (
     <>
-      {hasCatalogSelection && showPositionSection ? (
-        <section className="config-group position-config-group">
-          <h3>{t('product_step2', '1. Cote du retroviseur')}</h3>
-          <div className="feature-grid position-feature-grid">
-            {positions.map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={`feature-card position-feature-card ${selectedPositions.includes(item) ? 'active' : ''}`}
-                onClick={() => togglePosition(item)}
-              >
-                <span className="feature-card-icon">
-                  <img
-                    src={positionIconByValue[item]}
-                    alt=""
-                    className="feature-card-icon-img"
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </span>
-                <span className="feature-card-texts">
-                  <span className="feature-card-title">{positionLabel(item)}</span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-      ) : null}
 
       {hasCatalogSelection && isCoverPiece && normalizedOptionDefs.length ? (
         <>
@@ -210,6 +181,28 @@ export default function ProductOptionsSection({
               : `${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'PIECE'})`}
           </h3>
           <div className="feature-grid">
+            {showPositionSection ? positions.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`feature-card position-feature-card ${selectedPositions.includes(item) ? 'active' : ''}`}
+                onClick={() => togglePosition(item)}
+              >
+                <span className="feature-card-icon">
+                  <img
+                    src={positionIconByValue[item]}
+                    alt=""
+                    className="feature-card-icon-img"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+                <span className="feature-card-texts">
+                  <span className="feature-card-title">{positionLabel(item)}</span>
+                </span>
+              </button>
+            )) : null}
             {isPieceOrder ? (
               <button
                 type="button"

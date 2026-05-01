@@ -2593,8 +2593,8 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .position-feature-card .feature-card-icon {
-  width: 64px;
-  height: 50px;
+  width: 110px;
+  height: 85px;
 }
 
 .position-feature-card .feature-card-icon-img {
@@ -3128,8 +3128,8 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .feature-card-icon {
-    width: 64px;
-    height: 50px;
+    width: 110px;
+    height: 70px;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
