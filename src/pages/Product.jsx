@@ -134,6 +134,10 @@ export default function Product({
     if (!selectedCatalogCard) return [productPreviewImage];
     return productImagesByKey[selectedCatalogCard.key] || [selectedCatalogCard.imageSrc || productPreviewImage];
   }, [selectedCatalogCard, productImagesByKey]);
+  const previewThumbnailImages = useMemo(
+    () => selectedCatalogImages.slice(0, 4),
+    [selectedCatalogImages]
+  );
   const selectedPreviewImage = selectedCatalogImages[completePreviewIndex] || selectedCatalogImages[0] || productPreviewImage;
 
   useEffect(() => {
@@ -367,9 +371,9 @@ export default function Product({
               <button type="button" className="product-image-trigger" onClick={openLightbox}>
                 <CatalogPreview focus={selectedCatalogCard.previewFocus} imageSrc={selectedPreviewImage} />
               </button>
-              {selectedCatalogImages.length > 1 ? (
+              {previewThumbnailImages.length > 1 ? (
                 <div className="preview-thumbnails" role="listbox" aria-label={t('product_preview_images', 'Images du retroviseur complet')}>
-                  {selectedCatalogImages.map((imgSrc, idx) => (
+                  {previewThumbnailImages.map((imgSrc, idx) => (
                     <button
                       key={imgSrc}
                       type="button"

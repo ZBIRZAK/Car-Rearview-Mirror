@@ -237,7 +237,7 @@ const translations = {
     product_validation_required: 'Merci de completer les champs requis avant de continuer.',
     product_option_yes: 'Oui',
     product_option_no: 'Non',
-    product_step3_options: '3. Options du retroviseur (optionnel)',
+    product_step3_options: '3. Options du retroviseur',
     product_adjustment_title: '2. Reglage',
     product_cover_color_title: '2. Couleur cover',
     product_color_title: '2. Couleur',

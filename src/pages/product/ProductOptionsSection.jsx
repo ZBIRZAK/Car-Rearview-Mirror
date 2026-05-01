@@ -177,7 +177,7 @@ export default function ProductOptionsSection({
         <section className="config-group">
           <h3>
             {isCompleteOrder
-              ? t('product_step3_options', '3. Options du produit (optionnel)')
+              ? t('product_step3_options', '3. Options du produit')
               : `${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'PIECE'})`}
           </h3>
           <div className="feature-grid">
