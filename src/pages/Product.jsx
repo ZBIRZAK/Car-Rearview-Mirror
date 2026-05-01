@@ -220,6 +220,20 @@ export default function Product({
 
   const selectedPieceOptionGroup = selectedCatalogCard?.optionGroup || selectedFeatureKey;
   const selectedOptionDefs = useMemo(() => {
+    const prioritizeCompleteOptions = (items) => {
+      if (!isCompleteOrder) return items;
+      const list = Array.isArray(items) ? [...items] : [];
+      const takeByKeys = (keys) => {
+        const index = list.findIndex((item) => keys.includes(String(item.key || '').toLowerCase()));
+        if (index === -1) return null;
+        return list.splice(index, 1)[0];
+      };
+      const reglage = takeByKeys(['reglage electrique', 'reglage']);
+      const rabattement = takeByKeys(['rabattement']);
+      const head = [reglage, rabattement].filter(Boolean);
+      return [...head, ...list];
+    };
+
     const selectedProductKey = selectedCatalogCard?.key || selectedFeatureKey;
     const dynamicDefs = selectedProductKey
       ? effectiveAdminConfig.productOptionDefsByProductKey?.[selectedProductKey]
@@ -240,9 +254,10 @@ export default function Product({
           && item.label !== 'Forme'
         ));
         const hasReglage = filtered.some((item) => item.key === 'Reglage electrique' || item.label === t('product_electric', 'Electrique'));
-        return hasReglage
+        const withReglage = hasReglage
           ? filtered
           : [{ key: 'Reglage electrique', label: t('product_electric', 'Electrique'), icon: 'adjustment', imageSrc: '' }, ...filtered];
+        return prioritizeCompleteOptions(withReglage);
       }
 
       return mappedDynamic;
@@ -259,7 +274,7 @@ export default function Product({
           imageSrc: '',
         })).filter((card) => card.key !== 'Glace retroviseur' && card.key !== 'Forme retroviseur'),
       ];
-      return completeFallback;
+      return prioritizeCompleteOptions(completeFallback);
     }
 
     if (isPieceOrder) {
