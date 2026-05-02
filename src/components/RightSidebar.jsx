@@ -1,8 +1,9 @@
 import React from 'react';
 import previousIcon from '../icons/previous.png';
-import whatsappIcon from '../icons/new logo social/whatsapp.svg';
-import instagramIcon from '../icons/new logo social/instagram.svg';
-import telephoneIcon from '../icons/new logo social/telephone.svg';
+import telegramIcon from '../icons/new logo social/telegram.png';
+import instagramIcon from '../icons/new logo social/instagram.png';
+import wechatIcon from '../icons/new logo social/wechat.png';
+import whatsappIcon from '../icons/new logo social/whatsapp.png';
 
 export default function RightSidebar({
   brands,
@@ -62,14 +63,17 @@ export default function RightSidebar({
         <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onBack} aria-label="Retour">
           <img src={previousIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
         </button>
+        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onContact} aria-label="Telegram">
+          <img src={telegramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+        </button>
         <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onWhatsApp} aria-label="WhatsApp">
           <img src={whatsappIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
         </button>
         <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onInstagram} aria-label="Instagram">
           <img src={instagramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
         </button>
-        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onContact} aria-label="Contact">
-          <img src={telephoneIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onWeChat} aria-label="WeChat">
+          <img src={wechatIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
         </button>
       </div>
     </aside>

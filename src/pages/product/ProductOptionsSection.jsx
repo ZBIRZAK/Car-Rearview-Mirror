@@ -12,6 +12,10 @@ import cameraOptionIcon from '../../images/new-icones/Camera.png';
 import angleMortOptionIcon from '../../images/new-icones/Angle mort.png';
 import reglageIcon from '../../images/new-icones/Reglage.png';
 import rabattementIcon from '../../images/new-icones/rabattement.png';
+import batmanOptionIcon from '../../images/new-icones/batman.jpeg';
+import carbonOptionIcon from '../../images/new-icones/carbon.jpeg';
+import chromeeOptionIcon from '../../images/new-icones/chromee.jpeg';
+import autreOptionIcon from '../../images/new-icones/autre.jpeg';
 
 export default function ProductOptionsSection({
   t,
@@ -68,14 +72,71 @@ export default function ProductOptionsSection({
   const isCoverPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'COVER';
   const isGlassPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'GLASS';
   const shouldShowPositionCards = showPositionSection || isGlassPiece;
-  const coverBatmanOption = isCoverPiece
-    ? normalizedOptionDefs.find((item) => String(item.key || item.label || '').toLowerCase() === 'batman')
-    : null;
-  const coverColorOptions = isCoverPiece
-    ? normalizedOptionDefs.filter((item) => item.key !== coverBatmanOption?.key)
-    : [];
+  const COVER_ALLOWED_KEYS = new Set(['noir', 'black', 'gris', 'gray', 'grey', 'blanc', 'white', 'chrome', 'chromee', 'chromé', 'chromee', 'carbon', 'carbone', 'batman', 'autre-couleur', 'autre couleur', 'other-color', 'other color']);
+  const normalizeCoverOption = (value) => String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+  const coverDisplayLabelByKey = {
+    noir: 'Noir',
+    black: 'Noir',
+    gris: 'Gris',
+    gray: 'Gris',
+    grey: 'Gris',
+    blanc: 'Blanc',
+    white: 'Blanc',
+    chrome: 'Chromee',
+    chromee: 'Chromee',
+    carbon: 'Carbon',
+    carbone: 'Carbon',
+    batman: 'Batman',
+    'autre-couleur': 'Autre couleur',
+    'autre couleur': 'Autre couleur',
+    'other-color': 'Autre couleur',
+    'other color': 'Autre couleur',
+  };
+  const coverFilteredDefs = isCoverPiece
+    ? normalizedOptionDefs
+      .map((item) => {
+        const normalized = normalizeCoverOption(item.key || item.label);
+        return {
+          ...item,
+          coverNormalized: normalized,
+          label: coverDisplayLabelByKey[normalized] || item.label,
+        };
+      })
+      .filter((item) => COVER_ALLOWED_KEYS.has(item.coverNormalized))
+    : normalizedOptionDefs;
+  const coverEnsuredDefs = isCoverPiece
+    ? (() => {
+      const requiredCoverOptions = [
+        { normalized: 'noir', key: 'Noir', label: 'Noir' },
+        { normalized: 'gris', key: 'Gris', label: 'Gris' },
+        { normalized: 'blanc', key: 'Blanc', label: 'Blanc' },
+        { normalized: 'chromee', key: 'Chromee', label: 'Chromee' },
+        { normalized: 'carbon', key: 'Carbon', label: 'Carbon' },
+        { normalized: 'batman', key: 'Batman', label: 'Batman' },
+        { normalized: 'autre-couleur', key: 'Autre couleur', label: 'Autre couleur' },
+      ];
+      const byNormalized = new Map(coverFilteredDefs.map((item) => [item.coverNormalized, item]));
+      return requiredCoverOptions.map((required) => (
+        byNormalized.get(required.normalized) || {
+          key: required.key,
+          label: required.label,
+          icon: '',
+          imageSrc: '',
+          coverNormalized: required.normalized,
+        }
+      ));
+    })()
+    : coverFilteredDefs;
+  const coverColorOptions = isCoverPiece ? coverEnsuredDefs : [];
+  const coverColorTopOption = coverColorOptions[0] || null;
+  const coverColorRemainingOptions = coverColorTopOption
+    ? coverColorOptions.filter((item) => item.key !== coverColorTopOption.key)
+    : coverColorOptions;
   const selectedCoverColorKey = coverColorOptions.find((item) => selectedOptions.includes(item.key))?.key || '';
-  const isBatmanSelected = coverBatmanOption ? selectedOptions.includes(coverBatmanOption.key) : false;
   const colorClassToken = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const coverColorFallbackByToken = {
     noir: '#0f1012',
@@ -117,8 +178,137 @@ export default function ProductOptionsSection({
         <>
           <section className="config-group">
             <h3>{`${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'COVER'})`}</h3>
-            <div className="cover-color-grid">
-              {coverColorOptions.map((option) => {
+            <div className="feature-grid cover-position-grid">
+              {positions.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={`feature-card position-feature-card ${selectedPositions.includes(item) ? 'active' : ''}`}
+                  onClick={() => togglePosition(item)}
+                >
+                  <span className="feature-card-icon">
+                    <img
+                      src={positionIconByValue[item]}
+                      alt=""
+                      className="feature-card-icon-img"
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </span>
+                  <span className="feature-card-texts">
+                    <span className="feature-card-title">{positionLabel(item)}</span>
+                  </span>
+                </button>
+              ))}
+              <button
+                type="button"
+                className={`feature-card position-feature-card ${
+                  selectedPositions.includes('Cote conducteur') && selectedPositions.includes('Cote passager') ? 'active' : ''
+                }`}
+                onClick={() => {
+                  const hasBoth = selectedPositions.includes('Cote conducteur') && selectedPositions.includes('Cote passager');
+                  onChange('position', hasBoth ? [] : ['Cote conducteur', 'Cote passager']);
+                }}
+              >
+                <span className="feature-card-icon position-double-icon">
+                  <img
+                    src={conducteurIcon}
+                    alt=""
+                    className="feature-card-icon-img"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <img
+                    src={passagerIcon}
+                    alt=""
+                    className="feature-card-icon-img"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+                <span className="feature-card-texts">
+                  <span className="feature-card-title">{`${t('side_driver', 'Conducteur')} + ${t('side_passenger', 'Passager')}`}</span>
+                </span>
+              </button>
+              {coverColorTopOption ? (
+                <button
+                  key={coverColorTopOption.key}
+                  type="button"
+                  className={`feature-card cover-color-btn ${selectedCoverColorKey === coverColorTopOption.key ? 'active' : ''}`}
+                  aria-label={coverColorTopOption.label}
+                  title={coverColorTopOption.label}
+                  onClick={() => {
+                    const remaining = selectedOptions.filter((item) => !coverColorOptions.some((colorOpt) => colorOpt.key === item));
+                    const isActive = selectedCoverColorKey === coverColorTopOption.key;
+                    const next = isActive ? remaining : [...remaining, coverColorTopOption.key];
+                    onChange('options', next);
+                  }}
+                >
+                  <span className="feature-card-icon">
+                    {coverColorTopOption.imageSrc ? (
+                      <img
+                        src={coverColorTopOption.imageSrc}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : coverColorTopOption.coverNormalized === 'batman' ? (
+                      <img
+                        src={batmanOptionIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : coverColorTopOption.coverNormalized === 'carbon' || coverColorTopOption.coverNormalized === 'carbone' ? (
+                      <img
+                        src={carbonOptionIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : coverColorTopOption.coverNormalized === 'chrome' || coverColorTopOption.coverNormalized === 'chromee' ? (
+                      <img
+                        src={chromeeOptionIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : coverColorTopOption.coverNormalized === 'autre-couleur' || coverColorTopOption.coverNormalized === 'autre couleur' ? (
+                      <img
+                        src={autreOptionIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <span
+                        className={`cover-color-dot cover-dot-${colorClassToken(coverColorTopOption.label || coverColorTopOption.key)}`}
+                        style={getCoverDotStyle(coverColorTopOption.label || coverColorTopOption.key)}
+                        aria-hidden="true"
+                      />
+                    )}
+                  </span>
+                  <span className="feature-card-texts">
+                    <span className="feature-card-title">{coverColorTopOption.label}</span>
+                  </span>
+                </button>
+              ) : null}
+            </div>
+            <div className="feature-grid cover-color-grid">
+              {coverColorRemainingOptions.map((option) => {
                 const token = colorClassToken(option.label || option.key);
                 const isActive = selectedCoverColorKey === option.key;
                 return (
@@ -144,6 +334,42 @@ export default function ProductOptionsSection({
                           loading="lazy"
                           decoding="async"
                         />
+                      ) : option.coverNormalized === 'batman' ? (
+                        <img
+                          src={batmanOptionIcon}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : option.coverNormalized === 'carbon' || option.coverNormalized === 'carbone' ? (
+                        <img
+                          src={carbonOptionIcon}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : option.coverNormalized === 'chrome' || option.coverNormalized === 'chromee' ? (
+                        <img
+                          src={chromeeOptionIcon}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : option.coverNormalized === 'autre-couleur' || option.coverNormalized === 'autre couleur' ? (
+                        <img
+                          src={autreOptionIcon}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
                       ) : (
                         <span
                           className={`cover-color-dot cover-dot-${token}`}
@@ -161,33 +387,6 @@ export default function ProductOptionsSection({
             </div>
           </section>
 
-          {coverBatmanOption ? (
-            <section className="config-group">
-              <h3>{t('product_batman_title', '3. Batman')}</h3>
-              <div className="adjustment-choice-row adjustment-choice-row-two">
-                <button
-                  type="button"
-                  className={`choice-btn ${isBatmanSelected ? 'active' : ''}`}
-                  onClick={() => {
-                    if (isBatmanSelected) return;
-                    onChange('options', [...selectedOptions.filter((item) => item !== coverBatmanOption.key), coverBatmanOption.key]);
-                  }}
-                >
-                  {t('product_option_yes', 'Oui')}
-                </button>
-                <button
-                  type="button"
-                  className={`choice-btn ${!isBatmanSelected ? 'active' : ''}`}
-                  onClick={() => {
-                    if (!isBatmanSelected) return;
-                    onChange('options', selectedOptions.filter((item) => item !== coverBatmanOption.key));
-                  }}
-                >
-                  {t('product_option_no', 'Non')}
-                </button>
-              </div>
-            </section>
-          ) : null}
         </>
       ) : null}
 
