@@ -16,6 +16,7 @@ import batmanOptionIcon from '../../images/new-icones/batman.jpeg';
 import carbonOptionIcon from '../../images/new-icones/carbon.jpeg';
 import chromeeOptionIcon from '../../images/new-icones/chromee.jpeg';
 import autreOptionIcon from '../../images/new-icones/autre.jpeg';
+import dinamicOptionIcon from '../../images/new-icones/DINAMIC.png';
 
 export default function ProductOptionsSection({
   t,
@@ -60,6 +61,8 @@ export default function ProductOptionsSection({
     Rabattement: rabattementIcon,
     'Rabattement electrique': rabattementIcon,
     FOLDING: rabattementIcon,
+    DINAMIC: dinamicOptionIcon,
+    Dynamic: dinamicOptionIcon,
   };
   const normalizedOptionDefs = (selectedOptionDefs || [])
     .map((item) => ({
@@ -71,6 +74,8 @@ export default function ProductOptionsSection({
     .filter((item) => item.key && item.label);
   const isCoverPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'COVER';
   const isGlassPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'GLASS';
+  const singlePieceKey = String(selectedFeatureKey || '').toUpperCase();
+  const isSinglePiece = isPieceOrder && (singlePieceKey === 'SINGLE' || singlePieceKey === 'SIGNLE');
   const shouldShowPositionCards = showPositionSection || isGlassPiece;
   const COVER_ALLOWED_KEYS = new Set(['noir', 'black', 'gris', 'gray', 'grey', 'blanc', 'white', 'chrome', 'chromee', 'chromé', 'chromee', 'carbon', 'carbone', 'batman', 'autre-couleur', 'autre couleur', 'other-color', 'other color']);
   const normalizeCoverOption = (value) => String(value || '')
@@ -159,6 +164,12 @@ export default function ProductOptionsSection({
     return String(fallback).startsWith('linear-gradient')
       ? { backgroundImage: fallback, backgroundColor: 'transparent' }
       : { backgroundColor: fallback };
+  };
+  const getSingleDotStyle = (label) => {
+    const token = colorClassToken(label);
+    if (token === 'noir' || token === 'black') return { backgroundColor: '#0f1012' };
+    if (token === 'blanc' || token === 'white') return { backgroundColor: '#f2f4f7' };
+    return undefined;
   };
   const selectedPositions = Array.isArray(productConfig.position)
     ? productConfig.position
@@ -500,15 +511,21 @@ export default function ProductOptionsSection({
                 onClick={() => toggleOption(card.key)}
               >
                 <span className="feature-card-icon">
-                  {card.imageSrc ? (
-                    <img
-                      src={card.imageSrc}
-                      alt=""
-                      className="feature-card-icon-img"
+                  {isSinglePiece && ['noir', 'black', 'blanc', 'white'].includes(colorClassToken(card.key || card.label)) ? (
+                    <span
+                      className={`cover-color-dot cover-dot-${colorClassToken(card.key || card.label)}`}
+                      style={getSingleDotStyle(card.key || card.label)}
                       aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
                     />
+                  ) : card.imageSrc ? (
+                      <img
+                        src={card.imageSrc}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
                   ) : optionImageByLabel[card.key] || optionImageByLabel[card.label] ? (
                     <img
                       src={optionImageByLabel[card.key] || optionImageByLabel[card.label]}
