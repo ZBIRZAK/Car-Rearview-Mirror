@@ -232,9 +232,10 @@ export default function Product({
         if (index === -1) return null;
         return list.splice(index, 1)[0];
       };
-      const reglage = takeByKeys(['reglage electrique', 'reglage']);
+      const reglageElectrique = takeByKeys(['reglage electrique', 'reglage']);
+      const reglageManuel = takeByKeys(['reglage manuel', 'manuel']);
       const rabattement = takeByKeys(['rabattement']);
-      const head = [reglage, rabattement].filter(Boolean);
+      const head = [reglageElectrique, reglageManuel, rabattement].filter(Boolean);
       return [...head, ...list];
     };
 
@@ -257,11 +258,13 @@ export default function Product({
           && item.label !== 'Glace'
           && item.label !== 'Forme'
         ));
-        const hasReglage = filtered.some((item) => item.key === 'Reglage electrique' || item.label === t('product_electric', 'Electrique'));
-        const withReglage = hasReglage
-          ? filtered
-          : [{ key: 'Reglage electrique', label: t('product_electric', 'Electrique'), icon: 'adjustment', imageSrc: '' }, ...filtered];
-        return prioritizeCompleteOptions(withReglage);
+        const hasReglageElectrique = filtered.some((item) => item.key === 'Reglage electrique' || item.label === t('product_electric', 'Electrique'));
+        const hasReglageManuel = filtered.some((item) => item.key === 'Reglage manuel' || item.label === 'Reglage manuel' || item.label === t('product_manual', 'Manuel'));
+        const injectedReglage = [
+          ...(hasReglageManuel ? [] : [{ key: 'Reglage manuel', label: 'Reglage manuel', icon: 'adjustment', imageSrc: '' }]),
+          ...(hasReglageElectrique ? [] : [{ key: 'Reglage electrique', label: t('product_electric', 'Electrique'), icon: 'adjustment', imageSrc: '' }]),
+        ];
+        return prioritizeCompleteOptions([...injectedReglage, ...filtered]);
       }
 
       return mappedDynamic;
@@ -269,6 +272,7 @@ export default function Product({
 
     if (isCompleteOrder) {
       const completeFallback = [
+        { key: 'Reglage manuel', label: 'Reglage manuel', icon: 'adjustment' },
         { key: 'Reglage electrique', label: t('product_electric', 'Electrique'), icon: 'adjustment' },
         { key: 'Rabattement', label: t('product_fold_option_title', 'Rabattement'), icon: 'folding' },
         ...visibleFeatureCards.map((card) => ({

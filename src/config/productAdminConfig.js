@@ -65,6 +65,7 @@ export const COMPLETE_OPTION_DEFS = [
   { key: 'Forme retroviseur', label: 'Forme', icon: 'shape' },
   { key: 'Chauffage glace', label: 'Chauffage', icon: 'heating' },
   { key: 'Memoire position', label: 'Memoire', icon: 'memory' },
+  { key: 'Reglage manuel', label: 'Reglage manuel', icon: 'adjustment' },
   { key: 'Reglage electrique', label: 'Reglage electrique', icon: 'adjustment' },
   { key: 'Anti-eblouissement', label: 'Anti-eblouissement', icon: 'antiLight' },
   { key: 'Clignotant', label: 'Clignotant', icon: 'lamp' },

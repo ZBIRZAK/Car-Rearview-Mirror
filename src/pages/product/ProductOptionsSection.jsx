@@ -56,6 +56,7 @@ export default function ProductOptionsSection({
     'Forme retroviseur': formeOptionIcon,
     Forme: formeOptionIcon,
     'Reglage electrique': reglageIcon,
+    'Reglage manuel': reglageIcon,
     Reglage: reglageIcon,
     'ELECTRIC / MANUAL': reglageIcon,
     Rabattement: rabattementIcon,
@@ -433,7 +434,7 @@ export default function ProductOptionsSection({
                     </span>
                   </button>
                 ))}
-                {isGlassPiece ? (
+                {isGlassPiece || isCompleteOrder ? (
                   <button
                     type="button"
                     className={`feature-card position-feature-card ${

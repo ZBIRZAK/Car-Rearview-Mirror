@@ -469,10 +469,11 @@ function App() {
     const currentPayload = buildQuotePayload();
     setQuoteItems((prev) => [...prev, currentPayload]);
     const nextConfig = createEmptyProductConfig();
+    setSelectedModel(null);
+    setSelectedYear(null);
     setProductConfig(nextConfig);
-    navigateToView('product', {
-      queryString: buildProductQueryString({ productConfig: nextConfig }),
-    });
+    navigateToView('models');
+    setShowBrandHint(false);
   };
 
   // Handle form input changes
