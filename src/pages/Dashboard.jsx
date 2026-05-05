@@ -18,16 +18,17 @@ import { hasSupabaseConfig } from '../lib/supabaseClient';
 import { mockData } from '../data/mockData';
 import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from '../config/homeContentDefaults';
 import { fetchAppSetting, saveAppSetting } from '../lib/appSettingsApi';
-import glaceOptionIcon from '../images/new-icones/Glace.png';
-import sousEclairageOptionIcon from '../images/new-icones/Sous-eclairage.png';
-import formeOptionIcon from '../images/new-icones/Forme.png';
-import chauffageOptionIcon from '../images/new-icones/Chauffage.png';
-import memoireOptionIcon from '../images/new-icones/Memoire.png';
-import antiEblouissementOptionIcon from '../images/new-icones/Anti-eblouissement.png';
+import glaceOptionIcon from '../images/new-icones/SVG/Glace.svg';
+import sousEclairageOptionIcon from '../images/new-icones/SVG/Sous-eclairage.svg';
+import formeOptionIcon from '../images/new-icones/SVG/Forme.svg';
+import chauffageOptionIcon from '../images/new-icones/SVG/Chauffage.svg';
+import memoireOptionIcon from '../images/new-icones/SVG/Memoire.svg';
+import antiEblouissementOptionIcon from '../images/new-icones/SVG/Anti-eblouissement.svg';
 import cameraOptionIcon from '../images/new-icones/Camera.png';
-import angleMortOptionIcon from '../images/new-icones/Angle mort.png';
-import reglageIcon from '../images/new-icones/Reglage.png';
-import rabattementIcon from '../images/new-icones/rabattement.png';
+import angleMortOptionIcon from '../images/new-icones/SVG/Angle mort.svg';
+import reglageIcon from '../images/new-icones/SVG/Reglage-electrique.svg';
+import reglageManuelIcon from '../images/new-icones/SVG/Reglage-manuel.svg';
+import rabattementIcon from '../images/new-icones/SVG/rabattement.svg';
 
 function formatDate(value) {
   if (!value) return '-';
@@ -65,6 +66,8 @@ const OPTION_IMAGE_BY_KEY = {
   Heating: chauffageOptionIcon,
   'Anti-light': antiEblouissementOptionIcon,
   'Blind spot': angleMortOptionIcon,
+  'Reglage manuel': reglageManuelIcon,
+  Manuel: reglageManuelIcon,
   'ELECTRIC / MANUAL': reglageIcon,
   FOLDING: rabattementIcon,
   Underlight: sousEclairageOptionIcon,

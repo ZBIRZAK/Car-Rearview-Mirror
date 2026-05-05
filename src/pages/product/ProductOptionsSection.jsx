@@ -1,17 +1,18 @@
 import React from 'react';
 import FeatureIcon from './FeatureIcon';
-import conducteurIcon from '../../images/new-icones/Conducteur-v2.png';
-import passagerIcon from '../../images/new-icones/Passager-v2.png';
-import glaceOptionIcon from '../../images/new-icones/Glace.png';
-import sousEclairageOptionIcon from '../../images/new-icones/Sous-eclairage.png';
-import formeOptionIcon from '../../images/new-icones/Forme.png';
-import chauffageOptionIcon from '../../images/new-icones/Chauffage.png';
-import memoireOptionIcon from '../../images/new-icones/Memoire.png';
-import antiEblouissementOptionIcon from '../../images/new-icones/Anti-eblouissement.png';
+import conducteurIcon from '../../images/new-icones/SVG/Conducteur-v2.svg';
+import passagerIcon from '../../images/new-icones/SVG/Passager-v2.svg';
+import glaceOptionIcon from '../../images/new-icones/SVG/Glace.svg';
+import sousEclairageOptionIcon from '../../images/new-icones/SVG/Sous-eclairage.svg';
+import formeOptionIcon from '../../images/new-icones/SVG/Forme.svg';
+import chauffageOptionIcon from '../../images/new-icones/SVG/Chauffage.svg';
+import memoireOptionIcon from '../../images/new-icones/SVG/Memoire.svg';
+import antiEblouissementOptionIcon from '../../images/new-icones/SVG/Anti-eblouissement.svg';
 import cameraOptionIcon from '../../images/new-icones/Camera.png';
-import angleMortOptionIcon from '../../images/new-icones/Angle mort.png';
-import reglageIcon from '../../images/new-icones/Reglage.png';
-import rabattementIcon from '../../images/new-icones/rabattement.png';
+import angleMortOptionIcon from '../../images/new-icones/SVG/Angle mort.svg';
+import reglageIcon from '../../images/new-icones/SVG/Reglage-electrique.svg';
+import reglageManuelIcon from '../../images/new-icones/SVG/Reglage-manuel.svg';
+import rabattementIcon from '../../images/new-icones/SVG/rabattement.svg';
 import batmanOptionIcon from '../../images/new-icones/batman.jpeg';
 import carbonOptionIcon from '../../images/new-icones/carbon.jpeg';
 import chromeeOptionIcon from '../../images/new-icones/chromee.jpeg';
@@ -56,7 +57,7 @@ export default function ProductOptionsSection({
     'Forme retroviseur': formeOptionIcon,
     Forme: formeOptionIcon,
     'Reglage electrique': reglageIcon,
-    'Reglage manuel': reglageIcon,
+    'Reglage manuel': reglageManuelIcon,
     Reglage: reglageIcon,
     'ELECTRIC / MANUAL': reglageIcon,
     Rabattement: rabattementIcon,

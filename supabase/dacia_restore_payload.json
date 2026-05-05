@@ -1,0 +1,709 @@
+{
+  "brand": "Dacia",
+  "modelEntries": [
+    {
+      "model": "Dokker",
+      "years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "ranges": [
+        {
+          "start": 2012,
+          "end": 2024,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Dokker/Dokker (2012–2024)/rétroviseur complet (1).webp",
+                "/Dacia/Dokker/Dokker (2012–2024)/rétroviseur complet (2).webp",
+                "/Dacia/Dokker/Dokker (2012–2024)/rétroviseur complet (3).webp",
+                "/Dacia/Dokker/Dokker (2012–2024)/rétroviseur complet (4).webp",
+                "/Dacia/Dokker/Dokker (2012–2024)/rétroviseur complet (5).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Dokker/Dokker (2012–2024)/Glass (1).webp",
+                "/Dacia/Dokker/Dokker (2012–2024)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Dokker/Dokker (2012–2024)/Cover (1).jpg",
+                "/Dacia/Dokker/Dokker (2012–2024)/Cover (2).jpg",
+                "/Dacia/Dokker/Dokker (2012–2024)/Cover (3).webp",
+                "/Dacia/Dokker/Dokker (2012–2024)/Cover (4).webp"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Dokker (2012–2024)"
+        }
+      ]
+    },
+    {
+      "model": "Duster",
+      "years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "ranges": [
+        {
+          "start": 2010,
+          "end": 2013,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Duster/Duster 1 (2010–2013)/rétroviseur complet (1).webp",
+                "/Dacia/Duster/Duster 1 (2010–2013)/rétroviseur complet (2).webp",
+                "/Dacia/Duster/Duster 1 (2010–2013)/rétroviseur complet (3).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Duster/Duster 1 (2010–2013)/Glass (1).jpg"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Duster/Duster 1 (2010–2013)/Cover (1).jpg"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Duster 1 (2010–2013)"
+        },
+        {
+          "start": 2013,
+          "end": 2017,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Duster/Duster 1 (2013–2017)/rétroviseur complet (1).webp",
+                "/Dacia/Duster/Duster 1 (2013–2017)/rétroviseur complet (2).webp",
+                "/Dacia/Duster/Duster 1 (2013–2017)/rétroviseur complet (3).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Duster/Duster 1 (2013–2017)/Glass (1).webp",
+                "/Dacia/Duster/Duster 1 (2013–2017)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Duster/Duster 1 (2013–2017)/Cover (1).webp"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Duster 1 (2013–2017)"
+        },
+        {
+          "start": 2018,
+          "end": 2023,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Duster/Duster 2 (2018–2023)/rétroviseur complet (1).webp",
+                "/Dacia/Duster/Duster 2 (2018–2023)/rétroviseur complet (2).webp",
+                "/Dacia/Duster/Duster 2 (2018–2023)/rétroviseur complet (3).webp",
+                "/Dacia/Duster/Duster 2 (2018–2023)/rétroviseur complet (4).webp",
+                "/Dacia/Duster/Duster 2 (2018–2023)/rétroviseur complet (5).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Duster/Duster 2 (2018–2023)/Glass (1).webp",
+                "/Dacia/Duster/Duster 2 (2018–2023)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Duster/Duster 2 (2018–2023)/Cover (1).webp"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Duster 2 (2018–2023)"
+        },
+        {
+          "start": 2024,
+          "end": 2026,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Duster/Duster 3 (2024–présent)/rétroviseur complet (1).jpg",
+                "/Dacia/Duster/Duster 3 (2024–présent)/rétroviseur complet (2).jpg"
+              ],
+              "GLASS": [
+                "/Dacia/Duster/Duster 3 (2024–présent)/Glass (1).jpg",
+                "/Dacia/Duster/Duster 3 (2024–présent)/Glass (2).jpg",
+                "/Dacia/Duster/Duster 3 (2024–présent)/Glass (3).webp",
+                "/Dacia/Duster/Duster 3 (2024–présent)/Glass (4).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Duster/Duster 3 (2024–présent)/Cover (1).webp",
+                "/Dacia/Duster/Duster 3 (2024–présent)/Cover (2).webp"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Duster 3 (2024–présent)"
+        }
+      ]
+    },
+    {
+      "model": "Jogger",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "ranges": [
+        {
+          "start": 2021,
+          "end": 2026,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Jogger/Jogger (2021–présent)/rétroviseur complet (1).webp",
+                "/Dacia/Jogger/Jogger (2021–présent)/rétroviseur complet (2).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Jogger/Jogger (2021–présent)/Glass (1).webp",
+                "/Dacia/Jogger/Jogger (2021–présent)/Glass (2).webp",
+                "/Dacia/Jogger/Jogger (2021–présent)/Glass (3).webp",
+                "/Dacia/Jogger/Jogger (2021–présent)/Glass (4).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Jogger/Jogger (2021–présent)/Cover (1).webp",
+                "/Dacia/Jogger/Jogger (2021–présent)/Cover (2).webp"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Jogger (2021–présent)"
+        }
+      ]
+    },
+    {
+      "model": "Lodgy",
+      "years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "ranges": [
+        {
+          "start": 2012,
+          "end": 2022,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/rétroviseur complet (1).webp",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/rétroviseur complet (2).webp",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/rétroviseur complet (3).webp",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/rétroviseur complet (4).webp",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/rétroviseur complet (5).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/Glass (1).webp",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/Cover (1).jpg",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/Cover (2).webp",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/Cover (3).webp",
+                "/Dacia/Lodgy/Dacia Lodgy (2012–2022)/Cover (4).jpg"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Dacia Lodgy (2012–2022)"
+        }
+      ]
+    },
+    {
+      "model": "Logan",
+      "years": [
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "ranges": [
+        {
+          "start": 2004,
+          "end": 2012,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Logan/Logan 1 (2004–2012)/rétroviseur complet (1).webp",
+                "/Dacia/Logan/Logan 1 (2004–2012)/rétroviseur complet (2).webp",
+                "/Dacia/Logan/Logan 1 (2004–2012)/rétroviseur complet (3).webp",
+                "/Dacia/Logan/Logan 1 (2004–2012)/rétroviseur complet (4).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Logan/Logan 1 (2004–2012)/Glass (1).webp",
+                "/Dacia/Logan/Logan 1 (2004–2012)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Logan/Logan 1 (2004–2012)/Cover (1).jpg",
+                "/Dacia/Logan/Logan 1 (2004–2012)/Cover (2).jpg"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Logan 1 (2004–2012)"
+        },
+        {
+          "start": 2012,
+          "end": 2020,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Logan/Logan 2 (2012–2020)/rétroviseur complet (1).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/rétroviseur complet (2).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/rétroviseur complet (3).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/rétroviseur complet (4).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/rétroviseur complet (5).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/rétroviseur complet (6).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Logan/Logan 2 (2012–2020)/Glass (1).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Logan/Logan 2 (2012–2020)/Cover (1).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/Cover (2).webp",
+                "/Dacia/Logan/Logan 2 (2012–2020)/Cover (3).jpg",
+                "/Dacia/Logan/Logan 2 (2012–2020)/Cover (4).jpg"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Logan 2 (2012–2020)"
+        },
+        {
+          "start": 2020,
+          "end": 2026,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Logan/Logan 3 (2020–présent)/rétroviseur complet (1).webp",
+                "/Dacia/Logan/Logan 3 (2020–présent)/rétroviseur complet (2).webp",
+                "/Dacia/Logan/Logan 3 (2020–présent)/rétroviseur complet (3).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Logan/Logan 3 (2020–présent)/Glass (1).webp",
+                "/Dacia/Logan/Logan 3 (2020–présent)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Logan/Logan 3 (2020–présent)/Cover (1).jpg",
+                "/Dacia/Logan/Logan 3 (2020–présent)/Cover (2).jpg"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Logan 3 (2020–présent)"
+        }
+      ]
+    },
+    {
+      "model": "Sandero",
+      "years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "ranges": [
+        {
+          "start": 2008,
+          "end": 2012,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/rétroviseur complet (1).webp",
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/rétroviseur complet (2).webp",
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/rétroviseur complet (3).webp",
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/rétroviseur complet (4).webp",
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/rétroviseur complet (5).webp",
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/rétroviseur complet (6).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/Glass (1).webp",
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/Cover (1).jpg",
+                "/Dacia/Sandero/Dacia Sandero 1 (2008-2012)/Cover (2).jpg"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Dacia Sandero 1 (2008-2012)"
+        },
+        {
+          "start": 2012,
+          "end": 2021,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/rétroviseur complet (1).webp",
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/rétroviseur complet (2).webp",
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/rétroviseur complet (3).webp",
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/rétroviseur complet (4).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/Glass (1).webp",
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/Cover (1).jpg",
+                "/Dacia/Sandero/Dacia Sandero 2 (2012-2021)/Cover (2).jpg"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Dacia Sandero 2 (2012-2021)"
+        },
+        {
+          "start": 2021,
+          "end": 2026,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/rétroviseur complet (1).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/rétroviseur complet (2).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/rétroviseur complet (3).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/rétroviseur complet (4).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/rétroviseur complet (5).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/rétroviseur complet (6).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/Glass (1).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/Glass (2).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/Glass (3).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/Glass (4).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/Cover (1).webp",
+                "/Dacia/Sandero/Dacia Sandero 3 (2021-2026)/Cover (2).webp"
+              ],
+              "SINGLE": []
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Dacia Sandero 3 (2021-2026)"
+        }
+      ]
+    },
+    {
+      "model": "Spring",
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "ranges": [
+        {
+          "start": 2021,
+          "end": 2026,
+          "config": {
+            "catalogProducts": [],
+            "enabledProducts": [
+              "COMPLETE",
+              "GLASS",
+              "COVER",
+              "SINGLE"
+            ],
+            "completeOptionKeys": [],
+            "productImagesByKey": {
+              "COMPLETE": [
+                "/Dacia/Spring/Spring (2021–présent)/rétroviseur complet (1).webp",
+                "/Dacia/Spring/Spring (2021–présent)/rétroviseur complet (2).webp",
+                "/Dacia/Spring/Spring (2021–présent)/rétroviseur complet (3).webp",
+                "/Dacia/Spring/Spring (2021–présent)/rétroviseur complet (4).webp"
+              ],
+              "GLASS": [
+                "/Dacia/Spring/Spring (2021–présent)/Glass (1).webp",
+                "/Dacia/Spring/Spring (2021–présent)/Glass (2).webp"
+              ],
+              "MIRROR": [],
+              "COVER": [
+                "/Dacia/Spring/Spring (2021–présent)/Cover (1).jpg",
+                "/Dacia/Spring/Spring (2021–présent)/Cover (2).jpg"
+              ],
+              "SINGLE": [
+                "/Dacia/Spring/Spring (2021–présent)/Signle (2).webp",
+                "/Dacia/Spring/Spring (2021–présent)/signle (1).webp"
+              ]
+            },
+            "productOptionDefsByProductKey": {},
+            "pieceOptionsByKey": {
+              "GLASS": [],
+              "MIRROR": [],
+              "COVER": [],
+              "SINGLE": []
+            }
+          },
+          "variant": "Spring (2021–présent)"
+        }
+      ]
+    }
+  ]
+}
