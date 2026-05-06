@@ -18,6 +18,28 @@ export default function RightSidebar({
   onContact,
   disabled = false,
 }) {
+  const brandsRef = React.useRef(null);
+
+  const handleBrandsWheel = (event) => {
+    const listEl = brandsRef.current;
+    if (!listEl) return;
+    const { scrollTop, clientHeight, scrollHeight } = listEl;
+    const deltaY = event.deltaY;
+    const canScroll = scrollHeight > clientHeight + 1;
+    const atTop = scrollTop <= 0;
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+    const scrollingDown = deltaY > 0;
+
+    // When the sidebar brand list is at its edge, continue scrolling main content.
+    if (!canScroll || (scrollingDown && atBottom) || (!scrollingDown && atTop)) {
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) {
+        mainContent.scrollTop += deltaY;
+        event.preventDefault();
+      }
+    }
+  };
+
   return (
     <aside className="right-sidebar" aria-label="Sidebar actions">
       <div className="right-sidebar-top">
@@ -37,7 +59,7 @@ export default function RightSidebar({
 
       <div className="sidebar-divider" aria-hidden="true" />
 
-      <div className="right-sidebar-brands">
+      <div ref={brandsRef} className="right-sidebar-brands" onWheel={handleBrandsWheel}>
         {brands.map((brand) => (
           <button
             key={brand.id}
