@@ -519,10 +519,32 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .sidebar-share-icon-img {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   display: block;
+}
+
+.sidebar-share-close-mark {
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.sidebar-share-toggle-visual {
+  animation: shareToggleSwap 0.22s ease;
+  transform-origin: center;
+}
+
+@keyframes shareToggleSwap {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-12deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .sidebar-bottom-icon-img {

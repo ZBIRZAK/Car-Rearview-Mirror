@@ -134,7 +134,11 @@ export default function RightSidebar({
           aria-label="Partager"
           aria-expanded={isShareOpen}
         >
-          <img src={customerServiceIcon} alt="" aria-hidden="true" className="sidebar-share-icon-img" />
+          {isShareOpen ? (
+            <span className="sidebar-share-close-mark sidebar-share-toggle-visual" aria-hidden="true">×</span>
+          ) : (
+            <img src={customerServiceIcon} alt="" aria-hidden="true" className="sidebar-share-icon-img sidebar-share-toggle-visual" />
+          )}
         </button>
       </div>
     </aside>
