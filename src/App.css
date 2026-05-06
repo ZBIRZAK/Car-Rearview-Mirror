@@ -3240,7 +3240,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   top: 8px;
   height: 22%;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0));
+  /* background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0)); */
   pointer-events: none;
 }
 
@@ -3271,6 +3271,7 @@ width: 130px;
   /* font-weight: 600; */
   line-height: 1.25;
   /* text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45); */
+  margin: -2px 0px 5px 0px;
 }
 
 .feature-card-sub {
