@@ -475,6 +475,56 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   box-shadow: none;
 }
 
+.right-sidebar-bottom {
+  position: relative;
+}
+
+.sidebar-social-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 0.32s ease, opacity 0.28s ease, transform 0.32s ease;
+  padding: 2px 0px;
+}
+
+.sidebar-social-stack.open {
+  max-height: 260px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.sidebar-icon-share {
+  border-color: rgba(0, 0, 0, 0.16);
+  background: #fff;
+  color: #111;
+}
+
+.sidebar-share-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  transition: transform 0.22s ease;
+}
+
+.sidebar-icon-share.open .sidebar-share-icon {
+  transform: rotate(90deg);
+}
+
+.sidebar-share-icon-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+
 .sidebar-bottom-icon-img {
   width: 45px;
   height: 43px;

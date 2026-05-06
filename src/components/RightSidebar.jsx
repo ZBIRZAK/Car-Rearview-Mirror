@@ -4,6 +4,7 @@ import telegramIcon from '../icons/new logo social/telegram.png';
 import instagramIcon from '../icons/new logo social/instagram.png';
 import wechatIcon from '../icons/new logo social/wechat.png';
 import whatsappIcon from '../icons/new logo social/whatsapp.png';
+import customerServiceIcon from '../icons/customer-service.png';
 
 export default function RightSidebar({
   brands,
@@ -19,6 +20,7 @@ export default function RightSidebar({
   disabled = false,
 }) {
   const brandsRef = React.useRef(null);
+  const [isShareOpen, setIsShareOpen] = React.useState(false);
 
   const handleBrandsWheel = (event) => {
     const listEl = brandsRef.current;
@@ -82,20 +84,57 @@ export default function RightSidebar({
       <div className="sidebar-divider" aria-hidden="true" />
 
       <div className="right-sidebar-bottom">
+        <div className={`sidebar-social-stack ${isShareOpen ? 'open' : ''}`} aria-hidden={!isShareOpen}>
+          <button
+            type="button"
+            className="sidebar-icon-btn sidebar-icon-bottom"
+            onClick={onContact}
+            aria-label="Telegram"
+            tabIndex={isShareOpen ? 0 : -1}
+          >
+            <img src={telegramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+          </button>
+          <button
+            type="button"
+            className="sidebar-icon-btn sidebar-icon-bottom"
+            onClick={onWhatsApp}
+            aria-label="WhatsApp"
+            tabIndex={isShareOpen ? 0 : -1}
+          >
+            <img src={whatsappIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+          </button>
+          <button
+            type="button"
+            className="sidebar-icon-btn sidebar-icon-bottom"
+            onClick={onInstagram}
+            aria-label="Instagram"
+            tabIndex={isShareOpen ? 0 : -1}
+          >
+            <img src={instagramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+          </button>
+          <button
+            type="button"
+            className="sidebar-icon-btn sidebar-icon-bottom"
+            onClick={onWeChat}
+            aria-label="WeChat"
+            tabIndex={isShareOpen ? 0 : -1}
+          >
+            <img src={wechatIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+          </button>
+        </div>
+
         <button type="button" className="sidebar-icon-btn sidebar-icon-bottom sidebar-icon-back" onClick={onBack} aria-label="Retour">
           <img src={previousIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img sidebar-bottom-icon-previous" />
         </button>
-        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onContact} aria-label="Telegram">
-          <img src={telegramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
-        </button>
-        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onWhatsApp} aria-label="WhatsApp">
-          <img src={whatsappIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
-        </button>
-        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onInstagram} aria-label="Instagram">
-          <img src={instagramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
-        </button>
-        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onWeChat} aria-label="WeChat">
-          <img src={wechatIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+
+        <button
+          type="button"
+          className={`sidebar-icon-btn sidebar-icon-bottom sidebar-icon-share ${isShareOpen ? 'open' : ''}`}
+          onClick={() => setIsShareOpen((prev) => !prev)}
+          aria-label="Partager"
+          aria-expanded={isShareOpen}
+        >
+          <img src={customerServiceIcon} alt="" aria-hidden="true" className="sidebar-share-icon-img" />
         </button>
       </div>
     </aside>
