@@ -135,7 +135,9 @@ export default function RightSidebar({
           aria-expanded={isShareOpen}
         >
           {isShareOpen ? (
-            <span className="sidebar-share-close-mark sidebar-share-toggle-visual" aria-hidden="true">×</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="sidebar-share-close-mark sidebar-share-toggle-visual">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
           ) : (
             <img src={customerServiceIcon} alt="" aria-hidden="true" className="sidebar-share-icon-img sidebar-share-toggle-visual" />
           )}

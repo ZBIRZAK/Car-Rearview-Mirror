@@ -526,9 +526,12 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 }
 
 .sidebar-share-close-mark {
-  font-size: 34px;
-  line-height: 1;
-  font-weight: 400;
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
 }
 
 .sidebar-share-toggle-visual {
