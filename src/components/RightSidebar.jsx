@@ -60,8 +60,8 @@ export default function RightSidebar({
       <div className="sidebar-divider" aria-hidden="true" />
 
       <div className="right-sidebar-bottom">
-        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onBack} aria-label="Retour">
-          <img src={previousIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
+        <button type="button" className="sidebar-icon-btn sidebar-icon-bottom sidebar-icon-back" onClick={onBack} aria-label="Retour">
+          <img src={previousIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img sidebar-bottom-icon-previous" />
         </button>
         <button type="button" className="sidebar-icon-btn sidebar-icon-bottom" onClick={onContact} aria-label="Telegram">
           <img src={telegramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />

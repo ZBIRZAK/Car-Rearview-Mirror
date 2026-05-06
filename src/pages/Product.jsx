@@ -40,6 +40,7 @@ export default function Product({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [showValidationHint, setShowValidationHint] = useState(false);
+  const [unavailableProductNotice, setUnavailableProductNotice] = useState(null);
   const [completePreviewIndex, setCompletePreviewIndex] = useState(0);
   const [catalogCompleteImageIndex, setCatalogCompleteImageIndex] = useState(0);
   const effectiveAdminConfig = useMemo(() => ({
@@ -185,6 +186,7 @@ export default function Product({
   };
 
   const handleCatalogSelect = (item) => {
+    setUnavailableProductNotice(null);
     if (item.orderScope === 'complete' || item.key === 'COMPLETE') {
       onChange('orderScope', 'complete');
       onChange('productType', item.pieceType || completeTypeLabel);
@@ -363,6 +365,31 @@ export default function Product({
     return () => window.clearTimeout(timer);
   }, [showValidationHint]);
 
+  const handleUnavailableSelect = (item) => {
+    const fallbackImage = item?.imageSrc
+      || (productImagesByKey[item?.key] && productImagesByKey[item.key][0])
+      || productPreviewImage;
+    setUnavailableProductNotice({
+      key: item?.key || '',
+      label: item?.label || t('product_unknown', 'Produit'),
+      imageSrc: fallbackImage,
+    });
+  };
+
+  const handleUnavailableWhatsApp = () => {
+    const whatsappNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
+    if (!whatsappNumber || !unavailableProductNotice) return;
+    const messageLines = [
+      t('product_unavailable_whatsapp_intro', "Bonjour, ce produit n'est pas encore disponible sur le site."),
+      `${t('whatsapp_label_product', 'Produit')}: ${unavailableProductNotice.label}`,
+      `${t('whatsapp_label_brand', 'Marque')}: ${brand?.name || '-'}`,
+      `${t('whatsapp_label_model', 'Modele')}: ${model || '-'}`,
+      `${t('whatsapp_label_year', 'Annee')}: ${year || '-'}`,
+      t('product_unavailable_whatsapp_request', 'Merci de me confirmer la disponibilite et le prix.'),
+    ];
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(messageLines.join('\n'))}`, '_blank');
+  };
+
   return (
     <div className="product-view">
       
@@ -410,6 +437,7 @@ export default function Product({
             brand={brand}
             model={model}
             year={year}
+            onUnavailableSelect={handleUnavailableSelect}
           />
 
           <ProductOptionsSection
@@ -459,6 +487,40 @@ export default function Product({
           </div>
         </div>
       )}
+
+      {unavailableProductNotice ? (
+        <div className="product-unavailable-toast" role="status" aria-live="polite">
+          <button
+            type="button"
+            className="product-unavailable-toast-close"
+            onClick={() => setUnavailableProductNotice(null)}
+            aria-label={t('close', 'Fermer')}
+          >
+            ×
+          </button>
+          <img
+            src={unavailableProductNotice.imageSrc || productPreviewImage}
+            alt={unavailableProductNotice.label}
+            className="product-unavailable-toast-image"
+          />
+          <p className="product-unavailable-toast-title">
+            {unavailableProductNotice.label}
+          </p>
+          <p className="product-unavailable-toast-text">
+            {t(
+              'product_unavailable_notice',
+              'Produit non disponible pour le moment (sur le site). Envoyez-nous un message pour recevoir la disponibilite et le prix.'
+            )}
+          </p>
+          <button
+            type="button"
+            className="product-unavailable-toast-btn"
+            onClick={handleUnavailableWhatsApp}
+          >
+            {t('product_unavailable_notice_btn', 'Envoyer un message')}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

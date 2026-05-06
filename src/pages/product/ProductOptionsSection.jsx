@@ -8,16 +8,21 @@ import formeOptionIcon from '../../images/new-icones/SVG/Forme.svg';
 import chauffageOptionIcon from '../../images/new-icones/SVG/Chauffage.svg';
 import memoireOptionIcon from '../../images/new-icones/SVG/Memoire.svg';
 import antiEblouissementOptionIcon from '../../images/new-icones/SVG/Anti-eblouissement.svg';
-import cameraOptionIcon from '../../images/new-icones/Camera.png';
+import cameraOptionIcon from '../../images/new-icones/SVG/Camera.svg';
 import angleMortOptionIcon from '../../images/new-icones/SVG/Angle mort.svg';
 import reglageIcon from '../../images/new-icones/SVG/Reglage-electrique.svg';
 import reglageManuelIcon from '../../images/new-icones/SVG/Reglage-manuel.svg';
 import rabattementIcon from '../../images/new-icones/SVG/rabattement.svg';
-import batmanOptionIcon from '../../images/new-icones/batman.jpeg';
-import carbonOptionIcon from '../../images/new-icones/carbon.jpeg';
-import chromeeOptionIcon from '../../images/new-icones/chromee.jpeg';
-import autreOptionIcon from '../../images/new-icones/autre.jpeg';
-import dinamicOptionIcon from '../../images/new-icones/DINAMIC.png';
+import batmanOptionIcon from '../../images/new-icones/SVG/Batman.svg';
+import carbonOptionIcon from '../../images/new-icones/SVG/Carbon.svg';
+import chromeeOptionIcon from '../../images/new-icones/SVG/Chromee.svg';
+import autreOptionIcon from '../../images/new-icones/SVG/Autre couleur.svg';
+import dinamicOptionIcon from '../../images/new-icones/SVG/DINAMIC.svg';
+import singleBlancOptionIcon from '../../images/new-icones/SVG/Signle Blanc.svg';
+import singleNoirOptionIcon from '../../images/new-icones/SVG/Signle Noir.svg';
+import coverBlancOptionIcon from '../../images/new-icones/SVG/Blanc.svg';
+import coverNoirOptionIcon from '../../images/new-icones/SVG/Noir.svg';
+import coverGrisOptionIcon from '../../images/new-icones/SVG/Gris.svg';
 
 export default function ProductOptionsSection({
   t,
@@ -65,6 +70,8 @@ export default function ProductOptionsSection({
     FOLDING: rabattementIcon,
     DINAMIC: dinamicOptionIcon,
     Dynamic: dinamicOptionIcon,
+    'Single Blanc': singleBlancOptionIcon,
+    'Single Noir': singleNoirOptionIcon,
   };
   const normalizedOptionDefs = (selectedOptionDefs || [])
     .map((item) => ({
@@ -306,6 +313,33 @@ export default function ProductOptionsSection({
                         loading="lazy"
                         decoding="async"
                       />
+                    ) : coverColorTopOption.coverNormalized === 'blanc' || coverColorTopOption.coverNormalized === 'white' ? (
+                      <img
+                        src={coverBlancOptionIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : coverColorTopOption.coverNormalized === 'noir' || coverColorTopOption.coverNormalized === 'black' ? (
+                      <img
+                        src={coverNoirOptionIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : coverColorTopOption.coverNormalized === 'gris' || coverColorTopOption.coverNormalized === 'gray' || coverColorTopOption.coverNormalized === 'grey' ? (
+                      <img
+                        src={coverGrisOptionIcon}
+                        alt=""
+                        className="feature-card-icon-img"
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     ) : (
                       <span
                         className={`cover-color-dot cover-dot-${colorClassToken(coverColorTopOption.label || coverColorTopOption.key)}`}
@@ -377,6 +411,33 @@ export default function ProductOptionsSection({
                       ) : option.coverNormalized === 'autre-couleur' || option.coverNormalized === 'autre couleur' ? (
                         <img
                           src={autreOptionIcon}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : option.coverNormalized === 'blanc' || option.coverNormalized === 'white' ? (
+                        <img
+                          src={coverBlancOptionIcon}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : option.coverNormalized === 'noir' || option.coverNormalized === 'black' ? (
+                        <img
+                          src={coverNoirOptionIcon}
+                          alt=""
+                          className="feature-card-icon-img"
+                          aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : option.coverNormalized === 'gris' || option.coverNormalized === 'gray' || option.coverNormalized === 'grey' ? (
+                        <img
+                          src={coverGrisOptionIcon}
                           alt=""
                           className="feature-card-icon-img"
                           aria-hidden="true"
@@ -513,13 +574,7 @@ export default function ProductOptionsSection({
                 onClick={() => toggleOption(card.key)}
               >
                 <span className="feature-card-icon">
-                  {isSinglePiece && ['noir', 'black', 'blanc', 'white'].includes(colorClassToken(card.key || card.label)) ? (
-                    <span
-                      className={`cover-color-dot cover-dot-${colorClassToken(card.key || card.label)}`}
-                      style={getSingleDotStyle(card.key || card.label)}
-                      aria-hidden="true"
-                    />
-                  ) : card.imageSrc ? (
+                  {card.imageSrc ? (
                       <img
                         src={card.imageSrc}
                         alt=""
@@ -528,6 +583,24 @@ export default function ProductOptionsSection({
                         loading="lazy"
                         decoding="async"
                       />
+                  ) : isSinglePiece && ['blanc', 'white'].includes(colorClassToken(card.key || card.label)) ? (
+                    <img
+                      src={singleBlancOptionIcon}
+                      alt=""
+                      className="feature-card-icon-img"
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : isSinglePiece && ['noir', 'black'].includes(colorClassToken(card.key || card.label)) ? (
+                    <img
+                      src={singleNoirOptionIcon}
+                      alt=""
+                      className="feature-card-icon-img"
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   ) : optionImageByLabel[card.key] || optionImageByLabel[card.label] ? (
                     <img
                       src={optionImageByLabel[card.key] || optionImageByLabel[card.label]}

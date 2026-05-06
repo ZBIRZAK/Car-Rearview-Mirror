@@ -1,17 +1,29 @@
 import completeMirrorImage1 from '../../images/retroviseur complet-BMW-X3-1.jpeg';
 import completeMirrorImage2 from '../../images/retroviseur complet-BMW-X3-2.jpeg';
 import heroImage from '../../images/hero-image.jpeg';
+import placeholderComplete from '../../images/placeholders/retroviseur complet.svg';
+import placeholderGlass from '../../images/placeholders/Glass.svg';
+import placeholderCover from '../../images/placeholders/Cover.svg';
+import placeholderSingle from '../../images/placeholders/Signle.svg';
 
 export const productPreviewImage = heroImage;
 
 const completePreviewImages = [completeMirrorImage1, completeMirrorImage2];
 
+export const unavailablePlaceholderImagesByKey = {
+  COMPLETE: placeholderComplete,
+  GLASS: placeholderGlass,
+  MIRROR: placeholderComplete,
+  COVER: placeholderCover,
+  SINGLE: placeholderSingle,
+};
+
 export const defaultProductImagesByKey = {
   COMPLETE: completePreviewImages,
-  GLASS: [productPreviewImage],
-  MIRROR: [productPreviewImage],
-  COVER: [productPreviewImage],
-  SINGLE: [productPreviewImage],
+  GLASS: [placeholderGlass],
+  MIRROR: [placeholderComplete],
+  COVER: [placeholderCover],
+  SINGLE: [placeholderSingle],
 };
 
 export const positions = ['Cote conducteur', 'Cote passager'];

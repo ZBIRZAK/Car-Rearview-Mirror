@@ -24,7 +24,7 @@ import formeOptionIcon from '../images/new-icones/SVG/Forme.svg';
 import chauffageOptionIcon from '../images/new-icones/SVG/Chauffage.svg';
 import memoireOptionIcon from '../images/new-icones/SVG/Memoire.svg';
 import antiEblouissementOptionIcon from '../images/new-icones/SVG/Anti-eblouissement.svg';
-import cameraOptionIcon from '../images/new-icones/Camera.png';
+import cameraOptionIcon from '../images/new-icones/SVG/Camera.svg';
 import angleMortOptionIcon from '../images/new-icones/SVG/Angle mort.svg';
 import reglageIcon from '../images/new-icones/SVG/Reglage-electrique.svg';
 import reglageManuelIcon from '../images/new-icones/SVG/Reglage-manuel.svg';

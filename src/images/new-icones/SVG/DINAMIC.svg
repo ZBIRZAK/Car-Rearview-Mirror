@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 61.83 39.58">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#Dégradé_sans_nom_260-11);
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11, .cls-12, .cls-13, .cls-14, .cls-15, .cls-16, .cls-17 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: url(#Dégradé_sans_nom_260-2);
+      }
+
+      .cls-4 {
+        fill: none;
+      }
+
+      .cls-5 {
+        fill: url(#Dégradé_sans_nom_190);
+      }
+
+      .cls-6 {
+        fill: url(#Dégradé_sans_nom_260-9);
+      }
+
+      .cls-7 {
+        fill: url(#Dégradé_sans_nom_260-8);
+      }
+
+      .cls-8 {
+        fill: url(#Dégradé_sans_nom_260-10);
+      }
+
+      .cls-18 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-9 {
+        fill: url(#Dégradé_sans_nom_260-7);
+      }
+
+      .cls-10 {
+        fill: url(#Dégradé_sans_nom_260-13);
+      }
+
+      .cls-11 {
+        fill: url(#Dégradé_sans_nom_260-3);
+      }
+
+      .cls-12 {
+        fill: url(#Dégradé_sans_nom_260-14);
+      }
+
+      .cls-13 {
+        fill: url(#Dégradé_sans_nom_260-6);
+      }
+
+      .cls-14 {
+        fill: url(#Dégradé_sans_nom_260-5);
+      }
+
+      .cls-15 {
+        fill: url(#Dégradé_sans_nom_260);
+      }
+
+      .cls-16 {
+        fill: url(#Dégradé_sans_nom_260-4);
+      }
+
+      .cls-17 {
+        fill: url(#Dégradé_sans_nom_260-12);
+      }
+    </style>
+    <clipPath id="clippath">
+      <polygon class="cls-4" points="61.83 27.22 26.99 27.22 23.83 23.15 61.83 23.15 61.83 27.22"/>
+    </clipPath>
+    <radialGradient id="Dégradé_sans_nom_260" data-name="Dégradé sans nom 260" cx="61.46" cy="25.18" fx="61.46" fy="25.18" r="1.73" gradientUnits="userSpaceOnUse">
+      <stop offset=".18" stop-color="#ff6000"/>
+      <stop offset=".32" stop-color="#ff6000" stop-opacity=".97"/>
+      <stop offset=".51" stop-color="#ff6000" stop-opacity=".9"/>
+      <stop offset=".74" stop-color="#ff6000" stop-opacity=".77"/>
+      <stop offset="1" stop-color="#ff6000" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#ff6000" stop-opacity=".6"/>
+    </radialGradient>
+    <radialGradient id="Dégradé_sans_nom_260-2" data-name="Dégradé sans nom 260" cx="58.46" fx="58.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-3" data-name="Dégradé sans nom 260" cx="55.46" fx="55.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-4" data-name="Dégradé sans nom 260" cx="52.46" fx="52.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-5" data-name="Dégradé sans nom 260" cx="49.46" fx="49.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-6" data-name="Dégradé sans nom 260" cx="46.46" fx="46.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-7" data-name="Dégradé sans nom 260" cx="43.46" fx="43.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-8" data-name="Dégradé sans nom 260" cx="40.46" fx="40.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-9" data-name="Dégradé sans nom 260" cx="37.46" fx="37.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-10" data-name="Dégradé sans nom 260" cx="34.46" fx="34.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-11" data-name="Dégradé sans nom 260" cx="31.46" fx="31.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-12" data-name="Dégradé sans nom 260" cx="28.46" fx="28.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-13" data-name="Dégradé sans nom 260" cx="25.46" fx="25.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <radialGradient id="Dégradé_sans_nom_260-14" data-name="Dégradé sans nom 260" cx="22.46" fx="22.46" xlink:href="#Dégradé_sans_nom_260"/>
+    <linearGradient id="Dégradé_sans_nom_190" data-name="Dégradé sans nom 190" x1="23.83" y1="25.18" x2="61.83" y2="25.18" gradientUnits="userSpaceOnUse">
+      <stop offset=".15" stop-color="#000"/>
+      <stop offset=".84" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <g id="_3068_-_Side_Mirror" data-name="3068 - Side Mirror">
+      <g id="g4470">
+        <g id="g4480">
+          <g id="g4482">
+            <g id="g4488">
+              <g id="path4490">
+                <polygon class="cls-3" points="9.74 39.58 3.7 39.58 0 22.47 6.06 22.47 6.57 24.85 6.6 24.93 9.6 38.83 9.6 38.94 9.74 39.58"/>
+              </g>
+            </g>
+            <g id="g4492">
+              <g id="path4494">
+                <path class="cls-3" d="m19.14,37.64h-7.67l-2.58-11.91h2.74l.67,2.71c.99,3.94,3.51,7.22,6.84,9.2Z"/>
+                <path class="cls-3" d="m57.13,10.22c-3.03-3.54-7.24-5.9-11.83-6.63L23.38.13c-.59-.08-1.18-.13-1.77-.13-3.43,0-6.63,1.56-8.75,4.29-2.12,2.71-2.87,6.2-2.04,9.52l2.63,10.6.86,3.51c1.42,5.71,6.52,9.71,12.42,9.71h23.56c6.36,0,11.54-5.18,11.54-11.51v-3.17c0-4.7-1.69-9.2-4.7-12.74Zm1.48,15.88c0,4.59-3.73,8.32-8.32,8.32h-23.56c-4.4,0-8.26-3-9.31-7.3l-3.49-14.11c-1.37-5.5,3.33-10.62,8.93-9.74l21.89,3.46c7.97,1.26,13.82,8.13,13.82,16.18l.03,3.19h0Z"/>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <path class="cls-3" d="m58.61,26.1h0c0,4.59-3.73,8.32-8.32,8.32h-23.56c-4.4,0-8.26-3-9.31-7.3l-3.49-14.11c-1.37-5.5,3.33-10.62,8.93-9.74l21.89,3.46c7.97,1.26,13.82,8.13,13.82,16.18l.03,3.19"/>
+  </g>
+  <g>
+    <polygon class="cls-3" points="61.83 27.22 26.99 27.22 23.83 23.15 61.83 23.15 61.83 27.22"/>
+    <g class="cls-18">
+      <g>
+        <polygon class="cls-15" points="60.1 23.15 61.83 23.15 62.83 25.36 61.83 27.22 60.1 27.22 60.83 25.22 60.1 23.15"/>
+        <polygon class="cls-2" points="57.1 23.15 58.83 23.15 59.83 25.36 58.83 27.22 57.1 27.22 57.83 25.22 57.1 23.15"/>
+        <polygon class="cls-11" points="54.1 23.15 55.83 23.15 56.83 25.36 55.83 27.22 54.1 27.22 54.83 25.22 54.1 23.15"/>
+        <polygon class="cls-16" points="51.1 23.15 52.83 23.15 53.83 25.36 52.83 27.22 51.1 27.22 51.83 25.22 51.1 23.15"/>
+        <polygon class="cls-14" points="48.1 23.15 49.83 23.15 50.83 25.36 49.83 27.22 48.1 27.22 48.83 25.22 48.1 23.15"/>
+        <polygon class="cls-13" points="45.1 23.15 46.83 23.15 47.83 25.36 46.83 27.22 45.1 27.22 45.83 25.22 45.1 23.15"/>
+        <polygon class="cls-9" points="42.1 23.15 43.83 23.15 44.83 25.36 43.83 27.22 42.1 27.22 42.83 25.22 42.1 23.15"/>
+        <polygon class="cls-7" points="39.1 23.15 40.83 23.15 41.83 25.36 40.83 27.22 39.1 27.22 39.83 25.22 39.1 23.15"/>
+        <polygon class="cls-6" points="36.1 23.15 37.83 23.15 38.83 25.36 37.83 27.22 36.1 27.22 36.83 25.22 36.1 23.15"/>
+        <polygon class="cls-8" points="33.1 23.15 34.83 23.15 35.83 25.36 34.83 27.22 33.1 27.22 33.83 25.22 33.1 23.15"/>
+        <polygon class="cls-1" points="30.1 23.15 31.83 23.15 32.83 25.36 31.83 27.22 30.1 27.22 30.83 25.22 30.1 23.15"/>
+        <polygon class="cls-17" points="27.1 23.15 28.83 23.15 29.83 25.36 28.83 27.22 27.1 27.22 27.83 25.22 27.1 23.15"/>
+        <polygon class="cls-10" points="24.1 23.15 25.83 23.15 26.83 25.36 25.83 27.22 24.1 27.22 24.83 25.22 24.1 23.15"/>
+        <polygon class="cls-12" points="21.1 23.15 22.83 23.15 23.83 25.36 22.83 27.22 21.1 27.22 21.83 25.22 21.1 23.15"/>
+      </g>
+    </g>
+    <polygon class="cls-5" points="61.83 27.22 26.99 27.22 23.83 23.15 61.83 23.15 61.83 27.22"/>
+  </g>
+</svg>

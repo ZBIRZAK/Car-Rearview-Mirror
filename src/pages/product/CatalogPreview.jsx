@@ -6,7 +6,7 @@ export default function CatalogPreview({ focus, imageSrc }) {
   return (
     <span className={`catalog-preview ${focusClass}`}>
       <img key={imageSrc || productPreviewImage} className="catalog-preview-image" src={imageSrc || productPreviewImage} alt="" />
-      <span className="catalog-preview-shade" />
+      {/* <span className="catalog-preview-shade" /> */}
     </span>
   );
 }

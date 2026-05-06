@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 61.83 39.58">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: url(#Dégradé_sans_nom_8);
+        stroke: #d1d3c1;
+        stroke-miterlimit: 10;
+      }
+    </style>
+    <linearGradient id="Dégradé_sans_nom_8" data-name="Dégradé sans nom 8" x1="9.7" y1="18.8" x2="54.61" y2="18.8" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d9bc6f"/>
+      <stop offset=".98" stop-color="#a1813f"/>
+    </linearGradient>
+  </defs>
+  <g id="_3068_-_Side_Mirror" data-name="3068 - Side Mirror">
+    <g id="g4470">
+      <g id="g4480">
+        <g id="g4482">
+          <g id="g4492">
+            <g id="path4494">
+              <path class="cls-1" d="m54.61,26.1c0,4.59-3.73,8.32-8.32,8.32h-23.56c-4.4,0-8.26-3-9.31-7.3l-3.49-14.11c-1.37-5.5,3.33-10.62,8.93-9.74l21.89,3.46c7.97,1.26,13.82,8.13,13.82,16.18l.03,3.19h0Z"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <path class="cls-2" d="m54.61,26.1h0c0,4.59-3.73,8.32-8.32,8.32h-23.56c-4.4,0-8.26-3-9.31-7.3l-3.49-14.11c-1.37-5.5,3.33-10.62,8.93-9.74l21.89,3.46c7.97,1.26,13.82,8.13,13.82,16.18l.03,3.19"/>
+</svg>

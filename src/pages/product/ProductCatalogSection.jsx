@@ -1,5 +1,6 @@
 import React from 'react';
 import CatalogPreview from './CatalogPreview';
+import { unavailablePlaceholderImagesByKey } from './constants';
 
 export default function ProductCatalogSection({
   hasCatalogSelection,
@@ -14,10 +15,17 @@ export default function ProductCatalogSection({
   brand,
   model,
   year,
+  onUnavailableSelect,
 }) {
   if (hasCatalogSelection) return null;
   const shouldShowSkeleton = productConfigLoading && !visibleCatalogCards.length;
   const whatsappNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
+  const fallbackUnavailableCards = [
+    { key: 'COMPLETE', label: 'Retroviseur complet', previewFocus: 'complete' },
+    { key: 'GLASS', label: 'Glass', previewFocus: 'glass' },
+    { key: 'COVER', label: 'Cover', previewFocus: 'cover' },
+    { key: 'SINGLE', label: 'Signle', previewFocus: 'single' },
+  ];
 
   const handleMissingProductWhatsApp = () => {
     if (!whatsappNumber) return;
@@ -69,11 +77,33 @@ export default function ProductCatalogSection({
             })}
           </div>
           {!visibleCatalogCards.length ? (
-            <div className="empty-state">
-              <p>{t('product_catalog_empty_coming_soon', "Le site est en cours de mise a jour. D'autres produits seront ajoutes bientot.")}</p>
-              <button type="button" className="secondary-button" onClick={handleMissingProductWhatsApp}>
+            <div className="empty-state product-unavailable-cards-wrap">
+              {/* <p>{t('product_catalog_empty_coming_soon', "Le site est en cours de mise a jour. D'autres produits seront ajoutes bientot.")}</p> */}
+              <div className="order-scope-grid product-catalog-grid">
+                {fallbackUnavailableCards.map((item) => {
+                  const unavailableImageSrc = unavailablePlaceholderImagesByKey[item.key] || productPreviewImage;
+                  return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className="catalog-product-card catalog-product-card-unavailable"
+                    onClick={() => onUnavailableSelect?.({ ...item, imageSrc: unavailableImageSrc })}
+                  >
+                    <CatalogPreview
+                      focus={item.previewFocus}
+                      imageSrc={unavailableImageSrc}
+                    />
+                    <span className="catalog-unavailable-indicator" aria-hidden="true">!</span>
+                    <span className="catalog-product-meta">
+                      <span className="order-scope-title">{item.label}</span>
+                    </span>
+                  </button>
+                  );
+                })}
+              </div>
+              {/* <button type="button" className="secondary-button" onClick={handleMissingProductWhatsApp}>
                 {t('product_catalog_empty_whatsapp_btn', 'Demander ce produit sur WhatsApp')}
-              </button>
+              </button> */}
             </div>
           ) : null}
         </>
