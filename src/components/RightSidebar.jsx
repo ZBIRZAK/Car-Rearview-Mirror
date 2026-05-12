@@ -4,7 +4,6 @@ import telegramIcon from '../icons/new logo social/telegram.png';
 import instagramIcon from '../icons/new logo social/instagram.png';
 import wechatIcon from '../icons/new logo social/wechat.png';
 import whatsappIcon from '../icons/new logo social/whatsapp.png';
-import customerServiceIcon from '../icons/customer-service.png';
 
 export default function RightSidebar({
   brands,
@@ -139,7 +138,7 @@ export default function RightSidebar({
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           ) : (
-            <img src={customerServiceIcon} alt="" aria-hidden="true" className="sidebar-share-icon-img sidebar-share-toggle-visual" />
+            <img src={whatsappIcon} alt="" aria-hidden="true" className="sidebar-share-icon-img sidebar-share-toggle-visual" />
           )}
         </button>
       </div>
