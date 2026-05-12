@@ -24,6 +24,9 @@ import coverBlancOptionIcon from '../../images/new-icones/SVG/Blanc.svg';
 import coverNoirOptionIcon from '../../images/new-icones/SVG/Noir.svg';
 import coverGrisOptionIcon from '../../images/new-icones/SVG/Gris.svg';
 
+const SHOW_COMPLETE_BOTH_SIDES = String(import.meta.env.VITE_SHOW_COMPLETE_BOTH_SIDES || 'false').toLowerCase() === 'true';
+const COMPLETE_COLOR_OPTIONS = ['Noir', 'Blanc', 'Gris', 'Autre couleur', 'Carbon', 'Chromee'];
+
 export default function ProductOptionsSection({
   t,
   hasCatalogSelection,
@@ -151,6 +154,7 @@ export default function ProductOptionsSection({
     ? coverColorOptions.filter((item) => item.key !== coverColorTopOption.key)
     : coverColorOptions;
   const selectedCoverColorKey = coverColorOptions.find((item) => selectedOptions.includes(item.key))?.key || '';
+  const selectedCompleteColorKey = COMPLETE_COLOR_OPTIONS.find((item) => selectedOptions.includes(item)) || '';
   const colorClassToken = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const coverColorFallbackByToken = {
     noir: '#0f1012',
@@ -180,6 +184,16 @@ export default function ProductOptionsSection({
     if (token === 'blanc' || token === 'white') return { backgroundColor: '#f2f4f7' };
     return undefined;
   };
+  const getCompleteColorDotStyle = (label) => {
+    const token = colorClassToken(label);
+    if (token === 'noir') return { backgroundColor: '#0f1012' };
+    if (token === 'blanc') return { backgroundColor: '#f2f4f7' };
+    if (token === 'gris') return { backgroundColor: '#8f949b' };
+    if (token === 'carbon') return { backgroundImage: 'linear-gradient(135deg, #2d3137 0%, #15181d 100%)', backgroundColor: 'transparent' };
+    if (token === 'chromee') return { backgroundImage: 'linear-gradient(135deg, #f6f7fa 0%, #b8bec8 45%, #eef1f5 100%)', backgroundColor: 'transparent' };
+    if (token === 'autre-couleur') return { backgroundImage: 'conic-gradient(#ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e)', backgroundColor: 'transparent' };
+    return undefined;
+  };
   const selectedPositions = Array.isArray(productConfig.position)
     ? productConfig.position
     : (productConfig.position ? [productConfig.position] : []);
@@ -189,6 +203,12 @@ export default function ProductOptionsSection({
       ? selectedPositions.filter((value) => value !== item)
       : [...selectedPositions, item];
     onChange('position', nextPositions);
+  };
+
+  const toggleCompleteColor = (colorLabel) => {
+    const remaining = selectedOptions.filter((item) => !COMPLETE_COLOR_OPTIONS.includes(item));
+    const next = selectedCompleteColorKey === colorLabel ? remaining : [...remaining, colorLabel];
+    onChange('options', next);
   };
 
   return (
@@ -496,7 +516,7 @@ export default function ProductOptionsSection({
                     </span>
                   </button>
                 ))}
-                {isGlassPiece || isCompleteOrder ? (
+                {isGlassPiece || (isCompleteOrder && SHOW_COMPLETE_BOTH_SIDES) ? (
                   <button
                     type="button"
                     className={`feature-card position-feature-card ${
@@ -620,6 +640,32 @@ export default function ProductOptionsSection({
               </button>
             ))}
           </div>
+          {isCompleteOrder ? (
+            <div className="complete-color-section">
+              <h4 className="complete-color-title">{t('product_colors_title', 'Couleurs')}</h4>
+              <div className="complete-color-row" role="listbox" aria-label={t('product_colors_title', 'Couleurs')}>
+                {COMPLETE_COLOR_OPTIONS.map((colorLabel) => {
+                  const isActive = selectedCompleteColorKey === colorLabel;
+                  return (
+                    <button
+                      key={colorLabel}
+                      type="button"
+                      className={`complete-color-pill ${isActive ? 'active' : ''}`}
+                      onClick={() => toggleCompleteColor(colorLabel)}
+                      aria-label={colorLabel}
+                      title={colorLabel}
+                    >
+                      <span
+                        className={`cover-color-dot cover-dot-${colorClassToken(colorLabel)}`}
+                        style={getCompleteColorDotStyle(colorLabel)}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
         </section>
       ) : null}
 
