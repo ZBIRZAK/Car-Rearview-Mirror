@@ -26,6 +26,7 @@ import coverGrisOptionIcon from '../../images/new-icones/SVG/Gris.svg';
 
 const SHOW_COMPLETE_BOTH_SIDES = String(import.meta.env.VITE_SHOW_COMPLETE_BOTH_SIDES || 'false').toLowerCase() === 'true';
 const COMPLETE_COLOR_OPTIONS = ['Noir', 'Blanc', 'Gris', 'Autre couleur', 'Carbon', 'Chromee'];
+const COVER_PALETTE_ORDER = ['noir', 'blanc', 'gris', 'autre-couleur', 'carbon', 'chromee'];
 
 export default function ProductOptionsSection({
   t,
@@ -129,12 +130,12 @@ export default function ProductOptionsSection({
     ? (() => {
       const requiredCoverOptions = [
         { normalized: 'noir', key: 'Noir', label: 'Noir' },
-        { normalized: 'gris', key: 'Gris', label: 'Gris' },
         { normalized: 'blanc', key: 'Blanc', label: 'Blanc' },
-        { normalized: 'chromee', key: 'Chromee', label: 'Chromee' },
-        { normalized: 'carbon', key: 'Carbon', label: 'Carbon' },
-        { normalized: 'batman', key: 'Batman', label: 'Batman' },
+        { normalized: 'gris', key: 'Gris', label: 'Gris' },
         { normalized: 'autre-couleur', key: 'Autre couleur', label: 'Autre couleur' },
+        { normalized: 'carbon', key: 'Carbon', label: 'Carbon' },
+        { normalized: 'chromee', key: 'Chromee', label: 'Chromee' },
+        { normalized: 'batman', key: 'Batman', label: 'Batman' },
       ];
       const byNormalized = new Map(coverFilteredDefs.map((item) => [item.coverNormalized, item]));
       return requiredCoverOptions.map((required) => (
@@ -149,7 +150,9 @@ export default function ProductOptionsSection({
     })()
     : coverFilteredDefs;
   const coverColorOptions = isCoverPiece ? coverEnsuredDefs : [];
-  const coverPaletteOptions = coverColorOptions.filter((item) => item.coverNormalized !== 'batman');
+  const coverPaletteOptions = coverColorOptions
+    .filter((item) => item.coverNormalized !== 'batman')
+    .sort((a, b) => COVER_PALETTE_ORDER.indexOf(a.coverNormalized) - COVER_PALETTE_ORDER.indexOf(b.coverNormalized));
   const coverBatmanOption = coverColorOptions.find((item) => item.coverNormalized === 'batman') || null;
   const selectedCoverColorKey = coverPaletteOptions.find((item) => selectedOptions.includes(item.key))?.key || '';
   const isCoverBatmanSelected = Boolean(coverBatmanOption && selectedOptions.includes(coverBatmanOption.key));
@@ -177,7 +180,7 @@ export default function ProductOptionsSection({
     const token = colorClassToken(label);
     const fallback = coverColorFallbackByToken[token];
     if (!fallback) return undefined;
-    return String(fallback).startsWith('linear-gradient')
+    return (String(fallback).startsWith('linear-gradient') || String(fallback).startsWith('conic-gradient'))
       ? { backgroundImage: fallback, backgroundColor: 'transparent' }
       : { backgroundColor: fallback };
   };
