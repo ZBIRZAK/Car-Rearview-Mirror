@@ -2825,7 +2825,7 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   }
 
   .position-feature-card .feature-card-title {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -3342,7 +3342,7 @@ width: 130px;
 }
 
 .feature-card-title {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   /* font-weight: 600; */
   line-height: 1.25;
   /* text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45); */
@@ -3419,6 +3419,29 @@ width: 130px;
   font-weight: 700;
 }
 
+.complete-color-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.complete-color-head .complete-color-title {
+  margin: 0;
+}
+
+.complete-color-selected-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 4px 8px;
+  min-height: 24px;
+}
+
 .complete-color-row {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -3440,8 +3463,8 @@ width: 130px;
 }
 
 .complete-color-pill.active {
-  border-color: #c7aa5e;
-  box-shadow: 0 0 0 3px rgba(199, 170, 94, 0.22);
+  border-color: #f1c15d;
+  box-shadow: 0 0 0 2px rgba(199, 170, 94, 1.22);
 }
 
 .complete-color-pill .cover-color-dot {

@@ -149,11 +149,10 @@ export default function ProductOptionsSection({
     })()
     : coverFilteredDefs;
   const coverColorOptions = isCoverPiece ? coverEnsuredDefs : [];
-  const coverColorTopOption = coverColorOptions[0] || null;
-  const coverColorRemainingOptions = coverColorTopOption
-    ? coverColorOptions.filter((item) => item.key !== coverColorTopOption.key)
-    : coverColorOptions;
-  const selectedCoverColorKey = coverColorOptions.find((item) => selectedOptions.includes(item.key))?.key || '';
+  const coverPaletteOptions = coverColorOptions.filter((item) => item.coverNormalized !== 'batman');
+  const coverBatmanOption = coverColorOptions.find((item) => item.coverNormalized === 'batman') || null;
+  const selectedCoverColorKey = coverPaletteOptions.find((item) => selectedOptions.includes(item.key))?.key || '';
+  const isCoverBatmanSelected = Boolean(coverBatmanOption && selectedOptions.includes(coverBatmanOption.key));
   const selectedCompleteColorKey = COMPLETE_COLOR_OPTIONS.find((item) => selectedOptions.includes(item)) || '';
   const colorClassToken = (value) => String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const coverColorFallbackByToken = {
@@ -169,6 +168,10 @@ export default function ProductOptionsSection({
     rouge: '#d43a3a',
     red: '#d43a3a',
     carbon: 'linear-gradient(135deg, #2d3137 0%, #15181d 100%)',
+    chrome: 'linear-gradient(135deg, #f6f7fa 0%, #b8bec8 45%, #eef1f5 100%)',
+    chromee: 'linear-gradient(135deg, #f6f7fa 0%, #b8bec8 45%, #eef1f5 100%)',
+    'autre-couleur': 'conic-gradient(#ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e)',
+    'autre couleur': 'conic-gradient(#ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e)',
   };
   const getCoverDotStyle = (label) => {
     const token = colorClassToken(label);
@@ -208,6 +211,21 @@ export default function ProductOptionsSection({
   const toggleCompleteColor = (colorLabel) => {
     const remaining = selectedOptions.filter((item) => !COMPLETE_COLOR_OPTIONS.includes(item));
     const next = selectedCompleteColorKey === colorLabel ? remaining : [...remaining, colorLabel];
+    onChange('options', next);
+  };
+
+  const toggleCoverColor = (colorKey) => {
+    const remaining = selectedOptions.filter((item) => !coverPaletteOptions.some((colorOpt) => colorOpt.key === item));
+    const next = selectedCoverColorKey === colorKey ? remaining : [...remaining, colorKey];
+    onChange('options', next);
+  };
+
+  const toggleCoverBatman = () => {
+    if (!coverBatmanOption) return;
+    const isActive = selectedOptions.includes(coverBatmanOption.key);
+    const next = isActive
+      ? selectedOptions.filter((item) => item !== coverBatmanOption.key)
+      : [...selectedOptions, coverBatmanOption.key];
     onChange('options', next);
   };
 
@@ -273,211 +291,61 @@ export default function ProductOptionsSection({
                   <span className="feature-card-title">{`${t('side_driver', 'Conducteur')} + ${t('side_passenger', 'Passager')}`}</span>
                 </span>
               </button>
-              {coverColorTopOption ? (
+              {coverBatmanOption ? (
                 <button
-                  key={coverColorTopOption.key}
                   type="button"
-                  className={`feature-card cover-color-btn ${selectedCoverColorKey === coverColorTopOption.key ? 'active' : ''}`}
-                  aria-label={coverColorTopOption.label}
-                  title={coverColorTopOption.label}
-                  onClick={() => {
-                    const remaining = selectedOptions.filter((item) => !coverColorOptions.some((colorOpt) => colorOpt.key === item));
-                    const isActive = selectedCoverColorKey === coverColorTopOption.key;
-                    const next = isActive ? remaining : [...remaining, coverColorTopOption.key];
-                    onChange('options', next);
-                  }}
+                  className={`feature-card cover-color-btn ${isCoverBatmanSelected ? 'active' : ''}`}
+                  aria-label={coverBatmanOption.label}
+                  title={coverBatmanOption.label}
+                  onClick={toggleCoverBatman}
                 >
                   <span className="feature-card-icon">
-                    {coverColorTopOption.imageSrc ? (
-                      <img
-                        src={coverColorTopOption.imageSrc}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : coverColorTopOption.coverNormalized === 'batman' ? (
-                      <img
-                        src={batmanOptionIcon}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : coverColorTopOption.coverNormalized === 'carbon' || coverColorTopOption.coverNormalized === 'carbone' ? (
-                      <img
-                        src={carbonOptionIcon}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : coverColorTopOption.coverNormalized === 'chrome' || coverColorTopOption.coverNormalized === 'chromee' ? (
-                      <img
-                        src={chromeeOptionIcon}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : coverColorTopOption.coverNormalized === 'autre-couleur' || coverColorTopOption.coverNormalized === 'autre couleur' ? (
-                      <img
-                        src={autreOptionIcon}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : coverColorTopOption.coverNormalized === 'blanc' || coverColorTopOption.coverNormalized === 'white' ? (
-                      <img
-                        src={coverBlancOptionIcon}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : coverColorTopOption.coverNormalized === 'noir' || coverColorTopOption.coverNormalized === 'black' ? (
-                      <img
-                        src={coverNoirOptionIcon}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : coverColorTopOption.coverNormalized === 'gris' || coverColorTopOption.coverNormalized === 'gray' || coverColorTopOption.coverNormalized === 'grey' ? (
-                      <img
-                        src={coverGrisOptionIcon}
-                        alt=""
-                        className="feature-card-icon-img"
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : (
-                      <span
-                        className={`cover-color-dot cover-dot-${colorClassToken(coverColorTopOption.label || coverColorTopOption.key)}`}
-                        style={getCoverDotStyle(coverColorTopOption.label || coverColorTopOption.key)}
-                        aria-hidden="true"
-                      />
-                    )}
+                    <img
+                      src={batmanOptionIcon}
+                      alt=""
+                      className="feature-card-icon-img"
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </span>
                   <span className="feature-card-texts">
-                    <span className="feature-card-title">{coverColorTopOption.label}</span>
+                    <span className="feature-card-title">{coverBatmanOption.label}</span>
                   </span>
                 </button>
               ) : null}
             </div>
-            <div className="feature-grid cover-color-grid">
-              {coverColorRemainingOptions.map((option) => {
-                const token = colorClassToken(option.label || option.key);
-                const isActive = selectedCoverColorKey === option.key;
-                return (
-                  <button
-                    key={option.key}
-                    type="button"
-                    className={`feature-card cover-color-btn ${isActive ? 'active' : ''}`}
-                    aria-label={option.label}
-                    title={option.label}
-                    onClick={() => {
-                      const remaining = selectedOptions.filter((item) => !coverColorOptions.some((colorOpt) => colorOpt.key === item));
-                      const next = isActive ? remaining : [...remaining, option.key];
-                      onChange('options', next);
-                    }}
-                  >
-                    <span className="feature-card-icon">
-                      {option.imageSrc ? (
-                        <img
-                          src={option.imageSrc}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : option.coverNormalized === 'batman' ? (
-                        <img
-                          src={batmanOptionIcon}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : option.coverNormalized === 'carbon' || option.coverNormalized === 'carbone' ? (
-                        <img
-                          src={carbonOptionIcon}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : option.coverNormalized === 'chrome' || option.coverNormalized === 'chromee' ? (
-                        <img
-                          src={chromeeOptionIcon}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : option.coverNormalized === 'autre-couleur' || option.coverNormalized === 'autre couleur' ? (
-                        <img
-                          src={autreOptionIcon}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : option.coverNormalized === 'blanc' || option.coverNormalized === 'white' ? (
-                        <img
-                          src={coverBlancOptionIcon}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : option.coverNormalized === 'noir' || option.coverNormalized === 'black' ? (
-                        <img
-                          src={coverNoirOptionIcon}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : option.coverNormalized === 'gris' || option.coverNormalized === 'gray' || option.coverNormalized === 'grey' ? (
-                        <img
-                          src={coverGrisOptionIcon}
-                          alt=""
-                          className="feature-card-icon-img"
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span
-                          className={`cover-color-dot cover-dot-${token}`}
-                          style={getCoverDotStyle(option.label || option.key)}
-                          aria-hidden="true"
-                        />
-                      )}
-                    </span>
-                    <span className="feature-card-texts">
-                      <span className="feature-card-title">{option.label}</span>
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="complete-color-section">
+              <div className="complete-color-head">
+                <h4 className="complete-color-title">{t('product_colors_title', 'Couleurs')}</h4>
+                {selectedCoverColorKey ? (
+                  <span className="complete-color-selected-label">
+                    {selectedCoverColorKey}
+                  </span>
+                ) : null}
+              </div>
+              <div className="complete-color-row" role="listbox" aria-label={t('product_colors_title', 'Couleurs')}>
+                {coverPaletteOptions.map((option) => {
+                  const token = colorClassToken(option.label || option.key);
+                  const isActive = selectedCoverColorKey === option.key;
+                  return (
+                    <button
+                      key={option.key}
+                      type="button"
+                      className={`complete-color-pill ${isActive ? 'active' : ''}`}
+                      onClick={() => toggleCoverColor(option.key)}
+                      aria-label={option.label}
+                      title={option.label}
+                    >
+                      <span
+                        className={`cover-color-dot cover-dot-${token}`}
+                        style={getCoverDotStyle(option.label || option.key)}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </section>
 
@@ -642,7 +510,14 @@ export default function ProductOptionsSection({
           </div>
           {isCompleteOrder ? (
             <div className="complete-color-section">
-              <h4 className="complete-color-title">{t('product_colors_title', 'Couleurs')}</h4>
+              <div className="complete-color-head">
+                <h4 className="complete-color-title">{t('product_colors_title', 'Couleurs')}</h4>
+                {selectedCompleteColorKey ? (
+                  <span className="complete-color-selected-label">
+                    {selectedCompleteColorKey}
+                  </span>
+                ) : null}
+              </div>
               <div className="complete-color-row" role="listbox" aria-label={t('product_colors_title', 'Couleurs')}>
                 {COMPLETE_COLOR_OPTIONS.map((colorLabel) => {
                   const isActive = selectedCompleteColorKey === colorLabel;
