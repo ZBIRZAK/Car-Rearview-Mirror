@@ -427,8 +427,8 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  justify-content: flex-start;
+  gap: 7px;
   scrollbar-width: none;
 }
 
