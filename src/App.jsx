@@ -644,7 +644,7 @@ function App() {
 
   const showHeaderProductBack = currentView === 'product';
   const productHeaderTitle = currentView === 'product'
-    ? [selectedBrand?.name, selectedModel, selectedYear].filter(Boolean).join('-')
+    ? [selectedModel, selectedYear].filter(Boolean).join('-')
     : '';
   const isSingleProductSelection = currentView === 'product' && Boolean(productConfig.orderScope);
 
@@ -883,7 +883,11 @@ function App() {
       }
     };
     loadCatalog();
-    return () => { cancelled = true; };
+    window.addEventListener('catalog-order-updated', loadCatalog);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('catalog-order-updated', loadCatalog);
+    };
   }, [fallbackCatalog]);
 
   useEffect(() => {

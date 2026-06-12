@@ -11,6 +11,7 @@ export async function fetchCatalogBrands() {
   const { data, error } = await supabase
     .from('car_brands')
     .select('*')
+    .order('sort_order', { ascending: true })
     .order('name', { ascending: true });
   if (error) throw error;
   return data || [];
@@ -18,9 +19,17 @@ export async function fetchCatalogBrands() {
 
 export async function createCatalogBrand(name, logoUrl = '') {
   ensureSupabase();
+  const { data: lastBrand, error: orderError } = await supabase
+    .from('car_brands')
+    .select('sort_order')
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (orderError) throw orderError;
   const payload = {
     name: String(name || '').trim(),
     logo_url: String(logoUrl || '').trim() || null,
+    sort_order: Number(lastBrand?.sort_order ?? -1) + 1,
   };
   const { data, error } = await supabase
     .from('car_brands')
@@ -68,6 +77,7 @@ export async function fetchCatalogModels(brandId) {
     .from('car_models')
     .select('*')
     .eq('brand_id', brandId)
+    .order('sort_order', { ascending: true })
     .order('name', { ascending: true });
   if (error) throw error;
   return data || [];
@@ -75,7 +85,19 @@ export async function fetchCatalogModels(brandId) {
 
 export async function createCatalogModel(brandId, name) {
   ensureSupabase();
-  const payload = { brand_id: brandId, name: String(name || '').trim() };
+  const { data: lastModel, error: orderError } = await supabase
+    .from('car_models')
+    .select('sort_order')
+    .eq('brand_id', brandId)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (orderError) throw orderError;
+  const payload = {
+    brand_id: brandId,
+    name: String(name || '').trim(),
+    sort_order: Number(lastModel?.sort_order ?? -1) + 1,
+  };
   const { data, error } = await supabase
     .from('car_models')
     .insert(payload)
@@ -92,6 +114,27 @@ export async function deleteCatalogModel(id) {
     .delete()
     .eq('id', id);
   if (error) throw error;
+}
+
+async function persistSortOrder(table, orderedIds) {
+  ensureSupabase();
+  const updates = orderedIds.map((id, index) => (
+    supabase
+      .from(table)
+      .update({ sort_order: index })
+      .eq('id', id)
+  ));
+  const results = await Promise.all(updates);
+  const failed = results.find((result) => result.error);
+  if (failed?.error) throw failed.error;
+}
+
+export async function reorderCatalogBrands(orderedIds) {
+  return persistSortOrder('car_brands', orderedIds);
+}
+
+export async function reorderCatalogModels(orderedIds) {
+  return persistSortOrder('car_models', orderedIds);
 }
 
 export async function fetchCatalogYears(modelId) {
@@ -130,8 +173,8 @@ export async function deleteCatalogYear(id) {
 export async function fetchCatalogSnapshot() {
   ensureSupabase();
   const [{ data: brands, error: brandsError }, { data: models, error: modelsError }, { data: years, error: yearsError }] = await Promise.all([
-    supabase.from('car_brands').select('*').order('name', { ascending: true }),
-    supabase.from('car_models').select('*').order('name', { ascending: true }),
+    supabase.from('car_brands').select('*').order('sort_order', { ascending: true }).order('name', { ascending: true }),
+    supabase.from('car_models').select('*').order('sort_order', { ascending: true }).order('name', { ascending: true }),
     supabase.from('car_model_years').select('*').order('year', { ascending: false }),
   ]);
 

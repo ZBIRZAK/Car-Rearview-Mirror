@@ -10,6 +10,7 @@ export default function ProductCatalogSection({
   productPreviewImage,
   onCatalogSelect,
   pieceCardLabel,
+  usesFallbackCatalog,
 }) {
   if (hasCatalogSelection) return null;
   const shouldShowSkeleton = productConfigLoading;
@@ -42,6 +43,7 @@ export default function ProductCatalogSection({
                   <CatalogPreview
                     focus={item.previewFocus}
                     imageSrc={previewImage}
+                    isPlaceholder={usesFallbackCatalog}
                   />
                   <span className="catalog-product-meta">
                     <span className="order-scope-title">{pieceCardLabel(item).label}</span>

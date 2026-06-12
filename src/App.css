@@ -1546,6 +1546,38 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   cursor: pointer;
 }
 
+.dashboard-order-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.dashboard-order-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(198, 167, 94, 0.55);
+  border-radius: 8px;
+  background: #151515;
+  color: #f1c15d;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.dashboard-order-btn:hover:not(:disabled) {
+  border-color: #f1c15d;
+  background: #211d13;
+}
+
+.dashboard-order-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .dashboard-product-config-col {
   grid-column: 1 / -1;
 }
@@ -2490,11 +2522,24 @@ html,body,#root { height: 100%; overflow-x: hidden; }
   line-height: 1.25;
 }
 
-.fallback-product-notice p:last-child {
+.fallback-product-notice .fallback-product-notice-text {
   margin: 0;
   color: #e6e1d5;
-  font-size: 0.9rem;
-  line-height: 1.55;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  font-weight: 650;
+}
+
+.fallback-product-notice .fallback-product-notice-ar {
+  width: 100%;
+  margin: 2px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(199, 170, 94, 0.32);
+  color: #f1dfad;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  font-weight: 700;
+  text-align: center;
 }
 
 .piece-slider-title {
@@ -3214,6 +3259,16 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 
 .catalog-preview.focus-complete img {
   object-fit: contain;
+}
+
+.catalog-preview.is-placeholder {
+  background: #fff;
+}
+
+.catalog-preview.is-placeholder img {
+  object-fit: contain !important;
+  object-position: center;
+  padding: 10px;
 }
 
 @keyframes catalogImageSwap {
@@ -4163,6 +4218,12 @@ width: 130px;
 }
 
 .required-options-error .position-feature-card {
+  border-color: #e0272f !important;
+  box-shadow: 0 0 0 2px rgba(224, 39, 47, 0.18), 0 8px 14px rgba(0, 0, 0, 0.2);
+  animation: requiredOptionsPulse 0.7s ease 2;
+}
+
+.required-adjustment-options-error .adjustment-required-card {
   border-color: #e0272f !important;
   box-shadow: 0 0 0 2px rgba(224, 39, 47, 0.18), 0 8px 14px rgba(0, 0, 0, 0.2);
   animation: requiredOptionsPulse 0.7s ease 2;

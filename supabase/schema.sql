@@ -23,7 +23,8 @@ create table if not exists public.car_brands (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
   name text not null unique,
-  logo_url text
+  logo_url text,
+  sort_order int not null default 0
 );
 
 create table if not exists public.car_models (
@@ -31,8 +32,38 @@ create table if not exists public.car_models (
   created_at timestamptz not null default now(),
   brand_id uuid not null references public.car_brands(id) on delete cascade,
   name text not null,
+  sort_order int not null default 0,
   unique (brand_id, name)
 );
+
+alter table public.car_brands add column if not exists sort_order int not null default 0;
+alter table public.car_models add column if not exists sort_order int not null default 0;
+
+with ordered as (
+  select id, row_number() over (order by sort_order, name, created_at) - 1 as next_order
+  from public.car_brands
+)
+update public.car_brands as brands
+set sort_order = ordered.next_order
+from ordered
+where brands.id = ordered.id;
+
+with ordered as (
+  select
+    id,
+    row_number() over (partition by brand_id order by sort_order, name, created_at) - 1 as next_order
+  from public.car_models
+)
+update public.car_models as models
+set sort_order = ordered.next_order
+from ordered
+where models.id = ordered.id;
+
+create index if not exists car_brands_sort_order_idx
+  on public.car_brands (sort_order, name);
+
+create index if not exists car_models_brand_sort_order_idx
+  on public.car_models (brand_id, sort_order, name);
 
 create table if not exists public.car_model_years (
   id uuid primary key default gen_random_uuid(),

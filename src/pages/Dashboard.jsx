@@ -10,6 +10,8 @@ import {
   fetchCatalogBrands,
   fetchCatalogModels,
   fetchCatalogYears,
+  reorderCatalogBrands,
+  reorderCatalogModels,
   updateCatalogBrand,
 } from '../lib/catalogApi';
 import { fetchProductAdminConfig, saveProductAdminConfig } from '../lib/productConfigApi';
@@ -590,6 +592,22 @@ export default function Dashboard({
     }
   };
 
+  const handleMoveBrand = async (brandId, direction) => {
+    const currentIndex = brands.findIndex((item) => String(item.id) === String(brandId));
+    const targetIndex = currentIndex + direction;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= brands.length) return;
+    const nextBrands = [...brands];
+    [nextBrands[currentIndex], nextBrands[targetIndex]] = [nextBrands[targetIndex], nextBrands[currentIndex]];
+    setBrands(nextBrands);
+    try {
+      await reorderCatalogBrands(nextBrands.map((item) => item.id));
+      window.dispatchEvent(new Event('catalog-order-updated'));
+    } catch (err) {
+      setError(err?.message || "Impossible d'enregistrer l'ordre des marques.");
+      await loadBrands();
+    }
+  };
+
   useEffect(() => {
     setEditBrandLogoData('');
     setEditBrandLogoFileName('');
@@ -613,6 +631,22 @@ export default function Dashboard({
       await loadModels(selectedBrandId);
     } catch (err) {
       setError(err?.message || 'Failed to delete model.');
+    }
+  };
+
+  const handleMoveModel = async (modelId, direction) => {
+    const currentIndex = models.findIndex((item) => String(item.id) === String(modelId));
+    const targetIndex = currentIndex + direction;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= models.length) return;
+    const nextModels = [...models];
+    [nextModels[currentIndex], nextModels[targetIndex]] = [nextModels[targetIndex], nextModels[currentIndex]];
+    setModels(nextModels);
+    try {
+      await reorderCatalogModels(nextModels.map((item) => item.id));
+      window.dispatchEvent(new Event('catalog-order-updated'));
+    } catch (err) {
+      setError(err?.message || "Impossible d'enregistrer l'ordre des modeles.");
+      await loadModels(selectedBrandId);
     }
   };
 
@@ -1353,7 +1387,7 @@ export default function Dashboard({
                 </div>
               ) : null}
               <div className="dashboard-catalog-list">
-                {brands.map((brand) => (
+                {brands.map((brand, index) => (
                   <div
                     key={brand.id}
                     className={`dashboard-catalog-item ${selectedBrandId === brand.id ? 'active' : ''}`}
@@ -1368,16 +1402,44 @@ export default function Dashboard({
                     }}
                   >
                     <span>{brand.name}{brand.logo_url ? ' (logo)' : ''}</span>
-                    <button
-                      type="button"
-                      className="dashboard-delete-action-btn"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleDeleteBrand(brand.id);
-                      }}
-                    >
-                      Suppr.
-                    </button>
+                    <span className="dashboard-order-actions">
+                      <button
+                        type="button"
+                        className="dashboard-order-btn"
+                        disabled={index === 0}
+                        aria-label={`Monter ${brand.name}`}
+                        title="Monter"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMoveBrand(brand.id, -1);
+                        }}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        className="dashboard-order-btn"
+                        disabled={index === brands.length - 1}
+                        aria-label={`Descendre ${brand.name}`}
+                        title="Descendre"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMoveBrand(brand.id, 1);
+                        }}
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        className="dashboard-delete-action-btn"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleDeleteBrand(brand.id);
+                        }}
+                      >
+                        Suppr.
+                      </button>
+                    </span>
                   </div>
                 ))}
               </div>
@@ -1397,7 +1459,7 @@ export default function Dashboard({
                 <button type="button" className="year-filter-btn active" onClick={handleAddModel} disabled={!selectedBrandId}>Ajouter</button>
               </div>
               <div className="dashboard-catalog-list">
-                {models.map((model) => (
+                {models.map((model, index) => (
                   <div
                     key={model.id}
                     className={`dashboard-catalog-item ${selectedModelId === model.id ? 'active' : ''}`}
@@ -1412,16 +1474,44 @@ export default function Dashboard({
                     }}
                   >
                     <span>{model.name}</span>
-                    <button
-                      type="button"
-                      className="dashboard-delete-action-btn"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleDeleteModel(model.id);
-                      }}
-                    >
-                      Suppr.
-                    </button>
+                    <span className="dashboard-order-actions">
+                      <button
+                        type="button"
+                        className="dashboard-order-btn"
+                        disabled={index === 0}
+                        aria-label={`Monter ${model.name}`}
+                        title="Monter"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMoveModel(model.id, -1);
+                        }}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        className="dashboard-order-btn"
+                        disabled={index === models.length - 1}
+                        aria-label={`Descendre ${model.name}`}
+                        title="Descendre"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMoveModel(model.id, 1);
+                        }}
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        className="dashboard-delete-action-btn"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleDeleteModel(model.id);
+                        }}
+                      >
+                        Suppr.
+                      </button>
+                    </span>
                   </div>
                 ))}
               </div>

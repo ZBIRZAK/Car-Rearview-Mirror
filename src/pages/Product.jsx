@@ -181,12 +181,21 @@ export default function Product({
       : (productConfig.position ? [productConfig.position] : []);
     if (!productConfig.orderScope) missing.push('type de commande');
     if (requiresPosition && !selectedPositions.length) missing.push('position');
+    if (isCompleteOrder && !productConfig.adjustmentType) missing.push('reglage');
     if (!productConfig.productType) missing.push('type de produit');
     return missing;
-  }, [productConfig.orderScope, productConfig.position, productConfig.productType, selectedCatalogCard?.requiresPosition]);
+  }, [
+    productConfig.orderScope,
+    productConfig.position,
+    productConfig.adjustmentType,
+    productConfig.productType,
+    selectedCatalogCard?.requiresPosition,
+    isCompleteOrder,
+  ]);
 
   const canContinue = requiredMissing.length === 0;
   const isPositionMissing = requiredMissing.includes('position');
+  const isAdjustmentMissing = requiredMissing.includes('reglage');
 
   const openLightbox = () => {
     setIsLightboxOpen(true);
@@ -363,11 +372,6 @@ export default function Product({
   const handleContinue = () => {
     if (!canContinue) {
       setShowValidationHint(true);
-      window.requestAnimationFrame(() => {
-        const firstMissingField = document.querySelector('[data-required-missing="true"]');
-        firstMissingField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstMissingField?.focus({ preventScroll: true });
-      });
       return;
     }
     onContinue();
@@ -376,11 +380,6 @@ export default function Product({
   const handleContinueShoppingClick = () => {
     if (!canContinue) {
       setShowValidationHint(true);
-      window.requestAnimationFrame(() => {
-        const firstMissingField = document.querySelector('[data-required-missing="true"]');
-        firstMissingField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstMissingField?.focus({ preventScroll: true });
-      });
       return;
     }
     onContinueShopping();
@@ -389,6 +388,16 @@ export default function Product({
   useEffect(() => {
     if (canContinue) setShowValidationHint(false);
   }, [canContinue]);
+
+  useEffect(() => {
+    if (!showValidationHint || canContinue) return;
+    const frame = window.requestAnimationFrame(() => {
+      const firstMissingField = document.querySelector('[data-required-missing="true"]');
+      firstMissingField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstMissingField?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [showValidationHint, canContinue, isPositionMissing, isAdjustmentMissing]);
 
   return (
     <div className="product-view">
@@ -403,11 +412,14 @@ export default function Product({
                 <span className="fallback-product-notice-mark" aria-hidden="true">!</span>
                 <p className="fallback-product-notice-product">{pieceCardLabel(selectedCatalogCard).label}</p>
                 <h3>{[brand?.name, model, year].filter(Boolean).join(' - ')}</h3>
-                <p>
+                <p className="fallback-product-notice-text">
                   {t(
                     'fallback_product_notice_text',
                     "Ce produit n'est pas encore ajoute au site, mais il le sera bientot. Commandez maintenant et nous vous contacterons avec le prix et les photos."
                   )}
+                </p>
+                <p className="fallback-product-notice-ar" lang="ar" dir="rtl">
+                  هذا المنتج لم يضف إلى الموقع بعد، لكنه سيضاف قريبا. اطلبه الآن وسنتواصل معك لإرسال السعر والصور.
                 </p>
               </div>
             ) : (
@@ -447,6 +459,7 @@ export default function Product({
             productPreviewImage={productPreviewImage}
             onCatalogSelect={handleCatalogSelect}
             pieceCardLabel={pieceCardLabel}
+            usesFallbackCatalog={usesFallbackCatalog}
           />
 
           <ProductOptionsSection
@@ -465,6 +478,7 @@ export default function Product({
             showPositionSection={selectedCatalogCard?.requiresPosition !== false}
             showValidationHint={showValidationHint}
             isPositionMissing={isPositionMissing}
+            isAdjustmentMissing={isAdjustmentMissing}
           />
 
           {hasCatalogSelection ? (

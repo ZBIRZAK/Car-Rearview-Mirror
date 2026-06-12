@@ -43,6 +43,7 @@ export default function ProductOptionsSection({
   showPositionSection,
   showValidationHint,
   isPositionMissing,
+  isAdjustmentMissing,
 }) {
   const positionIconByValue = {
     'Cote conducteur': conducteurIcon,
@@ -86,6 +87,17 @@ export default function ProductOptionsSection({
       imageSrc: String(item?.imageSrc || '').trim(),
     }))
     .filter((item) => item.key && item.label);
+  const getAdjustmentValue = (item) => {
+    const key = String(item?.key || '').trim().toLowerCase();
+    const label = String(item?.label || '').trim().toLowerCase();
+    if (key === 'reglage electrique' || key === 'reglage' || label === 'reglage electrique' || label === 'electrique') {
+      return 'Reglage electrique';
+    }
+    if (key === 'reglage manuel' || key === 'manuel' || label === 'reglage manuel' || label === 'manuel') {
+      return 'Reglage manuel';
+    }
+    return '';
+  };
   const isCoverPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'COVER';
   const isGlassPiece = isPieceOrder && String(selectedFeatureKey || '').toUpperCase() === 'GLASS';
   const singlePieceKey = String(selectedFeatureKey || '').toUpperCase();
@@ -379,8 +391,16 @@ export default function ProductOptionsSection({
               {t('product_position_required', 'Selectionnez le cote du retroviseur : Conducteur, Passager ou les deux.')}
             </p>
           ) : null}
+          {showValidationHint && isAdjustmentMissing ? (
+            <p className="required-field-indicator">
+              <span aria-hidden="true">!</span>
+              {t('product_adjustment_required', 'Selectionnez un type de reglage : Electrique ou Reglage manuel.')}
+            </p>
+          ) : null}
           <div
-            className={`feature-grid ${showValidationHint && isPositionMissing ? 'required-options-error' : ''}`}
+            className={`feature-grid ${showValidationHint && isPositionMissing ? 'required-options-error' : ''} ${
+              showValidationHint && isAdjustmentMissing ? 'required-adjustment-options-error' : ''
+            }`}
             data-required-missing={showValidationHint && isPositionMissing ? 'true' : undefined}
             tabIndex={showValidationHint && isPositionMissing ? -1 : undefined}
           >
@@ -478,13 +498,32 @@ export default function ProductOptionsSection({
                 </span>
               </button>
             ) : null}
-            {normalizedOptionDefs.map((card) => (
-              <button
-                key={card.key}
-                type="button"
-                className={`feature-card ${selectedOptions.includes(card.key) ? 'active' : ''}`}
-                onClick={() => toggleOption(card.key)}
-              >
+            {normalizedOptionDefs.map((card) => {
+              const adjustmentValue = isCompleteOrder ? getAdjustmentValue(card) : '';
+              const isAdjustmentCard = Boolean(adjustmentValue);
+              const isAdjustmentActive = productConfig.adjustmentType === adjustmentValue;
+              const isFirstMissingAdjustment = showValidationHint
+                && isAdjustmentMissing
+                && adjustmentValue === 'Reglage electrique';
+              return (
+                <button
+                  key={card.key}
+                  type="button"
+                  className={`feature-card ${isAdjustmentCard ? 'adjustment-required-card' : ''} ${
+                    isAdjustmentCard ? (isAdjustmentActive ? 'active' : '') : (selectedOptions.includes(card.key) ? 'active' : '')
+                  }`}
+                  onClick={() => {
+                    if (isAdjustmentCard) {
+                      onChange('adjustmentType', adjustmentValue);
+                      return;
+                    }
+                    toggleOption(card.key);
+                  }}
+                  role={isAdjustmentCard ? 'radio' : undefined}
+                  aria-checked={isAdjustmentCard ? isAdjustmentActive : undefined}
+                  data-required-missing={isFirstMissingAdjustment ? 'true' : undefined}
+                  tabIndex={isFirstMissingAdjustment ? -1 : undefined}
+                >
                 <span className="feature-card-icon">
                   {card.imageSrc ? (
                       <img
@@ -527,10 +566,17 @@ export default function ProductOptionsSection({
                   ) : null}
                 </span>
                 <span className="feature-card-texts">
-                  <span className="feature-card-title">{card.label}</span>
+                  <span className="feature-card-title">
+                    {adjustmentValue === 'Reglage electrique'
+                      ? t('product_electric', 'Electrique')
+                      : adjustmentValue === 'Reglage manuel'
+                        ? t('product_manual_adjustment', 'Reglage manuel')
+                        : card.label}
+                  </span>
                 </span>
               </button>
-            ))}
+              );
+            })}
           </div>
           {isCompleteOrder ? (
             <div className="complete-color-section">
