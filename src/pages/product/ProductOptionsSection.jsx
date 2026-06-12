@@ -24,7 +24,6 @@ import coverBlancOptionIcon from '../../images/new-icones/SVG/Blanc.svg';
 import coverNoirOptionIcon from '../../images/new-icones/SVG/Noir.svg';
 import coverGrisOptionIcon from '../../images/new-icones/SVG/Gris.svg';
 
-const SHOW_COMPLETE_BOTH_SIDES = String(import.meta.env.VITE_SHOW_COMPLETE_BOTH_SIDES || 'false').toLowerCase() === 'true';
 const COMPLETE_COLOR_OPTIONS = ['Noir', 'Blanc', 'Gris', 'Autre couleur', 'Carbon', 'Chromee'];
 const COVER_PALETTE_ORDER = ['noir', 'blanc', 'gris', 'autre-couleur', 'carbon', 'chromee'];
 
@@ -42,6 +41,8 @@ export default function ProductOptionsSection({
   isCompleteOrder,
   selectedOptionDefs,
   showPositionSection,
+  showValidationHint,
+  isPositionMissing,
 }) {
   const positionIconByValue = {
     'Cote conducteur': conducteurIcon,
@@ -235,11 +236,21 @@ export default function ProductOptionsSection({
   return (
     <>
 
-      {hasCatalogSelection && isCoverPiece && normalizedOptionDefs.length ? (
+      {hasCatalogSelection && isCoverPiece ? (
         <>
           <section className="config-group">
             <h3>{`${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'COVER'})`}</h3>
-            <div className="feature-grid cover-position-grid">
+            {showValidationHint && isPositionMissing ? (
+              <p className="required-field-indicator">
+                <span aria-hidden="true">!</span>
+                {t('product_position_required', 'Selectionnez le cote du retroviseur : Conducteur, Passager ou les deux.')}
+              </p>
+            ) : null}
+            <div
+              className={`feature-grid cover-position-grid ${showValidationHint && isPositionMissing ? 'required-options-error' : ''}`}
+              data-required-missing={showValidationHint && isPositionMissing ? 'true' : undefined}
+              tabIndex={showValidationHint && isPositionMissing ? -1 : undefined}
+            >
               {positions.map((item) => (
                 <button
                   key={item}
@@ -355,14 +366,24 @@ export default function ProductOptionsSection({
         </>
       ) : null}
 
-      {hasCatalogSelection && !isCoverPiece && normalizedOptionDefs.length ? (
+      {hasCatalogSelection && !isCoverPiece && (normalizedOptionDefs.length || shouldShowPositionCards) ? (
         <section className="config-group">
           <h3>
             {isCompleteOrder
               ? t('product_step3_options', '3. Options du produit')
               : `${t('product_piece_options_title', '2. Options pour la piece')} (${selectedFeatureKey || 'PIECE'})`}
           </h3>
-          <div className="feature-grid">
+          {showValidationHint && isPositionMissing ? (
+            <p className="required-field-indicator">
+              <span aria-hidden="true">!</span>
+              {t('product_position_required', 'Selectionnez le cote du retroviseur : Conducteur, Passager ou les deux.')}
+            </p>
+          ) : null}
+          <div
+            className={`feature-grid ${showValidationHint && isPositionMissing ? 'required-options-error' : ''}`}
+            data-required-missing={showValidationHint && isPositionMissing ? 'true' : undefined}
+            tabIndex={showValidationHint && isPositionMissing ? -1 : undefined}
+          >
             {shouldShowPositionCards ? (
               <>
                 {positions.map((item) => (
@@ -387,7 +408,7 @@ export default function ProductOptionsSection({
                     </span>
                   </button>
                 ))}
-                {isGlassPiece || (isCompleteOrder && SHOW_COMPLETE_BOTH_SIDES) ? (
+                {isGlassPiece || isCompleteOrder ? (
                   <button
                     type="button"
                     className={`feature-card position-feature-card ${

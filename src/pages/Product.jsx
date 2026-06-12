@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../i18n';
-import { DEFAULT_PRODUCT_ADMIN_CONFIG, PIECE_OPTION_DEFS } from '../config/productAdminConfig';
+import {
+  COMPLETE_OPTION_DEFS,
+  DEFAULT_CATALOG_PRODUCTS,
+  DEFAULT_PRODUCT_ADMIN_CONFIG,
+  PIECE_OPTION_DEFS,
+} from '../config/productAdminConfig';
 import CatalogPreview from './product/CatalogPreview';
 import ProductCatalogSection from './product/ProductCatalogSection';
 import ProductOptionsSection from './product/ProductOptionsSection';
@@ -13,6 +18,7 @@ import {
   positions,
   productCatalogCards,
   productPreviewImage,
+  unavailablePlaceholderImagesByKey,
 } from './product/constants';
 
 const stripPhaseSuffix = (value) => String(value || '')
@@ -40,7 +46,6 @@ export default function Product({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [showValidationHint, setShowValidationHint] = useState(false);
-  const [unavailableProductNotice, setUnavailableProductNotice] = useState(null);
   const [completePreviewIndex, setCompletePreviewIndex] = useState(0);
   const [catalogCompleteImageIndex, setCatalogCompleteImageIndex] = useState(0);
   const effectiveAdminConfig = useMemo(() => ({
@@ -68,8 +73,13 @@ export default function Product({
   const isCompleteOrder = productConfig.orderScope === 'complete';
   const isPieceOrder = productConfig.orderScope === 'piece';
   const selectedFeatureKey = productConfig.selectedFeature || '';
+  const usesFallbackCatalog = !effectiveAdminConfig.catalogProducts.length
+    && !effectiveAdminConfig.enabledProducts.length;
   const fallbackCatalogCards = useMemo(() => {
     const enabledSet = new Set(effectiveAdminConfig.enabledProducts || DEFAULT_PRODUCT_ADMIN_CONFIG.enabledProducts);
+    if (!enabledSet.size) {
+      return DEFAULT_CATALOG_PRODUCTS.filter((item) => item.key !== 'MIRROR');
+    }
     return productCatalogCards.filter((item) => enabledSet.has(item.key));
   }, [effectiveAdminConfig.enabledProducts]);
   const visibleCatalogCards = useMemo(() => {
@@ -98,7 +108,13 @@ export default function Product({
     [effectiveAdminConfig.completeOptionKeys]
   );
   const visibleFeatureCards = useMemo(
-    () => featureCards.filter((card) => enabledCompleteOptionSet.has(card.key)),
+    () => {
+      if (!enabledCompleteOptionSet.size) {
+        const defaultKeys = new Set(COMPLETE_OPTION_DEFS.map((item) => item.key));
+        return featureCards.filter((card) => defaultKeys.has(card.key));
+      }
+      return featureCards.filter((card) => enabledCompleteOptionSet.has(card.key));
+    },
     [enabledCompleteOptionSet]
   );
   const productImagesByKey = useMemo(() => {
@@ -111,11 +127,14 @@ export default function Product({
     return Object.fromEntries(
       keys.map((key) => {
         const configured = Array.isArray(configMap[key]) ? configMap[key].filter(Boolean) : [];
-        const fallback = defaultProductImagesByKey[key] || [productPreviewImage];
+        const placeholder = unavailablePlaceholderImagesByKey[key];
+        const fallback = usesFallbackCatalog && placeholder
+          ? [placeholder]
+          : (defaultProductImagesByKey[key] || [productPreviewImage]);
         return [key, configured.length ? configured : fallback];
       })
     );
-  }, [effectiveAdminConfig.productImagesByKey, visibleCatalogCards]);
+  }, [effectiveAdminConfig.productImagesByKey, visibleCatalogCards, usesFallbackCatalog]);
   const selectedCatalogCard = useMemo(() => {
     if (!visibleCatalogCards.length) return null;
     if (selectedFeatureKey) {
@@ -167,6 +186,7 @@ export default function Product({
   }, [productConfig.orderScope, productConfig.position, productConfig.productType, selectedCatalogCard?.requiresPosition]);
 
   const canContinue = requiredMissing.length === 0;
+  const isPositionMissing = requiredMissing.includes('position');
 
   const openLightbox = () => {
     setIsLightboxOpen(true);
@@ -186,7 +206,6 @@ export default function Product({
   };
 
   const handleCatalogSelect = (item) => {
-    setUnavailableProductNotice(null);
     if (item.orderScope === 'complete' || item.key === 'COMPLETE') {
       onChange('orderScope', 'complete');
       onChange('productType', item.pieceType || completeTypeLabel);
@@ -344,6 +363,11 @@ export default function Product({
   const handleContinue = () => {
     if (!canContinue) {
       setShowValidationHint(true);
+      window.requestAnimationFrame(() => {
+        const firstMissingField = document.querySelector('[data-required-missing="true"]');
+        firstMissingField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstMissingField?.focus({ preventScroll: true });
+      });
       return;
     }
     onContinue();
@@ -352,43 +376,19 @@ export default function Product({
   const handleContinueShoppingClick = () => {
     if (!canContinue) {
       setShowValidationHint(true);
+      window.requestAnimationFrame(() => {
+        const firstMissingField = document.querySelector('[data-required-missing="true"]');
+        firstMissingField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstMissingField?.focus({ preventScroll: true });
+      });
       return;
     }
     onContinueShopping();
   };
 
   useEffect(() => {
-    if (!showValidationHint) return undefined;
-    const timer = window.setTimeout(() => {
-      setShowValidationHint(false);
-    }, 3000);
-    return () => window.clearTimeout(timer);
-  }, [showValidationHint]);
-
-  const handleUnavailableSelect = (item) => {
-    const fallbackImage = item?.imageSrc
-      || (productImagesByKey[item?.key] && productImagesByKey[item.key][0])
-      || productPreviewImage;
-    setUnavailableProductNotice({
-      key: item?.key || '',
-      label: item?.label || t('product_unknown', 'Produit'),
-      imageSrc: fallbackImage,
-    });
-  };
-
-  const handleUnavailableWhatsApp = () => {
-    const whatsappNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
-    if (!whatsappNumber || !unavailableProductNotice) return;
-    const messageLines = [
-      t('product_unavailable_whatsapp_intro', "Bonjour, ce produit n'est pas encore disponible sur le site."),
-      `${t('whatsapp_label_product', 'Produit')}: ${unavailableProductNotice.label}`,
-      `${t('whatsapp_label_brand', 'Marque')}: ${brand?.name || '-'}`,
-      `${t('whatsapp_label_model', 'Modele')}: ${model || '-'}`,
-      `${t('whatsapp_label_year', 'Annee')}: ${year || '-'}`,
-      t('product_unavailable_whatsapp_request', 'Merci de me confirmer la disponibilite et le prix.'),
-    ];
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(messageLines.join('\n'))}`, '_blank');
-  };
+    if (canContinue) setShowValidationHint(false);
+  }, [canContinue]);
 
   return (
     <div className="product-view">
@@ -398,26 +398,40 @@ export default function Product({
         {hasCatalogSelection ? (
         <aside className="catalog-preview-overlay">
           {selectedCatalogCard ? (
-            <div className="piece-slider-block product-image-preview-block" role="region" aria-label={t('product_preview_selected', 'Apercu produit selectionne')}>
-              <button type="button" className="product-image-trigger" onClick={openLightbox}>
-                <CatalogPreview focus={selectedCatalogCard.previewFocus} imageSrc={selectedPreviewImage} />
-              </button>
-              {previewThumbnailImages.length > 1 ? (
-                <div className="preview-thumbnails" role="listbox" aria-label={t('product_preview_images', 'Images du retroviseur complet')}>
-                  {previewThumbnailImages.map((imgSrc, idx) => (
-                    <button
-                      key={imgSrc}
-                      type="button"
-                      className={`preview-thumb-btn ${completePreviewIndex === idx ? 'active' : ''}`}
-                      onClick={() => setCompletePreviewIndex(idx)}
-                      aria-label={`Image ${idx + 1}`}
-                    >
-                      <img src={imgSrc} alt="" />
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+            usesFallbackCatalog ? (
+              <div className="fallback-product-notice" role="status">
+                <span className="fallback-product-notice-mark" aria-hidden="true">!</span>
+                <p className="fallback-product-notice-product">{pieceCardLabel(selectedCatalogCard).label}</p>
+                <h3>{[brand?.name, model, year].filter(Boolean).join(' - ')}</h3>
+                <p>
+                  {t(
+                    'fallback_product_notice_text',
+                    "Ce produit n'est pas encore ajoute au site, mais il le sera bientot. Commandez maintenant et nous vous contacterons avec le prix et les photos."
+                  )}
+                </p>
+              </div>
+            ) : (
+              <div className="piece-slider-block product-image-preview-block" role="region" aria-label={t('product_preview_selected', 'Apercu produit selectionne')}>
+                <button type="button" className="product-image-trigger" onClick={openLightbox}>
+                  <CatalogPreview focus={selectedCatalogCard.previewFocus} imageSrc={selectedPreviewImage} />
+                </button>
+                {previewThumbnailImages.length > 1 ? (
+                  <div className="preview-thumbnails" role="listbox" aria-label={t('product_preview_images', 'Images du retroviseur complet')}>
+                    {previewThumbnailImages.map((imgSrc, idx) => (
+                      <button
+                        key={imgSrc}
+                        type="button"
+                        className={`preview-thumb-btn ${completePreviewIndex === idx ? 'active' : ''}`}
+                        onClick={() => setCompletePreviewIndex(idx)}
+                        aria-label={`Image ${idx + 1}`}
+                      >
+                        <img src={imgSrc} alt="" />
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            )
           ) : null}
 
         </aside>
@@ -433,11 +447,6 @@ export default function Product({
             productPreviewImage={productPreviewImage}
             onCatalogSelect={handleCatalogSelect}
             pieceCardLabel={pieceCardLabel}
-            t={t}
-            brand={brand}
-            model={model}
-            year={year}
-            onUnavailableSelect={handleUnavailableSelect}
           />
 
           <ProductOptionsSection
@@ -454,6 +463,8 @@ export default function Product({
             isCompleteOrder={isCompleteOrder}
             selectedOptionDefs={visibleOptionDefs}
             showPositionSection={selectedCatalogCard?.requiresPosition !== false}
+            showValidationHint={showValidationHint}
+            isPositionMissing={isPositionMissing}
           />
 
           {hasCatalogSelection ? (
@@ -464,8 +475,6 @@ export default function Product({
                 onContinue={handleContinue}
                 onContinueShopping={handleContinueShoppingClick}
                 quoteItemsCount={quoteItemsCount}
-                showValidationHint={showValidationHint}
-                canContinue={canContinue}
               />
             </div>
           ) : null}
@@ -488,39 +497,6 @@ export default function Product({
         </div>
       )}
 
-      {unavailableProductNotice ? (
-        <div className="product-unavailable-toast" role="status" aria-live="polite">
-          <button
-            type="button"
-            className="product-unavailable-toast-close"
-            onClick={() => setUnavailableProductNotice(null)}
-            aria-label={t('close', 'Fermer')}
-          >
-            ×
-          </button>
-          <img
-            src={unavailableProductNotice.imageSrc || productPreviewImage}
-            alt={unavailableProductNotice.label}
-            className="product-unavailable-toast-image"
-          />
-          <p className="product-unavailable-toast-title">
-            {unavailableProductNotice.label}
-          </p>
-          <p className="product-unavailable-toast-text">
-            {t(
-              'product_unavailable_notice',
-              'Produit non disponible pour le moment (sur le site). Envoyez-nous un message pour recevoir la disponibilite et le prix.'
-            )}
-          </p>
-          <button
-            type="button"
-            className="product-unavailable-toast-btn"
-            onClick={handleUnavailableWhatsApp}
-          >
-            {t('product_unavailable_notice_btn', 'Envoyer un message')}
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }

@@ -33,8 +33,10 @@ import {
 
 const FLOW_STORAGE_KEY = 'crm_flow_state_v1';
 const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '1234567890').replace(/\D/g, '');
-const WECHAT_URL = import.meta.env.VITE_WECHAT_URL || 'https://www.wechat.com/';
-const INSTAGRAM_URL = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/';
+const SOCIAL_CONTACT_NUMBER = import.meta.env.VITE_SOCIAL_CONTACT_NUMBER || '+212691525291';
+const TELEGRAM_URL = import.meta.env.VITE_TELEGRAM_URL || 'https://t.me/+212691525291';
+const WECHAT_URL = import.meta.env.VITE_WECHAT_URL || `tel:${SOCIAL_CONTACT_NUMBER}`;
+const INSTAGRAM_URL = import.meta.env.VITE_INSTAGRAM_URL || `tel:${SOCIAL_CONTACT_NUMBER}`;
 const POSITION_ORDER = ['Cote conducteur', 'Cote passager'];
 const createEmptyProductConfig = () => ({
   orderScope: '',
@@ -519,20 +521,27 @@ function App() {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank');
   };
 
+  const openSocialContact = (url) => {
+    if (String(url).startsWith('tel:')) {
+      window.location.href = url;
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleTelegramClick = () => {
+    setActiveNav('telegram');
+    openSocialContact(TELEGRAM_URL);
+  };
+
   const handleWeChatClick = () => {
     setActiveNav('wechat');
-    window.open(WECHAT_URL, '_blank');
+    openSocialContact(WECHAT_URL);
   };
 
   const handleInstagramClick = () => {
     setActiveNav('instagram');
-    window.open(INSTAGRAM_URL, '_blank');
-  };
-
-  // Handle Contact click
-  const handleContactClick = () => {
-    setActiveNav('contact');
-    navigateToView('contact');
+    openSocialContact(INSTAGRAM_URL);
   };
 
   const handleStartSelection = () => {
@@ -985,7 +994,8 @@ function App() {
         onWhatsApp={handleWhatsAppClick}
         onWeChat={handleWeChatClick}
         onInstagram={handleInstagramClick}
-        onContact={handleContactClick}
+        onTelegram={handleTelegramClick}
+        socialContactNumber={SOCIAL_CONTACT_NUMBER}
         disabled={catalogLoading}
       />
 

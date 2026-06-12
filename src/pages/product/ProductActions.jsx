@@ -22,8 +22,6 @@ export default function ProductActions({
   onContinue,
   onContinueShopping,
   quoteItemsCount,
-  showValidationHint,
-  canContinue,
 }) {
   if (!hasCatalogSelection) return null;
 
@@ -55,11 +53,6 @@ export default function ProductActions({
         </p>
       </div>
 
-      {showValidationHint && !canContinue ? (
-        <p className="product-validation-toast" role="status" aria-live="polite">
-          {t('product_validation_required', 'Merci de completer les champs requis avant de continuer.')}
-        </p>
-      ) : null}
     </>
   );
 }

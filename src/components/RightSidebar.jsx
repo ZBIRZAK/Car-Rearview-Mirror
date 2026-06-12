@@ -15,7 +15,8 @@ export default function RightSidebar({
   onWhatsApp,
   onWeChat,
   onInstagram,
-  onContact,
+  onTelegram,
+  socialContactNumber = '',
   disabled = false,
 }) {
   const brandsRef = React.useRef(null);
@@ -87,8 +88,9 @@ export default function RightSidebar({
           <button
             type="button"
             className="sidebar-icon-btn sidebar-icon-bottom"
-            onClick={onContact}
+            onClick={onTelegram}
             aria-label="Telegram"
+            title={`Telegram: ${socialContactNumber}`}
             tabIndex={isShareOpen ? 0 : -1}
           >
             <img src={telegramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
@@ -107,6 +109,7 @@ export default function RightSidebar({
             className="sidebar-icon-btn sidebar-icon-bottom"
             onClick={onInstagram}
             aria-label="Instagram"
+            title={`Instagram: ${socialContactNumber}`}
             tabIndex={isShareOpen ? 0 : -1}
           >
             <img src={instagramIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
@@ -116,6 +119,7 @@ export default function RightSidebar({
             className="sidebar-icon-btn sidebar-icon-bottom"
             onClick={onWeChat}
             aria-label="WeChat"
+            title={`WeChat: ${socialContactNumber}`}
             tabIndex={isShareOpen ? 0 : -1}
           >
             <img src={wechatIcon} alt="" aria-hidden="true" className="sidebar-bottom-icon-img" />
