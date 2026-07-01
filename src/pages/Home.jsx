@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useI18n } from '../i18n';
+import heroMirrorImage from '../images/hero-image.jpeg';
 import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from '../config/homeContentDefaults';
 
 function WhyLineIcon({ type }) {
@@ -37,6 +38,7 @@ function WhyLineIcon({ type }) {
 export default function Home({ onStartSelection, showBrandHint, homeContent = DEFAULT_HOME_CONTENT }) {
   const { t } = useI18n();
   const normalizedContent = normalizeHomeContent(homeContent);
+  const [isGuideReady, setIsGuideReady] = useState(false);
 
   const renderSeoLink = (link, index) => {
     const href = String(link?.href || '').trim();
@@ -51,15 +53,26 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
       <div className="home-content">
         {/* Hero Section */}
         <div className="hero-section">
-          <div className="hero-video-frame">
+          <div className={`hero-video-frame ${isGuideReady ? 'is-ready' : 'is-loading'}`}>
+            <div className="hero-video-poster" aria-hidden="true">
+              <img src={heroMirrorImage} alt="" className="hero-video-poster-image" />
+              <div className="hero-video-poster-overlay" />
+              <div className="hero-video-loading-copy">
+                <span className="hero-video-loading-badge">{t('home_guide_loading_label', 'Guide video')}</span>
+                <strong>{t('home_guide_loading_title', 'Chargement du guide')}</strong>
+                <span>{t('home_guide_loading_text', 'La video se prepare...')}</span>
+              </div>
+            </div>
             <video
               className="hero-guide-video"
               src="/videos/guide.mp4"
+              poster={heroMirrorImage}
               controls
               autoPlay
               muted
               playsInline
               preload="metadata"
+              onLoadedData={() => setIsGuideReady(true)}
             >
               {t('home_guide_fallback', 'Votre navigateur ne prend pas en charge la lecture video.')}
             </video>
