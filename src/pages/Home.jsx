@@ -208,7 +208,7 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
             className="guide-modal"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="guide-modal-title"
+            aria-label={t('home_guide_title', 'Comment utiliser l’application')}
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -219,9 +219,6 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
             >
               ×
             </button>
-            <div className="guide-modal-header">
-              <h2 id="guide-modal-title">{t('home_guide_title', 'Comment utiliser l’application')}</h2>
-            </div>
             <div className="guide-video-shell">
               <video
                 className="guide-video"
