@@ -756,6 +756,12 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 .app-description { font-size: 1.1rem; color: #aaa; line-height: 1.6; margin-bottom: 32px; }
 .time-estimate { color: #d4dae0; font-size: 0.9rem; margin-top: 10px; }
 .brand-hint { color: #d0b06b; font-size: 0.9rem; margin-top: 8px; }
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
 .trust-strip { display:flex; flex-wrap: wrap; gap:8px; margin-top: 12px; }
 .trust-strip span { font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 5px 10px; color: #ddd; background: rgba(255,255,255,0.04); }
 
@@ -859,6 +865,88 @@ html,body,#root { height: 100%; overflow-x: hidden; }
 .cta-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(198, 167, 94, 0.35);
+}
+
+.guide-button {
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f7f1de;
+  border: 1px solid rgba(198, 167, 94, 0.34);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.guide-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(198, 167, 94, 0.7);
+  background: rgba(198, 167, 94, 0.1);
+}
+
+.guide-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(6px);
+}
+
+.guide-modal {
+  position: relative;
+  width: min(920px, 100%);
+  max-height: min(88vh, 860px);
+  overflow: auto;
+  border-radius: 22px;
+  border: 1px solid rgba(198, 167, 94, 0.22);
+  background: linear-gradient(180deg, #111111, #070707);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  padding: 22px;
+}
+
+.guide-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.guide-modal-header {
+  margin-bottom: 18px;
+  padding-right: 48px;
+}
+
+.guide-modal-header h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.3rem, 3vw, 2.2rem);
+  color: #fff;
+}
+
+.guide-video-shell {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(198, 167, 94, 0.16);
+  background: #000;
+}
+
+.guide-video {
+  display: block;
+  width: 100%;
+  max-height: 68vh;
+  background: #000;
 }
 
 .section-title {
@@ -5134,11 +5222,39 @@ width: 130px;
   }
 
   .hero-text {
-    display: none;
+    display: block;
   }
 
   .hero-image {
     height: 55vh;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .guide-button,
+  .cta-button {
+    width: 100%;
+  }
+
+  .guide-modal {
+    padding: 18px 14px 14px;
+    border-radius: 18px;
+  }
+
+  .guide-modal-close {
+    top: 10px;
+    right: 10px;
+  }
+
+  .guide-modal-header {
+    padding-right: 40px;
+  }
+
+  .guide-video {
+    max-height: 56vh;
   }
 
   .featured-grid {

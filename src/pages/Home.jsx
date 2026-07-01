@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useI18n } from '../i18n';
 import heroMirrorImage from '../images/hero-image.jpeg';
 import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from '../config/homeContentDefaults';
+
+const GUIDE_VIDEO_STORAGE_KEY = 'home_guide_video_seen';
 
 function WhyLineIcon({ type }) {
   if (type === 'shield') {
@@ -38,6 +40,29 @@ function WhyLineIcon({ type }) {
 export default function Home({ onStartSelection, showBrandHint, homeContent = DEFAULT_HOME_CONTENT }) {
   const { t } = useI18n();
   const normalizedContent = normalizeHomeContent(homeContent);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+
+  useEffect(() => {
+    const hasSeenGuide = window.localStorage.getItem(GUIDE_VIDEO_STORAGE_KEY);
+    if (!hasSeenGuide) {
+      setIsGuideOpen(true);
+      window.localStorage.setItem(GUIDE_VIDEO_STORAGE_KEY, 'true');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isGuideOpen) return undefined;
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsGuideOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isGuideOpen]);
+
   const renderSeoLink = (link, index) => {
     const href = String(link?.href || '').trim();
     if (href) {
@@ -69,7 +94,16 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
             <p className="app-description">
               {t('home_desc', 'Trouvez le retroviseur ideal pour votre vehicule. Produits de qualite, prix competitifs et livraison rapide.')}
             </p>
-            <button className="cta-button" onClick={onStartSelection}>{t('home_cta', 'Choisir ma marque')}</button>
+            <div className="hero-actions">
+              <button className="cta-button" onClick={onStartSelection}>{t('home_cta', 'Choisir ma marque')}</button>
+              <button
+                type="button"
+                className="guide-button"
+                onClick={() => setIsGuideOpen(true)}
+              >
+                {t('home_guide_cta', "Voir le guide d'utilisation")}
+              </button>
+            </div>
             {/* <p className="time-estimate">{t('home_time', 'Temps estime : 30 secondes')}</p> */}
             {showBrandHint ? (
               <p className="brand-hint">{t('home_hint', 'Commencez par choisir une marque dans la barre laterale droite.')}</p>
@@ -163,6 +197,47 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
           </div>
         </section>
       </div>
+
+      {isGuideOpen ? (
+        <div
+          className="guide-modal-backdrop"
+          role="presentation"
+          onClick={() => setIsGuideOpen(false)}
+        >
+          <div
+            className="guide-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="guide-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="guide-modal-close"
+              aria-label={t('close', 'Fermer')}
+              onClick={() => setIsGuideOpen(false)}
+            >
+              ×
+            </button>
+            <div className="guide-modal-header">
+              <h2 id="guide-modal-title">{t('home_guide_title', 'Comment utiliser l’application')}</h2>
+            </div>
+            <div className="guide-video-shell">
+              <video
+                className="guide-video"
+                src="/videos/guide.mp4"
+                controls
+                autoPlay
+                muted
+                playsInline
+                preload="metadata"
+              >
+                {t('home_guide_fallback', 'Votre navigateur ne prend pas en charge la lecture video.')}
+              </video>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
