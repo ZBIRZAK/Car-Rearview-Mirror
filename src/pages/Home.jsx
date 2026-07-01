@@ -67,7 +67,6 @@ export default function Home({ onStartSelection, showBrandHint, homeContent = DE
               className="hero-guide-video"
               src="/videos/guide.mp4"
               poster={heroMirrorImage}
-              controls
               autoPlay
               muted
               playsInline
