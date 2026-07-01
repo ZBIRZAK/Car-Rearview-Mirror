@@ -3,8 +3,6 @@ import { useI18n } from '../i18n';
 import heroMirrorImage from '../images/hero-image.jpeg';
 import { DEFAULT_HOME_CONTENT, normalizeHomeContent } from '../config/homeContentDefaults';
 
-const GUIDE_VIDEO_STORAGE_KEY = 'home_guide_video_seen';
-
 function WhyLineIcon({ type }) {
   if (type === 'shield') {
     return (
@@ -40,15 +38,7 @@ function WhyLineIcon({ type }) {
 export default function Home({ onStartSelection, showBrandHint, homeContent = DEFAULT_HOME_CONTENT }) {
   const { t } = useI18n();
   const normalizedContent = normalizeHomeContent(homeContent);
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
-
-  useEffect(() => {
-    const hasSeenGuide = window.localStorage.getItem(GUIDE_VIDEO_STORAGE_KEY);
-    if (!hasSeenGuide) {
-      setIsGuideOpen(true);
-      window.localStorage.setItem(GUIDE_VIDEO_STORAGE_KEY, 'true');
-    }
-  }, []);
+  const [isGuideOpen, setIsGuideOpen] = useState(true);
 
   useEffect(() => {
     if (!isGuideOpen) return undefined;

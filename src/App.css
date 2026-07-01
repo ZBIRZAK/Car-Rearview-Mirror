@@ -5231,18 +5231,37 @@ width: 130px;
     width: 100%;
   }
 
+  .guide-modal-backdrop {
+    padding: 0;
+    align-items: stretch;
+  }
+
   .guide-modal {
-    padding: 12px;
-    border-radius: 18px;
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    background: #000;
   }
 
   .guide-modal-close {
-    top: 10px;
-    right: 10px;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.68);
+  }
+
+  .guide-video-shell {
+    height: 100dvh;
+    border: none;
+    border-radius: 0;
   }
 
   .guide-video {
-    min-height: 60vh;
+    min-height: 100dvh;
   }
 
   .featured-grid {
@@ -5275,6 +5294,11 @@ width: 130px;
 }
 
 @media (max-width: 420px) {
+  .guide-modal-close {
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+  }
+
   .main-content {
     padding: 0 12px;
     padding-right: 76px;
